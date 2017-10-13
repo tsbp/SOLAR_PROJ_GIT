@@ -1,0 +1,14 @@
+﻿"Symbol";"Value";"Unit";
+"REFERENCE";"UCPA206";"";
+"TraceParts.PartVersion";"1.0.8";"";
+"SUPPLIER";"Schaeffler Technologies AG & Co. KG";"";
+"TraceParts.PartStatus";"Published";"";
+"TraceParts.PartNumber";"69-18042013-077212";"";
+"TraceParts.PartLanguage";"en";"";
+"DESIGN";"Plummer block housing units";"";
+"TraceParts.InstanceId";"69-18042013-0772127A27DDIKFCQV07FTITB30KXDW";"";
+"TraceParts.PartTitle";"Plummer block housing units UCPA, cast iron housing, with short base, radial insert ball bearing with grub screws in inner ring, RSR seals";"";
+"TRACEPARTS";"TRACEPARTS";"";
+"TraceParts.PartStatusId";"";"";
+"SELECTION";"UCPA206";"";
+"TraceParts.ClassPath";"INAFAG:/F_INAFAG/INAFAG.1.1/INAFAG.1.1.1/INAFAG.1.1.1.9/INAFAG.1.1.1.9.1/69-18042013-077212";"";
