@@ -54,32 +54,53 @@ long scale(int aAxis, int aVal)
 void getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, long * aPitch, long * aRoll, long * aHead)
 {
   //===== roll, pitch ===========
-	long a = q_mul(toFixed(aRawAcc->x), toFixed(aRawAcc->x));
-	long b = q_mul(toFixed(aRawAcc->y), toFixed(aRawAcc->y));
-	long c = q_mul(toFixed(aRawAcc->z), toFixed(aRawAcc->z));
+	long a = (long)aRawAcc->x; //q_mul(toFixed(aRawAcc->x), toFixed(aRawAcc->x));
+	long b = (long)aRawAcc->y; //q_mul(toFixed(aRawAcc->y), toFixed(aRawAcc->y));
+	long c = (long)aRawAcc->z; //q_mul(toFixed(aRawAcc->z), toFixed(aRawAcc->z));
 
-	long cdf = q_add(a, q_add(b, c));
+	ets_uart_printf("aRawAcc->x = %d, aRawAcc->y = %d, aRawAcc->z = %d\r\n",
+						a,
+						b,
+						c);
+//	ets_uart_printf("a^2 = %d, b^2 = %d, c^2 = %d\r\n",
+//							a * a,
+//							b * b,
+//							c * c);
 
-	long d = sqrt_fx(cdf);
+	long cdf = a*a + b * b + c * c; //q_add(a, q_add(b, c));
+	ets_uart_printf("cdf = %d\r\n", cdf);
 
-	long accxnorm = q_div(toFixed(aRawAcc->x), d);
-	long accynorm = q_div(toFixed(aRawAcc->y), d);
-	long accznorm = q_div(toFixed(aRawAcc->z), d);
 
-	long sinP = q_sub(0, accxnorm);
-	long sinR = q_sub(0, accynorm);
-	long cosP = sqrt_fx(q_sub(toFixed(1000), q_mul(sinP, sinP)));
-	long cosR = sqrt_fx(q_sub(toFixed(1000), q_mul(sinR, sinR)));
+	float d = f_sqrt(cdf);
 
-	ets_uart_printf("sinP = %d, sinR = %d, cosP = %d, cosR = %d, \r\n",
-			toFloatX10000(sinP),
-			toFloatX10000(sinR),
-			toFloatX10000(cosP),
-			toFloatX10000(cosR));
+	a = (int)d;
+	ets_uart_printf("Q = %d\r\n", d);
+
+
+	float accxnorm = aRawAcc->x / d; //q_div(toFixed(aRawAcc->x), d);
+	float accynorm = aRawAcc->y / d; //q_div(toFixed(aRawAcc->y), d);
+	float accznorm = aRawAcc->z / d; //q_div(toFixed(aRawAcc->z), d);
+
+	float sinP = 0 - accxnorm; //q_sub(0, accxnorm);
+	float sinR = 0 - accynorm; //q_sub(0, accynorm);
+	float cosP = f_sqrt(1 - sinP * sinP); //sqrt_fx(q_sub(toFixed(1000), q_mul(sinP, sinP)));
+	float cosR = f_sqrt(1 - sinR * sinR); //sqrt_fx(q_sub(toFixed(1000), q_mul(sinR, sinR)));
+
+    a = sinP * 10000;
+    b = sinP * 10000;
+    c = sinP * 10000;
+    d = sinP * 10000;
+
+	ets_uart_printf("sinP = %d, sinR = %d, cosP = %d, cosR = %d, \r\n", a, b, c, d);
 
 	*aPitch = toFloatX10000(asin_fx(sinP)); //*aPitch = asin_fx(-accxnorm);
 	*aRoll =  toFloatX10000(asin_fx(sinR));         // *aRoll =  asin(accynorm/cos(*aPitch));
 
+	float ee = -1.456, bb = 1.234;
+		int ss = ee / bb* 1000000;
+		ets_uart_printf("mul = %d (0x%04x)\r\n", ss);
+
+/*
 	//====== heading ======================
 //	long Magx = toFixed(aRawMag->x);
 //	long Magy = toFixed(aRawMag->y);
@@ -134,6 +155,9 @@ void getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, long * aPitch, long *
 	float ee = -1.456, bb = 1.234;
 	int ss = ee * bb* 1000000;
 	ets_uart_printf("mul = %d (0x%04x)\r\n", ss);
+
+
+	*/
 
 }
 //==============================================================================

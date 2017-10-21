@@ -214,3 +214,38 @@ long cos_fx(long x, long y)
   return  q_div(x, sqrt_fx(q_add(q_mul(x, x), q_mul(y, y))));
 }
 //===========================================================================
+float fabsol (float x)
+{
+  if(x < 0)
+    x *= (-1);
+  return x;
+}
+//===============================================
+#define F_DIF_FX (0.00001f)
+//===============================================
+float f_sqrt(float aVal)
+{
+	int i;
+	float x, x1;
+
+	if (aVal <= 0) return 0;
+	else
+	{
+		i = 0;
+		x1 = aVal;
+		x = aVal / 2;
+		while(i < 25)
+		{
+//			x1 = q_sub(x, q_div(q_sub(q_mul(x,x), num), q_mul(toFixed(2000), x)));
+			x1 = x - ((x * x - aVal) / (2 * x));
+			if(fabsol(x / x1) < F_DIF_FX) break;
+			else
+			{
+				i++;
+				x = x1;
+			}
+		}
+	}
+	return x1;
+}
+//===========================================================================
