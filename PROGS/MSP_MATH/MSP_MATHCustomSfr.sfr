@@ -1,0 +1,7 @@
+[Sfr]
+sfr = "P6SEL.P5",	"Memory",	0x37,	1,	base=16,	modified
+sfr = "U0CTL.LISTEN",	"Memory",	0x70,	1,	base=16,	modified
+sfr = "U0RCTL.RXERR",	"Memory",	0x72,	1,	base=16,	modified
+
+
+[SfrGroupInfo]
