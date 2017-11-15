@@ -38,126 +38,120 @@ const sint16 MAG_MIN_MAX[3][2] = {
 		{-267, 654}  // z
 };
 //==============================================================================
-long scale(int aAxis, int aVal)
+float scale(int aAxis, sint16 aVal)
 {
 
 //	Magx = (Magx-Mag_minx)/(Mag_maxx-Mag_minx)*2-1;
 //	Magy = (Magy-Mag_miny)/(Mag_maxy-Mag_miny)*2-1;
 //	Magz = (Magz-Mag_minz)/(Mag_maxz-Mag_minz)*2-1;
 
-	int a = 1000*(aVal                  - MAG_MIN_MAX[aAxis][0]);
-	int b = 1000*((MAG_MIN_MAX[aAxis][1] - MAG_MIN_MAX[aAxis][0]));
-	long c = q_mul(toFixed(2000), q_div(toFixed(a),toFixed(b)));
-	return q_sub(c, toFixed(1000));
+	float a = (aVal                   - MAG_MIN_MAX[aAxis][0]);
+	float b = ((MAG_MIN_MAX[aAxis][1] - MAG_MIN_MAX[aAxis][0]));
+	float c = 2 * (a / b);
+	return (c - 1);
 }
 //==============================================================================
-void getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, long * aPitch, long * aRoll, long * aHead)
+float tatan2(float y, float x){
+  float z = y / x;
+  return z - (z*z*z / 3) + (z*z*z*z*z / 5) - (z*z*z*z*z*z*z / 7) + (z*z*z*z*z*z*z*z*z / 9);
+}
+//================================================================
+void getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sint16 * aPitch, sint16 * aRoll, sint16 * aHead)
 {
   //===== roll, pitch ===========
-	long a = (long)aRawAcc->x; //q_mul(toFixed(aRawAcc->x), toFixed(aRawAcc->x));
-	long b = (long)aRawAcc->y; //q_mul(toFixed(aRawAcc->y), toFixed(aRawAcc->y));
-	long c = (long)aRawAcc->z; //q_mul(toFixed(aRawAcc->z), toFixed(aRawAcc->z));
+	long a = (long)aRawAcc->x;
+	long b = (long)aRawAcc->y;
+	long c = (long)aRawAcc->z;
+	long d;
 
-	ets_uart_printf("aRawAcc->x = %d, aRawAcc->y = %d, aRawAcc->z = %d\r\n",
-						a,
-						b,
-						c);
-//	ets_uart_printf("a^2 = %d, b^2 = %d, c^2 = %d\r\n",
-//							a * a,
-//							b * b,
-//							c * c);
+//	ets_uart_printf("aRawAcc->x = %d, aRawAcc->y = %d, aRawAcc->z = %d\r\n",
+//						a,
+//						b,
+//						c);
 
-	long cdf = a*a + b * b + c * c; //q_add(a, q_add(b, c));
-	ets_uart_printf("cdf = %d\r\n", cdf);
+	long cdf = iSqrt(a*a + b * b + c * c); //q_add(a, q_add(b, c));
+//	ets_uart_printf("Q = %d\r\n", cdf);
 
+	float accxnorm = (float) aRawAcc->x / cdf;
+	float accynorm = (float) aRawAcc->y / cdf;
+	float accznorm = (float) aRawAcc->z / cdf;
 
-	float d = f_sqrt(cdf);
+	a = (int)(accxnorm * 10000);
+	b = (int)(accynorm * 10000);
+	c = (int)(accznorm * 10000);
 
-	a = (int)d;
-	ets_uart_printf("Q = %d\r\n", d);
-
-
-	float accxnorm = aRawAcc->x / d; //q_div(toFixed(aRawAcc->x), d);
-	float accynorm = aRawAcc->y / d; //q_div(toFixed(aRawAcc->y), d);
-	float accznorm = aRawAcc->z / d; //q_div(toFixed(aRawAcc->z), d);
+//	ets_uart_printf("accxnorm = %d, accynorm = %d, accznorm = %d,\r\n", a, b, c);
 
 	float sinP = 0 - accxnorm; //q_sub(0, accxnorm);
 	float sinR = 0 - accynorm; //q_sub(0, accynorm);
-	float cosP = f_sqrt(1 - sinP * sinP); //sqrt_fx(q_sub(toFixed(1000), q_mul(sinP, sinP)));
-	float cosR = f_sqrt(1 - sinR * sinR); //sqrt_fx(q_sub(toFixed(1000), q_mul(sinR, sinR)));
+	float cosP = (float)iSqrt(100000000*(1 - sinP * sinP))/10000;
+	float cosR = (float)iSqrt(100000000*(1 - sinR * sinR))/10000;
 
-    a = sinP * 10000;
-    b = sinP * 10000;
-    c = sinP * 10000;
-    d = sinP * 10000;
 
-	ets_uart_printf("sinP = %d, sinR = %d, cosP = %d, cosR = %d, \r\n", a, b, c, d);
 
-	*aPitch = toFloatX10000(asin_fx(sinP)); //*aPitch = asin_fx(-accxnorm);
-	*aRoll =  toFloatX10000(asin_fx(sinR));         // *aRoll =  asin(accynorm/cos(*aPitch));
+//    a = (int)(sinP * 10000);
+//    b = (int)(sinR * 10000);
+//    c = (int)(cosP * 10000);
+//    d = (int)(cosR * 10000);
+//
+//	ets_uart_printf("sinP = %d, sinR = %d, cosP = %d, cosR = %d, \r\n", a, b, c, d);
 
-	float ee = -1.456, bb = 1.234;
-		int ss = ee / bb* 1000000;
-		ets_uart_printf("mul = %d (0x%04x)\r\n", ss);
+	*aPitch = iAsin((sint16)(sinP * 10000)); //*aPitch = asin_fx(-accxnorm);
+	*aRoll =  iAsin((sint16)(sinR * 10000));         // *aRoll =  asin(accynorm/cos(*aPitch));
 
-/*
+	ets_uart_printf("aPitch = %d, aRoll = %d \r\n", *aPitch, *aRoll);
+
+
 	//====== heading ======================
-//	long Magx = toFixed(aRawMag->x);
-//	long Magy = toFixed(aRawMag->y);
-//	long Magz = toFixed(aRawMag->z);
 
 	//  Magx *= ((double)1100 / 1000);
 	//  Magy *= ((double)1100 / 1000);
 	//  Magz *= ((double)980  / 1000);
 
 	// use calibration values to shift and scale magnetometer measurements
-	long Magx = scale(X_SCALE, aRawMag->x);//(Magx-Mag_minx)/(Mag_maxx-Mag_minx)*2-1;
-	long Magy = scale(Y_SCALE, aRawMag->y);//(Magy-Mag_miny)/(Mag_maxy-Mag_miny)*2-1;
-	long Magz = scale(Z_SCALE, aRawMag->z);//(Magz-Mag_minz)/(Mag_maxz-Mag_minz)*2-1;
+	float Magx = scale(X_SCALE, aRawMag->x);//(Magx-Mag_minx)/(Mag_maxx-Mag_minx)*2-1;
+	float Magy = scale(Y_SCALE, aRawMag->y);//(Magy-Mag_miny)/(Mag_maxy-Mag_miny)*2-1;
+	float Magz = scale(Z_SCALE, aRawMag->z);//(Magz-Mag_minz)/(Mag_maxz-Mag_minz)*2-1;
 
+//	ets_uart_printf("aRawMag->x = %d, aRawMag->y = %d, aRawMag->z = %d\r\n",
+//					(aRawMag->x),
+//					(aRawMag->y),
+//					(aRawMag->z));
+//
+//	ets_uart_printf("Magx = %d, Magy = %d, Magz = %d\r\n",
+//				(int)(Magx*10000),
+//				(int)(Magy*10000),
+//				(int)(Magz*10000));
 
-
-
-	ets_uart_printf("aRawMag->x = %d, aRawMag->y = %d, aRawMag->z = %d\r\n",
-					(aRawMag->x),
-					(aRawMag->y),
-					(aRawMag->z));
-
-	ets_uart_printf("Magx = %d, Magy = %d, Magz = %d\r\n",
-				toFloatX10000(Magx),
-				toFloatX10000(Magy),
-				toFloatX10000(Magz));
-
-	//long sinR = sin(aRoll);
-	//long cosR = cos(aRoll);
-	//long sinP = sin(aPitch);
-	//long cosP = cos(aPitch);
 
 	// tilt compensated magnetic sensor measurements
-	long magxcomp = q_add(q_mul(Magx, cosP), q_mul(Magz, sinP)); //Magx*cosP+Magz*sinP;
-
-	a = q_mul(q_mul(Magx, sinR), sinP);
-	b = q_mul(Magy, cosR);
-	c = q_mul(q_mul(Magz, sinR), cosP);
-	long magycomp = q_sub(q_add(a,b), c); //Magx*sinR*sinP+Magy*cosR-Magz*sinR*cosP;
+	float magxcomp = Magx*cosP + Magz*sinP;
+	float magycomp = Magx*sinR*sinP + Magy*cosR - Magz*sinR*cosP;
 
 	ets_uart_printf("magxcomp = %d, magycomp = %d\r\n",
-					toFloatX10000(magxcomp),
-					toFloatX10000(magycomp));
+					(int)(magxcomp*10000),
+					(int)(magycomp*10000));
 
 	// arctangent of y/x
-	long cc = q_div(magycomp, magxcomp);
-		ets_uart_printf("cc = %d (0x%04x)\r\n", toFloatX10000(cc), cc);
+	float cc = magycomp / magxcomp;
+	ets_uart_printf("cc = %d \r\n", (int)(cc * 1000));
 
-	*aHead = toFloatX10000(atan_fx(cc)); //(atan2(magycomp, magxcomp));
-	ets_uart_printf("atan_fx = %d (0x%04x)\r\n", toFloatX10000(*aHead), atan_fx(cc));
+	int uPI = 31416;
 
-	float ee = -1.456, bb = 1.234;
-	int ss = ee * bb* 1000000;
-	ets_uart_printf("mul = %d (0x%04x)\r\n", ss);
+			int u = iAtan((sint16)(cc * 1000));
+			    if( magxcomp < 0.0 )// 2nd, 3rd quadrant
+			    {
+			        if( u > 0 )// will go to 3rd quadrant
+			            u -= uPI;
+			        else
+			            u += uPI;
+			    }
 
 
-	*/
+
+	*aHead =  u;//(atan2(magycomp, magxcomp));
+	ets_uart_printf("atan_fx = %d \r\n", *aHead);
+
 
 }
 //==============================================================================

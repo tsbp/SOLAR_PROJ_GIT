@@ -27,7 +27,7 @@ uint8 addr = 0x3f;
 uint8 out = 0;
 unsigned char tmp[6];
 
-long Pitch, Roll, Yaw;
+sint16 Pitch, Roll, Yaw;
 //uint16 YawDegrees, RollDegrees;
 
 float ang = 483;
@@ -66,9 +66,9 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	//ets_uart_printf("x = %d, y = %d, z = %d\r\n", compass.x, compass.y, compass.z);
 //
 	getAngles(&accel, &compass, &Pitch, &Roll, &Yaw);
-	addValueToArray((int)(Roll),  rollArray);
-	addValueToArray((int)(Pitch), pitchArray);
-	addValueToArray((int)(Yaw),   yawArray);
+	addValueToArray((sint16)(Roll),  rollArray);
+	addValueToArray((sint16)(Pitch), pitchArray);
+	addValueToArray((sint16)(Yaw),   yawArray);
 
 	_roll    = mFilter(rollArray,  FILTER_LENGHT);
 	_pitch   = mFilter(pitchArray, FILTER_LENGHT);
