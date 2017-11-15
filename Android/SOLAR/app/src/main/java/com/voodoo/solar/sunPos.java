@@ -1,22 +1,17 @@
-package com.voodoo.sunpos;
+package com.voodoo.solar;
 
-import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import java.lang.Math;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-
-public class MainActivity extends ActionBarActivity {
-
+public class sunPos extends Activity {
     double DEG_TO_RAD  = 0.01745329;
     double PI =  3.141592654;
     double TWOPI = 6.28318531;
@@ -30,8 +25,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_sun_pos);
         tvResult = (TextView)findViewById(R.id.tvResult);
         tvDate   = (TextView)findViewById(R.id.tvDate);
 
@@ -93,7 +87,7 @@ public class MainActivity extends ActionBarActivity {
         print += (String.format("%.2f", Lon / DEG_TO_RAD) + ", ");
         print += (String.format("%.2f", Lat / DEG_TO_RAD) + "\r\n");
         //print += ("year,month,day,local hour,minute,second,elevation,azimuth");
-       // print+=("\r\n");
+        // print+=("\r\n");
 
         Year = 2017;
         // Changes may be required in for… loop to get complete
@@ -130,25 +124,4 @@ public class MainActivity extends ActionBarActivity {
         return JD_whole;
     }
     //==============================================================================================
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
