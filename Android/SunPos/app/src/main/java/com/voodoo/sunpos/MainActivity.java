@@ -26,6 +26,7 @@ public class MainActivity extends ActionBarActivity {
 
     TextView tvResult, tvDate;
     EditText etLong, etLatit;
+    com.voodoo.sunpos.imagePosition imgPos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,8 @@ public class MainActivity extends ActionBarActivity {
 
         etLong =  (EditText) findViewById(R.id.etLong);
         etLatit =  (EditText) findViewById(R.id.etLatit);
+
+        imgPos  = (com.voodoo.sunpos.imagePosition)findViewById(R.id.imgPos);
 
         Button btnCalc = (Button) findViewById(R.id.btnCalculate);
         btnCalc.setOnClickListener(new View.OnClickListener() {
