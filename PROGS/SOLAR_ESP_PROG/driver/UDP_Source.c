@@ -115,6 +115,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				ansBuffer[3] = OK;
 				inProcess = PROC_DURATION;
 				blink = BLINK_BACKWARD;
+				move(3);
 				break;
 
 			case CMD_RIGHT:
@@ -122,6 +123,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				ansBuffer[3] = OK;
 				inProcess = PROC_DURATION;
 				blink = BLINK_FORWARD;
+				move(2);
 				break;
 
 			case CMD_UP:
@@ -130,6 +132,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				ansBuffer[3] = OK;
 				inProcess = PROC_DURATION;
 				blink = BLINK_UP;
+				move(8);
 				break;
 
 			case CMD_DOWN:
@@ -137,6 +140,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				ansBuffer[3] = OK;
 				inProcess = PROC_DURATION;
 				blink = BLINK_DOWN;
+				move(12);
 				break;
 
 			case CMD_STATE:

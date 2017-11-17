@@ -44,13 +44,14 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	{
 		if (wifi_station_get_connect_status() == STATION_GOT_IP) 	blink = BLINK_WAIT;
 		else														blink = BLINK_WAIT_UNCONNECTED;
+		move(0);
 	}
 
 
 	//======== PCF8574 =====================
 	terminators = PCF8574_readByte(addr);
-	PCF8574_writeByte(0x3f, ((out++) << 4) | 0x0f);
-
+	//PCF8574_writeByte(0x3f, ((out++) << 4) | 0x0f);
+/*
 	//======== BH1715  =====================
 	BH1715(I2C_READ, 0x23, 0x01, (unsigned char*)&light, 2);
 	light = ((unsigned char*)&light)[1] |
@@ -64,7 +65,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	compass.y = ((tmp[4] << 8) | tmp[5]) ;
 
 	//ets_uart_printf("x = %d, y = %d, z = %d\r\n", compass.x, compass.y, compass.z);
-//
+
 	getAngles(&accel, &compass, &Pitch, &Roll, &Yaw);
 	addValueToArray((sint16)(Roll),  rollArray);
 	addValueToArray((sint16)(Pitch), pitchArray);
@@ -73,6 +74,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	_roll    = mFilter(rollArray,  FILTER_LENGHT);
 	_pitch   = mFilter(pitchArray, FILTER_LENGHT);
 	_heading = mFilter(yawArray,   FILTER_LENGHT);
+*/
 
 	//ets_uart_printf("_roll = %d, _pitch = %d, _heading = %d\r\n", _roll, _pitch, _heading);
 //
@@ -97,6 +99,8 @@ void ICACHE_FLASH_ATTR setup(void)
 	BH1715(I2C_WRITE, 0x23, 0x10, 0, 1);
 	//==================================================
 	LSM303Init();
+
+	PCF8574_writeByte(0x3f, 0 | 0x0f);
 
 //	button_init();
 	UDP_Init_client();

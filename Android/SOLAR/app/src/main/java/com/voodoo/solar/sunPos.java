@@ -7,9 +7,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class sunPos extends Activity {
     double DEG_TO_RAD  = 0.01745329;
@@ -22,6 +25,13 @@ public class sunPos extends Activity {
     TextView tvResult, tvDate;
     EditText etLong, etLatit;
 
+    Button btnAnim;
+
+    com.voodoo.solar.imgPosition imgSun;
+
+    private Timer mTimer;
+    private MyTimerTask mMyTimerTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +42,33 @@ public class sunPos extends Activity {
         etLong =  (EditText) findViewById(R.id.etLong);
         etLatit =  (EditText) findViewById(R.id.etLatit);
 
+        imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
+
+//        mTimer = new Timer();
+//        mMyTimerTask = new MyTimerTask();
+//        mTimer.schedule(mMyTimerTask, 1000, 1000);
+
+        btnAnim = (Button) findViewById(R.id.btnAnimate);
+        btnAnim.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(mTimer == null)
+                {
+                    Lon = DEG_TO_RAD * Double.parseDouble(etLong.getText().toString());
+                    Lat = DEG_TO_RAD * Double.parseDouble(etLatit.getText().toString());
+                    mTimer = new Timer();
+                    mMyTimerTask = new MyTimerTask();
+                    mTimer.schedule(mMyTimerTask, 1000, 1000);
+                    cntr = 3;
+                }
+                else
+                {
+                    mTimer.cancel();
+                    mTimer = null;
+                    btnAnim.setText("Animate");
+                }
+            }
+        });
+
         Button btnCalc = (Button) findViewById(R.id.btnCalculate);
         btnCalc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -39,14 +76,47 @@ public class sunPos extends Activity {
                 Lon = DEG_TO_RAD * Double.parseDouble(etLong.getText().toString());
                 Lat = DEG_TO_RAD * Double.parseDouble(etLatit.getText().toString());
 
-                DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-                String date = df.format(Calendar.getInstance().getTime());
-                tvDate.setText(date);
+//                DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+//                String date = df.format(Calendar.getInstance().getTime());
+
+                Calendar currentTime    = Calendar.getInstance();
+
+                int d = currentTime.get(Calendar.DAY_OF_MONTH);
+                int m = 1 + currentTime.get(Calendar.MONTH);
+                int y = currentTime.get(Calendar.YEAR);
+
+                int h = currentTime.get(Calendar.HOUR_OF_DAY);
+                int min = currentTime.get(Calendar.MINUTE);
+                int s = currentTime.get(Calendar.SECOND);
+
+                tvDate.setText(y + "." + m + "." + d + " * " + h + ":" + min + ":" + s);
 
                 getAngles();
                 tvResult.setText(print);
             }
         });
+    }
+    //==============================================================================================
+    int cntr = 0;
+    //==============================================================================================
+    class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    cntr++;
+                    if(cntr == 22) cntr = 3;
+                    btnAnim.setText("Sun at " + cntr + " hour");
+                    Calculate(Year, Month, Day, cntr - Zone, 0, 0);
+                    imgSun.azimuth   = azimuth / DEG_TO_RAD;
+                    imgSun.elevation = elev / DEG_TO_RAD;
+                    imgSun.invalidate();
+
+                }
+            });
+        }
     }
     //==============================================================================================
     void Calculate(int aYear, int aMonth, int aDay, int aHour, int aMinute, int aSecond)

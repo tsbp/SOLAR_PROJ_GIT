@@ -167,3 +167,8 @@ void ICACHE_FLASH_ATTR indicator_loop(os_event_t *events)
 	blinking(blink);
 	leds(ledStt);
 }
+//==============================================================================
+void ICACHE_FLASH_ATTR move(uint8 a)
+{
+	PCF8574_writeByte(0x3f, (a << 4) | 0x0f);
+}

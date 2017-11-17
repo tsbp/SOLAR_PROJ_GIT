@@ -65,11 +65,23 @@
                 android:text="32.23"/>
 
         </LinearLayout>
-        <Button
+
+        <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Рассчитать"
             android:id="@+id/btnCalculate"/>
+            <Button
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Animate"
+                android:id="@+id/btnAnimate"/>
+        </LinearLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,6 +92,13 @@
             android:background="#88ffff00"
             android:textColor="#0000ff"
             android:textSize="18sp" />
+
+        <com.voodoo.solar.imgPosition
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/compass"
+            android:id="@+id/imgPos"/>
 
         <ScrollView
             android:layout_width="match_parent"
