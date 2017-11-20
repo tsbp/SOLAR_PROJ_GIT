@@ -2,33 +2,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@drawable/border"
+    >
+
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:id="@+id/i1"
-        android:background="#ff0000"/>
+        android:textSize="20dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/border_m"
+        android:gravity="center_vertical|center_horizontal" />
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:id="@+id/i2"/>
+        android:layout_marginTop="3dp"
+        android:id="@+id/i2"
+        android:textSize="20dp"
+        android:background="@drawable/border"
+        android:gravity="center_vertical|center_horizontal"/>
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_marginTop="3dp"
         android:id="@+id/i3"
-        android:background="#ff0000"/>
+        android:textSize="20dp"
+        android:background="@drawable/border"
+        android:gravity="center_vertical|center_horizontal"/>
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:id="@+id/i4"/>
+        android:layout_marginTop="3dp"
+        android:id="@+id/i4"
+        android:textSize="20dp"
+        android:background="@drawable/border"
+        android:gravity="center_vertical|center_horizontal"/>
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:id="@+id/i5"
-        android:background="#ff0000"/>
+        android:textSize="20dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/border"
+        android:gravity="center_vertical|center_horizontal"/>
 </LinearLayout>
