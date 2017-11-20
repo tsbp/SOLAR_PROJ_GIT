@@ -8,9 +8,7 @@ import android.opengl.GLU;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.SeekBar;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.voodoo.solar.UDPProcessor.OnReceiveListener;
@@ -21,12 +19,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Locale;
 
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -68,11 +63,6 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
     Button btnIn1, btnIn2, btnIn3, btnIn4;
 
-    ListView lvClients;
-    int clientsIp[];
-    String clientData[][];
-    String [] lvStrings = {"100", "101", "102", "105", "255"};
-    int [][] vals = {{1,2,3,4,5}, {1,2,3,4,5}, {1,2,3,4,5}, {10,20,30,40,50}, {0,9,8,7,6}};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,17 +85,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         sbCompass = (SeekBar) findViewById(R.id.sbCompass);
         sbAccel   = (SeekBar) findViewById(R.id.sbAccel);
 
-        lvClients = (ListView)findViewById(R.id.lvClients);
-        //lvBuid();
-
         btnIn1 = (Button)findViewById(R.id.btnIn1);
-        btnIn1.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                //lvBuid();
-
-            }
-        });
         btnIn2 = (Button)findViewById(R.id.btnIn2);
         btnIn3 = (Button)findViewById(R.id.btnIn3);
         btnIn4 = (Button)findViewById(R.id.btnIn4);
@@ -239,37 +219,6 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         }, 0, 100);
     }
     //==============================================================================================
-    private final String ATTRIBUTE_IP = "attr_ip";
-    private final String ATTRIBUTE_V1 = "attr_v1";
-    private final String ATTRIBUTE_V2 = "attr_v2";
-    private final String ATTRIBUTE_V3 = "attr_v3";
-    private final String ATTRIBUTE_V4 = "attr_v4";
-    private final String ATTRIBUTE_V5 = "attr_v5";
-    //==============================================================================================
-    void lvBuid()
-    {
-        ArrayList<Map<String, Object>> data = new ArrayList<>(
-                clientsIp.length);
-        Map<String, Object> m;
-        for (int i = 0; i < clientsIp.length; i++) {
-
-            m = new HashMap<>();
-            m.put(ATTRIBUTE_IP, clientsIp[i]);
-            m.put(ATTRIBUTE_V1, clientData[i][0]);
-            m.put(ATTRIBUTE_V2, clientData[i][1]);
-            m.put(ATTRIBUTE_V3, clientData[i][2]);
-            m.put(ATTRIBUTE_V4, clientData[i][3]);
-
-            data.add(m);
-
-        }
-        String[] from = {ATTRIBUTE_IP, ATTRIBUTE_V1, ATTRIBUTE_V2, ATTRIBUTE_V3, ATTRIBUTE_V4,};
-        int[] to = {R.id.i1, R.id.i2, R.id.i3, R.id.i4, R.id.i5};
-        SimpleAdapter sAdapter = new SimpleAdapter(this, data, R.layout.client_item, from, to);
-        //lvClients = (ListView) findViewById(R.id.lvClients);
-        lvClients.setAdapter(sAdapter);
-    }
-    //==============================================================================================
     short azimuth;
     short angle;
     byte angIncrement  = 10;
@@ -355,19 +304,6 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
             if(in[0] == ID_SLAVE)
             {
-                //==========================================
-                if(clientsIp == null)
-                {
-                    clientsIp = new int[1];
-                    clientsIp[0] = ip.getAddress()[3];
-                    clientData = new String[1][4];
-                    clientData[0][0] = "";
-                }
-                else
-                { //add client
-
-                }
-                //==========================================
                 switch(in[1])
                 {
                     case CMD_ANGLE:
@@ -412,24 +348,57 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         if(tt < 0) tt += 360;
                         tNorth.setText(String.format("%.1f", tt));
 
-                        // find ip
-                        for(int i = 0; i < clientsIp.length; i++)
-                        {
-                            if(ip.getAddress()[3] == clientsIp[i])
-                            {
-                               clientData[i][0] = String.format("%.1f", Math.toDegrees(RollAng));
-                               clientData[i][1] = String.format("%.1f", Math.toDegrees(PitchAng));
-                               clientData[i][2] = String.format("%.1f", tt);
-                               lvBuid();
-                            }
-                        }
-
                         break;
 
                     case CMD_CFG:
                         break;
                 }
             }
+//            if(in.length >= 18 && in[0] == (byte)0xc0) {
+//                cx = (short) (((in[3] << 8) & 0xff00) | (int) (in[2] & 0xff));
+//                cy = (short) (((in[5] << 8) & 0xff00) | (int) (in[4] & 0xff));
+//                cz = (short) (((in[7] << 8) & 0xff00) | (int) (in[6] & 0xff));
+//
+//                ax = (short) (((in[9] << 8)  & 0xff00) | (int) (in[8] & 0xff));
+//                ay = (short) (((in[11] << 8) & 0xff00) | (int) (in[10] & 0xff));
+//                az = (short) (((in[13] << 8) & 0xff00) | (int) (in[12] & 0xff));
+//
+//                tAccel.setText(ax + "\t\t\t" + ay + "\t\t\t" + az + "\t\t\t ");
+//                tCompass.setText(cx + "\t\t\t" + cy + "\t\t\t" + cz + "\t\t\t");
+//
+//                if((cz & (short)1) == 1)   btnIn1.setBackgroundColor(Color.RED);
+//                else                       btnIn1.setBackgroundColor(Color.GREEN);
+//                if((cz & (short)2) == 2)   btnIn2.setBackgroundColor(Color.RED);
+//                else                       btnIn2.setBackgroundColor(Color.GREEN);
+//                if((cz & (short)4) == 4)   btnIn3.setBackgroundColor(Color.RED);
+//                else                       btnIn3.setBackgroundColor(Color.GREEN);
+//                if((cz & (short)8) == 8)   btnIn4.setBackgroundColor(Color.RED);
+//                else                       btnIn4.setBackgroundColor(Color.GREEN);
+//
+//
+//                int light = ((in[15] << 8) & 0xff00) | (in[14] & 0xff);
+//
+//                tLight.setText("" + light);
+//
+//                RollAng  = (double)ax/10000;
+//                PitchAng = (double)ay/10000;
+//
+//
+//                pPitch = PitchAng;
+//                pRoll = RollAng;
+//                pHead = (double)az/10000;
+//
+//                //double north = get_TiltHeading();
+//                double north  = Math.toDegrees((double)az/10000);
+//
+//
+//                if (north < 0)
+//                    north +=360;
+//
+//                tAngleV.setText(String.format("%.1f", Math.toDegrees(RollAng)));
+//                tAngleH.setText(String.format("%.1f", Math.toDegrees(PitchAng)));//
+//                tNorth.setText(String.format("%.1f", (north)));
+//            }
         }
         catch (Exception e)
         {
