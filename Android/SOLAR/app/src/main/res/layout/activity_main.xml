@@ -11,14 +11,77 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.voodoo.solar.MainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:textSize="15dp"
+                android:text="IP"
+                android:background="@drawable/border_m"
+                android:gravity="center_vertical|center_horizontal" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:textSize="15dp"
+                android:text="Pitch"
+                android:background="@drawable/border"
+                android:gravity="center_vertical|center_horizontal"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:textSize="15dp"
+                android:text="Roll"
+                android:background="@drawable/border"
+                android:gravity="center_vertical|center_horizontal"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:textSize="15dp"
+                android:text="Head"
+                android:background="@drawable/border"
+                android:gravity="center_vertical|center_horizontal"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:textSize="15dp"
+                android:text="Light"
+                android:background="@drawable/border"
+                android:gravity="center_vertical|center_horizontal"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:textSize="15dp"
+                android:text="Term"
+                android:background="@drawable/border"
+                android:gravity="center_vertical|center_horizontal"/>
+
+        </LinearLayout>
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/lvClients">
         </ListView>
 
-    <LinearLayout
+    </LinearLayout>
+
+
+    <!--LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -232,6 +295,6 @@
             android:layout_height="50dp"
             android:id="@+id/w3D"
             android:layout_marginTop="10dp" />
-    </LinearLayout>
+    </LinearLayout-->
 </LinearLayout>
 

@@ -45,8 +45,8 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     public static UDPProcessor udpProcessor ;
     InetAddress deviceIP = null, broadcastIP;
 
-    TextView tCompass, tAccel, tLight, tAngleV, tAngleH, tNorth, tAzimuth, tAngle;
-    SeekBar sbCompass, sbAccel;
+    //TextView tCompass, tAccel, tLight, tAngleV, tAngleH, tNorth, tAzimuth, tAngle;
+    //SeekBar sbCompass, sbAccel;
 
     public static double  pPitch, pRoll, pHead;
 
@@ -66,57 +66,58 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     final byte ID_SLAVE     = (byte)0x3c;
 
 
-    Button btnIn1, btnIn2, btnIn3, btnIn4;
+    //Button btnIn1, btnIn2, btnIn3, btnIn4;
 
     ListView lvClients;
     int clientsIp[];
     String clientData[][];
-    String [] lvStrings = {"100", "101", "102", "105", "255"};
-    int [][] vals = {{1,2,3,4,5}, {1,2,3,4,5}, {1,2,3,4,5}, {10,20,30,40,50}, {0,9,8,7,6}};
+    int currentClient = 0;
+    int notAsweredCntr[] = new int[100];
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GLSurfaceView view = (GLSurfaceView) findViewById(R.id.w3D);
-        view.setRenderer(new OpenGLRenderer());
+//        GLSurfaceView view = (GLSurfaceView) findViewById(R.id.w3D);
+//        view.setRenderer(new OpenGLRenderer());
 
-        tCompass = (TextView) findViewById(R.id.tvCompass);
-        tAccel   = (TextView) findViewById(R.id.tvAccel);
-        tLight   = (TextView) findViewById(R.id.tvLight);
-        tAngleV  = (TextView) findViewById(R.id.tvAngleV);
-        tAngleH  = (TextView) findViewById(R.id.tvAngleH);
-        tNorth   = (TextView) findViewById(R.id.tvNorth);
-
-        tAzimuth   = (TextView) findViewById(R.id.tvAzimuth);
-        tAngle   = (TextView) findViewById(R.id.tvAngle);
-
-        sbCompass = (SeekBar) findViewById(R.id.sbCompass);
-        sbAccel   = (SeekBar) findViewById(R.id.sbAccel);
+//        tCompass = (TextView) findViewById(R.id.tvCompass);
+//        tAccel   = (TextView) findViewById(R.id.tvAccel);
+//        tLight   = (TextView) findViewById(R.id.tvLight);
+//        tAngleV  = (TextView) findViewById(R.id.tvAngleV);
+//        tAngleH  = (TextView) findViewById(R.id.tvAngleH);
+//        tNorth   = (TextView) findViewById(R.id.tvNorth);
+//
+//        tAzimuth   = (TextView) findViewById(R.id.tvAzimuth);
+//        tAngle   = (TextView) findViewById(R.id.tvAngle);
+//
+//        sbCompass = (SeekBar) findViewById(R.id.sbCompass);
+//        sbAccel   = (SeekBar) findViewById(R.id.sbAccel);
 
         lvClients = (ListView)findViewById(R.id.lvClients);
         //lvBuid();
 
-        btnIn1 = (Button)findViewById(R.id.btnIn1);
-        btnIn1.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                //lvBuid();
-
-            }
-        });
-        btnIn2 = (Button)findViewById(R.id.btnIn2);
-        btnIn3 = (Button)findViewById(R.id.btnIn3);
-        btnIn4 = (Button)findViewById(R.id.btnIn4);
-        btnIn4.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                Intent intent = new Intent(getApplicationContext(), sunPos.class);
-                startActivity(intent);
-
-            }
-        });
+//        btnIn1 = (Button)findViewById(R.id.btnIn1);
+//        btnIn1.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//
+//                //lvBuid();
+//
+//            }
+//        });
+//        btnIn2 = (Button)findViewById(R.id.btnIn2);
+//        btnIn3 = (Button)findViewById(R.id.btnIn3);
+//        btnIn4 = (Button)findViewById(R.id.btnIn4);
+//        btnIn4.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//
+//                Intent intent = new Intent(getApplicationContext(), sunPos.class);
+//                startActivity(intent);
+//
+//            }
+//        });
 
         udpProcessor = new UDPProcessor(7171);
         udpProcessor.setOnReceiveListener(this);
@@ -129,97 +130,99 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         catch (UnknownHostException e){}
 
         sendCmd((byte) 0, broadcastIP);
-        //================================================
-        Button btnUp = (Button) findViewById(R.id.btnUp);
-        btnUp.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                if(deviceIP != null)
-                    sendCmd(CMD_UP, deviceIP);
-                else
-                    sendCmd(CMD_UP, broadcastIP);
-            }
-        });
-        //================================================
-        Button btnDown = (Button) findViewById(R.id.btndown);
-        btnDown.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if(deviceIP != null)
-                    sendCmd(CMD_DOWN, deviceIP);
-                else
-                    sendCmd(CMD_DOWN, broadcastIP);
-            }
-        });
-        //================================================
-        Button btnRight = (Button) findViewById(R.id.btnRight);
-        btnRight.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if(deviceIP != null)
-                    sendCmd(CMD_RIGHT, deviceIP);
-                else
-                    sendCmd(CMD_RIGHT, broadcastIP);
-            }
-        });
-        //================================================
-        Button btnLeft = (Button) findViewById(R.id.btnLeft);
-        btnLeft.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if(deviceIP != null)
-                    sendCmd(CMD_LEFT, deviceIP);
-                else
-                    sendCmd(CMD_LEFT, broadcastIP);
-            }
-        });
+//        //================================================
+//        Button btnUp = (Button) findViewById(R.id.btnUp);
+//        btnUp.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//
+//                if(deviceIP != null)
+//                    sendCmd(CMD_UP, deviceIP);
+//                else
+//                    sendCmd(CMD_UP, broadcastIP);
+//            }
+//        });
+//        //================================================
+//        Button btnDown = (Button) findViewById(R.id.btndown);
+//        btnDown.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                if(deviceIP != null)
+//                    sendCmd(CMD_DOWN, deviceIP);
+//                else
+//                    sendCmd(CMD_DOWN, broadcastIP);
+//            }
+//        });
+//        //================================================
+//        Button btnRight = (Button) findViewById(R.id.btnRight);
+//        btnRight.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                if(deviceIP != null)
+//                    sendCmd(CMD_RIGHT, deviceIP);
+//                else
+//                    sendCmd(CMD_RIGHT, broadcastIP);
+//            }
+//        });
+//        //================================================
+//        Button btnLeft = (Button) findViewById(R.id.btnLeft);
+//        btnLeft.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                if(deviceIP != null)
+//                    sendCmd(CMD_LEFT, deviceIP);
+//                else
+//                    sendCmd(CMD_LEFT, broadcastIP);
+//            }
+//        });
+//        //==========================================================================================
+//        sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+//
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//               tAzimuth.setText("Azimyth: " + progress*3.6);
+//                double tmp = Math.toRadians(progress * 3.6);
+//                //if(tmp > Math.PI) tmp -= Math.PI * 2;
+//                azimuth =  (short)(tmp * 10000);
+//
+//                cmdBuffer[2] = (byte) ((azimuth) & (byte)0xff);
+//                cmdBuffer[3] = (byte) ((azimuth >> 8) & (byte)0xff);
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                if(deviceIP != null)
+//                    sendCmd(CMD_AZIMUTH, deviceIP);
+//                else
+//                    sendCmd(CMD_AZIMUTH, broadcastIP);
+//            }
+//        });
+//        //==========================================================================================
+//        sbAccel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+//
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                tAngle.setText("Angle: " + progress * 0.9);
+//                angle =  (short)(Math.toRadians(progress * 0.9) * 10000);
+//
+//                cmdBuffer[2] = (byte) ((angle) & (byte)0xff);
+//                cmdBuffer[3] = (byte) ((angle >> 8) & (byte)0xff);
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                if(deviceIP != null)
+//                    sendCmd(CMD_ANGLE, deviceIP);
+//                else
+//                    sendCmd(CMD_ANGLE, broadcastIP);
+//            }
+//        });
         //==========================================================================================
-        sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-               tAzimuth.setText("Azimyth: " + progress*3.6);
-                double tmp = Math.toRadians(progress * 3.6);
-                //if(tmp > Math.PI) tmp -= Math.PI * 2;
-                azimuth =  (short)(tmp * 10000);
-
-                cmdBuffer[2] = (byte) ((azimuth) & (byte)0xff);
-                cmdBuffer[3] = (byte) ((azimuth >> 8) & (byte)0xff);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if(deviceIP != null)
-                    sendCmd(CMD_AZIMUTH, deviceIP);
-                else
-                    sendCmd(CMD_AZIMUTH, broadcastIP);
-            }
-        });
-        //==========================================================================================
-        sbAccel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tAngle.setText("Angle: " + progress * 0.9);
-                angle =  (short)(Math.toRadians(progress * 0.9) * 10000);
-
-                cmdBuffer[2] = (byte) ((angle) & (byte)0xff);
-                cmdBuffer[3] = (byte) ((angle >> 8) & (byte)0xff);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if(deviceIP != null)
-                    sendCmd(CMD_ANGLE, deviceIP);
-                else
-                    sendCmd(CMD_ANGLE, broadcastIP);
-            }
-        });
         //==========================================================================================
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -229,14 +232,69 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(deviceIP != null)
-                            sendCmd(CMD_STATE, deviceIP);
-                        else
+//                        if(deviceIP != null)
+//                            sendCmd(CMD_STATE, deviceIP);
+//                        else
+//                        sendCmd(CMD_STATE, broadcastIP);
+
+                        if(deviceIP == null)
                             sendCmd(CMD_STATE, broadcastIP);
+                        else
+                            try
+                            {
+                                byte [] addr = broadcastIP.getAddress();
+
+                                if(currentClient < clientsIp.length) currentClient++;
+                                if(currentClient >= clientsIp.length)
+                                {
+                                    addr[3] = (byte)255;
+                                    currentClient = -1;
+                                }
+                                else
+                                {
+                                    addr[3] = (byte) clientsIp[currentClient];
+                                    notAsweredCntr[currentClient]++;
+                                }
+
+                                sendCmd(CMD_STATE, InetAddress.getByAddress(addr));
+
+                                // check for not answered
+
+
+                                for(int i = 0; i < clientsIp.length; i++)
+                                    if(notAsweredCntr[i] > 10) deleteListRow(i);
+
+                            }
+                            catch (UnknownHostException e){}
+
+
                     }
                 });
             }
-        }, 0, 100);
+        }, 0, 200);
+    }
+    //==============================================================================================
+    void deleteListRow(int aRow)
+    {
+//        if(clientsIp.length == 1)
+//        {
+//            clientsIp = null;
+//            clientData = null;
+//        }
+//        else
+        {
+            for (int i = aRow; i < clientsIp.length - 1; i++)
+                clientsIp[i] = clientsIp[i + 1];
+
+            int tmp[] = new int[clientsIp.length - 1];
+            for (int i = 0; i < tmp.length; i++)
+                tmp[i] = clientsIp[i];
+            clientsIp = new int[clientsIp.length - 1];
+            clientsIp = tmp;
+
+            clientData = new String[clientData.length - 1][4];
+            if(clientsIp.length == 0) lvBuid();
+        }
     }
     //==============================================================================================
     private final String ATTRIBUTE_IP = "attr_ip";
@@ -259,12 +317,12 @@ public class MainActivity extends Activity implements OnReceiveListener  {
             m.put(ATTRIBUTE_V2, clientData[i][1]);
             m.put(ATTRIBUTE_V3, clientData[i][2]);
             m.put(ATTRIBUTE_V4, clientData[i][3]);
-
+            m.put(ATTRIBUTE_V5, clientData[i][4]);
             data.add(m);
 
         }
-        String[] from = {ATTRIBUTE_IP, ATTRIBUTE_V1, ATTRIBUTE_V2, ATTRIBUTE_V3, ATTRIBUTE_V4,};
-        int[] to = {R.id.i1, R.id.i2, R.id.i3, R.id.i4, R.id.i5};
+        String[] from = {ATTRIBUTE_IP, ATTRIBUTE_V1, ATTRIBUTE_V2, ATTRIBUTE_V3, ATTRIBUTE_V4, ATTRIBUTE_V5};
+        int[] to = {R.id.i1, R.id.i2, R.id.i3, R.id.i4, R.id.i5, R.id.i6};
         SimpleAdapter sAdapter = new SimpleAdapter(this, data, R.layout.client_item, from, to);
         //lvClients = (ListView) findViewById(R.id.lvClients);
         lvClients.setAdapter(sAdapter);
@@ -360,12 +418,30 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 {
                     clientsIp = new int[1];
                     clientsIp[0] = ip.getAddress()[3];
-                    clientData = new String[1][4];
+                    clientData = new String[1][5];
                     clientData[0][0] = "";
                 }
                 else
                 { //add client
+                    int found = 0;
+                    for(int i = 0; i < clientsIp.length; i++)
+                        if(ip.getAddress()[3] == (byte)clientsIp[i]) found = 1;
+                    if(found == 0)
+                    {
+                        int tmp [];
+                        tmp = clientsIp;
+                        clientsIp = new int[tmp.length +1];
+                        for(int i = 0; i < tmp.length; i++)
+                            clientsIp[i] = tmp[i];
+                        clientsIp[clientsIp.length - 1] = ip.getAddress()[3];
 
+                        //String tmpd[][] = clientData;
+                        clientData = new String[clientData.length + 1][5];
+
+//                        for(int i = 0; i < clientsIp.length; i++)
+//                            for(int j = 0; j < 4; j++)
+//                                clientData[i][j] = tmpd[i][j];
+                    }
                 }
                 //==========================================
                 switch(in[1])
@@ -383,44 +459,38 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                     case CMD_DOWN:
                         break;
                     case CMD_STATE:
-                        if((in[11] & (short)1) == 1)   btnIn1.setBackgroundColor(Color.RED);
-                        else                           btnIn1.setBackgroundColor(Color.GREEN);
-                        if((in[11] & (short)2) == 2)   btnIn2.setBackgroundColor(Color.RED);
-                        else                           btnIn2.setBackgroundColor(Color.GREEN);
-                        if((in[11] & (short)4) == 4)   btnIn3.setBackgroundColor(Color.RED);
-                        else                           btnIn3.setBackgroundColor(Color.GREEN);
-                        if((in[11] & (short)8) == 8)   btnIn4.setBackgroundColor(Color.RED);
-                        else                           btnIn4.setBackgroundColor(Color.GREEN);
+
+                        String terms = "";
+                        if((in[11] & (short)1) == 1)   terms += "1"; //btnIn1.setBackgroundColor(Color.RED);
+                        else                           terms += "0"; //btnIn1.setBackgroundColor(Color.GREEN);
+                        if((in[11] & (short)2) == 2)   terms += "1"; //btnIn2.setBackgroundColor(Color.RED);
+                        else                           terms += "0"; //btnIn2.setBackgroundColor(Color.GREEN);
+                        if((in[11] & (short)4) == 4)   terms += "1"; //btnIn3.setBackgroundColor(Color.RED);
+                        else                           terms += "0"; //btnIn3.setBackgroundColor(Color.GREEN);
+                        if((in[11] & (short)8) == 8)   terms += "1"; //btnIn4.setBackgroundColor(Color.RED);
+                        else                           terms += "0"; //btnIn4.setBackgroundColor(Color.GREEN);
 
                         int light = (((in[10] << 8) & 0xff00) | (int) (in[9] & 0xff));
-                        tLight.setText("" + light);
 
                         ax = (short) (((in[4] << 8) & 0xff00) | (int) (in[3] & 0xff));
                         ay = (short) (((in[6] << 8) & 0xff00) | (int) (in[5] & 0xff));
                         az = (short) (((in[8] << 8) & 0xff00) | (int) (in[7] & 0xff));
 
-                        tAccel.setText(ax + "\t\t\t" + ay + "\t\t\t" + az + "\t\t\t ");
 
-                        RollAng =       (double)ax/10000;
-                        PitchAng      = (double)ay/10000;
-                        double north  = (double)az/10000;
-
-                        tAngleV.setText(String.format("%.1f", Math.toDegrees(RollAng)));
-                        tAngleH.setText(String.format("%.1f", Math.toDegrees(PitchAng)));
-
-                        double tt = Math.toDegrees(north);
+                        double tt = Math.toDegrees((double)az/10000);
                         if(tt < 0) tt += 360;
-                        tNorth.setText(String.format("%.1f", tt));
-
                         // find ip
                         for(int i = 0; i < clientsIp.length; i++)
                         {
                             if(ip.getAddress()[3] == clientsIp[i])
                             {
-                               clientData[i][0] = String.format("%.1f", Math.toDegrees(RollAng));
-                               clientData[i][1] = String.format("%.1f", Math.toDegrees(PitchAng));
-                               clientData[i][2] = String.format("%.1f", tt);
-                               lvBuid();
+                                clientData[i][0] = String.format("%.1f", Math.toDegrees((double)ax/10000));
+                                clientData[i][1] = String.format("%.1f", Math.toDegrees((double)ay/10000));
+                                clientData[i][2] = String.format("%.1f", tt);
+                                clientData[i][3] = "" + light;
+                                clientData[i][4] = terms;
+                                lvBuid();
+                                notAsweredCntr[i] = 0;
                             }
                         }
 

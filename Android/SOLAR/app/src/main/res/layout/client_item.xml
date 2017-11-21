@@ -8,47 +8,55 @@
 
     <TextView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_weight="1"
         android:id="@+id/i1"
-        android:textSize="20dp"
-        android:layout_marginTop="3dp"
+        android:textSize="15dp"
         android:background="@drawable/border_m"
         android:gravity="center_vertical|center_horizontal" />
     <TextView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_weight="1"
-        android:layout_marginTop="3dp"
+
         android:id="@+id/i2"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:background="@drawable/border"
         android:gravity="center_vertical|center_horizontal"/>
     <TextView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_weight="1"
-        android:layout_marginTop="3dp"
+
         android:id="@+id/i3"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:background="@drawable/border"
         android:gravity="center_vertical|center_horizontal"/>
     <TextView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_weight="1"
-        android:layout_marginTop="3dp"
+
         android:id="@+id/i4"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:background="@drawable/border"
         android:gravity="center_vertical|center_horizontal"/>
     <TextView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_weight="1"
         android:id="@+id/i5"
-        android:textSize="20dp"
-        android:layout_marginTop="3dp"
+        android:textSize="15dp"
+
+        android:background="@drawable/border"
+        android:gravity="center_vertical|center_horizontal"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_weight="1"
+        android:id="@+id/i6"
+        android:textSize="15dp"
+
         android:background="@drawable/border"
         android:gravity="center_vertical|center_horizontal"/>
 </LinearLayout>
