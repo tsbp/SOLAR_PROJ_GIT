@@ -73,10 +73,17 @@
         </LinearLayout>
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:id="@+id/lvClients">
         </ListView>
+
+        <android.opengl.GLSurfaceView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/w3D"
+            android:layout_marginTop="10dp" />
 
     </LinearLayout>
 
@@ -89,212 +96,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
-            <TextView
-                android:text="Входы: "
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:layout_marginLeft="2dp"/>
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:id="@+id/btnIn1"
-                android:background="#00ff00"
-                android:layout_marginRight="5dp"/>
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:id="@+id/btnIn2"
-                android:background="#00ff00"
-                android:layout_marginRight="5dp"/>
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:id="@+id/btnIn3"
-                android:background="#00ff00"
-                android:layout_marginRight="5dp"/>
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:id="@+id/btnIn4"
-                android:background="#00ff00"
-                android:layout_marginRight="5dp"/>
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="#ffff00">
-            <TextView
-                android:text="Compass: "
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="2dp"
-                android:id="@+id/textView4" />
-            <TextView
-                android:text="0.00"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:id="@+id/tvCompass" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="#77ff00">
-            <TextView
-                android:text="Accel: "
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="2dp"
-                android:id="@+id/textView6" />
-            <TextView
-                android:text="0.00"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:id="@+id/tvAccel" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="#bbbbff">
-            <TextView
-                android:text="Light: "
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="2dp"
-                android:id="@+id/textView7" />
-            <TextView
-                android:text="0.00"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:id="@+id/tvLight" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:id="@+id/tvAzimuth"
-            android:textAlignment="center"
-            android:text="Azimyth: 0" />
-
-        <SeekBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:id="@+id/sbCompass" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:id="@+id/tvAngle"
-            android:textAlignment="center"
-            android:text="Angle: 0" />
-
-        <SeekBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:id="@+id/sbAccel" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
-            <Button
-                android:text="Up"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/btnUp" />
-            <Button
-                android:text="Down"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/btndown" />
-            <Button
-                android:text="Left"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/btnRight" />
-
-            <Button
-                android:text="Right"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/btnLeft" />
-            </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
-
-            <TextView
-                android:text="Angle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/tvAngleV"
-                android:textAlignment="center"
-                android:textSize="25sp" />
-
-            <TextView
-                android:text="Angle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-
-                android:id="@+id/tvAngleH"
-                android:textAlignment="center"
-                android:textSize="25sp" />
-            <TextView
-                android:text="North"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-
-                android:id="@+id/tvNorth"
-                android:textAlignment="center"
-                android:textSize="25sp" />
-
-        </LinearLayout>
-
-
-        <android.opengl.GLSurfaceView
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:id="@+id/w3D"
-            android:layout_marginTop="10dp" />
     </LinearLayout-->
 </LinearLayout>
 
