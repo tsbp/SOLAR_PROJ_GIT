@@ -85,14 +85,14 @@ void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sin
 	// tilt compensated magnetic sensor measurements
 	double magxcomp = Magx*cosP + Magz*sinP;
 	double magycomp = Magx*sinR*sinP + Magy*cosR - Magz*sinR*cosP;
-
-	ets_uart_printf("magxcomp = %d, magycomp = %d\r\n",
-					(int)(magxcomp*10000),
-					(int)(magycomp*10000));
+//
+//	ets_uart_printf("magxcomp = %d, magycomp = %d\r\n",
+//					(int)(magxcomp*10000),
+//					(int)(magycomp*10000));
 
 	// arctangent of y/x
 	*aHead = (sint16)(atan2f(magycomp, magxcomp) * 10000);
-	ets_uart_printf("atan_fx = %d \r\n", *aHead);
+	//ets_uart_printf("atan_fx = %d \r\n", *aHead);
 }
 //==============================================================================
 sint16 avgBuf[FILTER_LENGHT];

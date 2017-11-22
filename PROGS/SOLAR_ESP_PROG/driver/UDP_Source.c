@@ -73,10 +73,10 @@ uint16 angV = 27000, angH = 15846;
 void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 {
 	int a, i;
-//	ets_uart_printf("recv udp data: ");
-//	for (a = 0; a < length; a++)
-//		ets_uart_printf("%02x ", pusrdata[a]);
-//	ets_uart_printf("\r\n");
+	ets_uart_printf("recv udp data: ");
+	for (a = 0; a < length; a++)
+		ets_uart_printf("%02x ", pusrdata[a]);
+	ets_uart_printf("\r\n");
 
 	struct espconn *pesp_conn = arg;
 	//flashWriteBit = 0;
