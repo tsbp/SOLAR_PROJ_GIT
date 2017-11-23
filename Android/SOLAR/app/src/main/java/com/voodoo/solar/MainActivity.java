@@ -41,75 +41,39 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     public static UDPProcessor udpProcessor ;
     InetAddress deviceIP = null, broadcastIP;
 
-    //TextView tCompass, tAccel, tLight, tAngleV, tAngleH, tNorth, tAzimuth, tAngle;
-    //SeekBar sbCompass, sbAccel;
-
     public static double  pPitch, pRoll, pHead;
-
-//    static byte CMD_SET_AZIMUTH = (byte)0x10;
-//    static byte CMD_SET_ANGLE   = (byte)0x11;
 
     final byte CMD_ANGLE   = (byte)0x10;
     final byte CMD_AZIMUTH	= (byte)0x11;
     final byte CMD_LEFT	= (byte)0x20;
     final byte CMD_RIGHT	= (byte)0x21;
     final byte CMD_UP	    = (byte)0x22;
-    final byte CMD_DOWN	= (byte)0x23;
-    final byte CMD_STATE	= (byte)0xA0;
+    public final static byte CMD_DOWN	= (byte)0x23;
+    public final static byte CMD_STATE	= (byte)0xA0;
     final byte CMD_CFG		= (byte)0xC0;
 
     final byte ID_MASTER	= (byte)0x7e;
     final byte ID_SLAVE     = (byte)0x3c;
 
 
-    //Button btnIn1, btnIn2, btnIn3, btnIn4;
-
     ListView lvClients;
-    int clientsIp[];
+    byte clientsIp[];
     String clientData[][];
     int currentClient = 0;
     int notAsweredCntr[] = new int[100];
 
+    public static int clientActivityCreated = 0;
+
+    public final static String BROADCAST_ACTION = "broadcast Cient data";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GLSurfaceView view = (GLSurfaceView) findViewById(R.id.w3D);
-        view.setRenderer(new OpenGLRenderer());
-
-//        tCompass = (TextView) findViewById(R.id.tvCompass);
-//        tAccel   = (TextView) findViewById(R.id.tvAccel);
-//        tLight   = (TextView) findViewById(R.id.tvLight);
-//        tAngleV  = (TextView) findViewById(R.id.tvAngleV);
-//        tAngleH  = (TextView) findViewById(R.id.tvAngleH);
-//        tNorth   = (TextView) findViewById(R.id.tvNorth);
-//
 
 
         lvClients = (ListView)findViewById(R.id.lvClients);
-        //lvBuid();
-
-//        btnIn1 = (Button)findViewById(R.id.btnIn1);
-//        btnIn1.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//
-//                //lvBuid();
-//
-//            }
-//        });
-//        btnIn2 = (Button)findViewById(R.id.btnIn2);
-//        btnIn3 = (Button)findViewById(R.id.btnIn3);
-//        btnIn4 = (Button)findViewById(R.id.btnIn4);
-//        btnIn4.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//
-//                Intent intent = new Intent(getApplicationContext(), sunPos.class);
-//                startActivity(intent);
-//
-//            }
-//        });
 
         udpProcessor = new UDPProcessor(7171);
         udpProcessor.setOnReceiveListener(this);
@@ -122,46 +86,16 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         catch (UnknownHostException e){}
 
         sendCmd((byte) 0, broadcastIP);
+
+
         //================================================
-        Button btnUp = (Button) findViewById(R.id.bSet);
-        btnUp.setOnClickListener(new View.OnClickListener() {
+        Button bSunCalc = (Button) findViewById(R.id.bSet);
+        bSunCalc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ClientConfig.class);
+                Intent intent = new Intent(getApplicationContext(), sunPos.class);
                 startActivity(intent);
             }
         });
-//        //================================================
-//        Button btnDown = (Button) findViewById(R.id.btndown);
-//        btnDown.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_DOWN, deviceIP);
-//                else
-//                    sendCmd(CMD_DOWN, broadcastIP);
-//            }
-//        });
-//        //================================================
-//        Button btnRight = (Button) findViewById(R.id.btnRight);
-//        btnRight.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_RIGHT, deviceIP);
-//                else
-//                    sendCmd(CMD_RIGHT, broadcastIP);
-//            }
-//        });
-//        //================================================
-//        Button btnLeft = (Button) findViewById(R.id.btnLeft);
-//        btnLeft.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_LEFT, deviceIP);
-//                else
-//                    sendCmd(CMD_LEFT, broadcastIP);
-//            }
-//        });
-
-        //==========================================================================================
 
         //==========================================================================================
         Timer timer = new Timer();
@@ -172,10 +106,6 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        if(deviceIP != null)
-//                            sendCmd(CMD_STATE, deviceIP);
-//                        else
-//                        sendCmd(CMD_STATE, broadcastIP);
 
                         if(deviceIP == null)
                             sendCmd(CMD_STATE, broadcastIP);
@@ -200,7 +130,6 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
                                 // check for not answered
 
-
                                 for(int i = 0; i < clientsIp.length; i++)
                                     if(notAsweredCntr[i] > 10) deleteListRow(i);
 
@@ -214,22 +143,29 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         }, 0, 200);
     }
     //==============================================================================================
+    int selectedClient = 0;
+    //==============================================================================================
+    void sendIntent()
+    {
+        Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
+        intent.putExtra(ClientConfig.PARAM_PITCH, clientData[selectedClient][0]);
+        intent.putExtra(ClientConfig.PARAM_ROLL,  clientData[selectedClient][1]);
+        intent.putExtra(ClientConfig.PARAM_HEAD,  clientData[selectedClient][2]);
+        intent.putExtra(ClientConfig.PARAM_LIGTH, clientData[selectedClient][3]);
+        intent.putExtra(ClientConfig.PARAM_TERM,  clientData[selectedClient][4]);
+        sendBroadcast(intent);
+    }
+    //==============================================================================================
     void deleteListRow(int aRow)
     {
-//        if(clientsIp.length == 1)
-//        {
-//            clientsIp = null;
-//            clientData = null;
-//        }
-//        else
         {
             for (int i = aRow; i < clientsIp.length - 1; i++)
                 clientsIp[i] = clientsIp[i + 1];
 
-            int tmp[] = new int[clientsIp.length - 1];
+            byte tmp[] = new byte[clientsIp.length - 1];
             for (int i = 0; i < tmp.length; i++)
                 tmp[i] = clientsIp[i];
-            clientsIp = new int[clientsIp.length - 1];
+            clientsIp = new byte[clientsIp.length - 1];
             clientsIp = tmp;
 
             clientData = new String[clientData.length - 1][4];
@@ -252,7 +188,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         for (int i = 0; i < clientsIp.length; i++) {
 
             m = new HashMap<>();
-            m.put(ATTRIBUTE_IP, clientsIp[i]);
+            m.put(ATTRIBUTE_IP, clientsIp[i] & 0xff);
             m.put(ATTRIBUTE_V1, clientData[i][0]);
             m.put(ATTRIBUTE_V2, clientData[i][1]);
             m.put(ATTRIBUTE_V3, clientData[i][2]);
@@ -271,6 +207,15 @@ public class MainActivity extends Activity implements OnReceiveListener  {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id)
             {
+                byte [] ip = getBroadcastIP4AsBytes();
+                ip[3] = clientsIp[position];
+                try
+                {
+                    ClientConfig.ip = InetAddress.getByAddress(ip);
+                }
+                catch (UnknownHostException e){}
+                clientActivityCreated = 1;
+                selectedClient = position;
                 Intent intent = new Intent(MainActivity.this, ClientConfig.class);
                 startActivity(intent);
             }
@@ -283,7 +228,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
     byte[] cmdBuffer = new byte[6];
     //==============================================================================================
-    void sendCmd(byte aCmd, InetAddress aIP)
+    public  void sendCmd(byte aCmd, InetAddress aIP)
     {
 //        cmdBuffer[0] = (byte) 0xc0;
 //        cmdBuffer[1] =        aCmd;
@@ -365,8 +310,8 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 //==========================================
                 if(clientsIp == null)
                 {
-                    clientsIp = new int[1];
-                    clientsIp[0] = ip.getAddress()[3];
+                    clientsIp = new byte[1];
+                    clientsIp[0] = (byte)((int)ip.getAddress()[3]);
                     clientData = new String[1][5];
                     clientData[0][0] = "";
                 }
@@ -377,9 +322,9 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         if(ip.getAddress()[3] == (byte)clientsIp[i]) found = 1;
                     if(found == 0)
                     {
-                        int tmp [];
+                        byte tmp [];
                         tmp = clientsIp;
-                        clientsIp = new int[tmp.length +1];
+                        clientsIp = new byte[tmp.length +1];
                         for(int i = 0; i < tmp.length; i++)
                             clientsIp[i] = tmp[i];
                         clientsIp[clientsIp.length - 1] = ip.getAddress()[3];
@@ -440,6 +385,9 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                 clientData[i][4] = terms;
                                 lvBuid();
                                 notAsweredCntr[i] = 0;
+
+                                if(clientActivityCreated == 1) sendIntent();
+
 
                                 if(i == 0)
                                 {

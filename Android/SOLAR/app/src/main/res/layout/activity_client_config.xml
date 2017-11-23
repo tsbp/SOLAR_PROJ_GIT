@@ -11,47 +11,14 @@
     android:orientation="vertical"
     tools:context="com.voodoo.solar.ClientConfig">
 
-    <LinearLayout
+    <TextView
+        android:text="IP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp">
-        <TextView
-            android:text="Входы: "
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:layout_marginLeft="2dp"/>
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_weight="1"
-            android:id="@+id/btnIn1"
-            android:background="#00ff00"
-            android:layout_marginRight="5dp"/>
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_weight="1"
-            android:id="@+id/btnIn2"
-            android:background="#00ff00"
-            android:layout_marginRight="5dp"/>
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_weight="1"
-            android:id="@+id/btnIn3"
-            android:background="#00ff00"
-            android:layout_marginRight="5dp"/>
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_weight="1"
-            android:id="@+id/btnIn4"
-            android:background="#00ff00"
-            android:layout_marginRight="5dp"/>
-    </LinearLayout>
+        android:id="@+id/tvIP"
+        android:textAlignment="center"
+        android:background="#06f5e2"
+        android:textSize="25sp" />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -59,18 +26,16 @@
         android:layout_marginTop="5dp"
         android:background="#ffff00">
         <TextView
-            android:text="Compass: "
+            android:text=" Pitch: "
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginLeft="2dp"
-            android:id="@+id/textView4" />
+            android:layout_marginLeft="2dp"/>
         <TextView
-            android:text="0.00"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:id="@+id/tvCompass" />
+            android:layout_weight="2"
+            android:id="@+id/tvPitch" />
     </LinearLayout>
 
     <LinearLayout
@@ -78,20 +43,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:background="#77ff00">
+        android:background="#00ffa6">
         <TextView
-            android:text="Accel: "
+            android:text=" Roll: "
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginLeft="2dp"
-            android:id="@+id/textView6" />
+            android:layout_marginLeft="2dp"/>
         <TextView
-            android:text="0.00"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:id="@+id/tvAccel" />
+            android:layout_weight="2"
+            android:id="@+id/tvRoll" />
     </LinearLayout>
 
     <LinearLayout
@@ -99,21 +62,59 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:background="#bbbbff">
+        android:background="#7fbeea">
         <TextView
-            android:text="Light: "
+            android:text=" Heading: "
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginLeft="2dp"
-            android:id="@+id/textView7" />
+            android:layout_marginLeft="2dp"/>
         <TextView
-            android:text="0.00"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:id="@+id/tvLight" />
+            android:layout_weight="2"
+            android:id="@+id/tvHead" />
     </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="#d267ff">
+        <TextView
+            android:text=" Ligth: "
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="2dp"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:id="@+id/tvLigth" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="#ff74ae">
+        <TextView
+            android:text=" Terminators: "
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="2dp"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:id="@+id/tvTerm" />
+    </LinearLayout>
+
+
 
     <TextView
         android:layout_width="match_parent"
@@ -175,40 +176,11 @@
             android:id="@+id/btnLeft" />
     </LinearLayout>
 
-    <LinearLayout
+    <android.opengl.GLSurfaceView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp">
-
-        <TextView
-            android:text="Angle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/tvAngleV"
-            android:textAlignment="center"
-            android:textSize="25sp" />
-
-        <TextView
-            android:text="Angle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-
-            android:id="@+id/tvAngleH"
-            android:textAlignment="center"
-            android:textSize="25sp" />
-        <TextView
-            android:text="North"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-
-            android:id="@+id/tvNorth"
-            android:textAlignment="center"
-            android:textSize="25sp" />
-
-    </LinearLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/w3D"
+        android:layout_marginTop="10dp" />
 
 </LinearLayout>
