@@ -38,22 +38,14 @@ import static com.voodoo.solar.IPHelper.getBroadcastIP4AsBytes;
 
 public class MainActivity extends Activity implements OnReceiveListener  {
 
-    public static UDPProcessor udpProcessor ;
-    InetAddress deviceIP = null, broadcastIP;
+
 
     public static double  pPitch, pRoll, pHead;
 
-    final byte CMD_ANGLE   = (byte)0x10;
-    final byte CMD_AZIMUTH	= (byte)0x11;
-    final byte CMD_LEFT	= (byte)0x20;
-    final byte CMD_RIGHT	= (byte)0x21;
-    final byte CMD_UP	    = (byte)0x22;
-    public final static byte CMD_DOWN	= (byte)0x23;
-    public final static byte CMD_STATE	= (byte)0xA0;
-    final byte CMD_CFG		= (byte)0xC0;
+    public static UDPProcessor udpProcessor ;
+    InetAddress deviceIP = null, broadcastIP;
 
-    final byte ID_MASTER	= (byte)0x7e;
-    final byte ID_SLAVE     = (byte)0x3c;
+
 
 
     ListView lvClients;
@@ -85,7 +77,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         }
         catch (UnknownHostException e){}
 
-        sendCmd((byte) 0, broadcastIP);
+        //sendCmd((byte) 0, broadcastIP);
 
 
         //================================================
@@ -108,7 +100,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                     public void run() {
 
                         if(deviceIP == null)
-                            sendCmd(CMD_STATE, broadcastIP);
+                            UDPCommands.sendCmd(UDPCommands.CMD_STATE, (short)0, (short)0, (byte)0, broadcastIP);
                         else
                             try
                             {
@@ -126,7 +118,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                     notAsweredCntr[currentClient]++;
                                 }
 
-                                sendCmd(CMD_STATE, InetAddress.getByAddress(addr));
+                                UDPCommands.sendCmd(UDPCommands.CMD_STATE, (short)0, (short)0, (byte)0, InetAddress.getByAddress(addr));
 
                                 // check for not answered
 
@@ -222,69 +214,67 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         });
     }
     //==============================================================================================
-    short azimuth;
-    short angle;
-    byte angIncrement  = 10;
 
-    byte[] cmdBuffer = new byte[6];
-    //==============================================================================================
-    public  void sendCmd(byte aCmd, InetAddress aIP)
-    {
-//        cmdBuffer[0] = (byte) 0xc0;
-//        cmdBuffer[1] =        aCmd;
+
+//    byte[] cmdBuffer = new byte[6];
+//    //==============================================================================================
+//    public  void sendCmd(byte aCmd, InetAddress aIP)
+//    {
+////        cmdBuffer[0] = (byte) 0xc0;
+////        cmdBuffer[1] =        aCmd;
+////
+////        cmdBuffer[4] = (byte) (0xcc);
+////        cmdBuffer[5] = (byte) (0xcc);
+//        int dataLng = 0;
+//        byte buf[] = null;
+//        switch(aCmd)
+//        {
+//            case CMD_ANGLE:
+//                dataLng = 2;
+//                buf = new byte[5 + dataLng];
+//                buf[3] = (byte) ((angle) & (byte)0xff);
+//                buf[4] = (byte) ((angle >> 8) & (byte)0xff);
+//                break;
 //
-//        cmdBuffer[4] = (byte) (0xcc);
-//        cmdBuffer[5] = (byte) (0xcc);
-        int dataLng = 0;
-        byte buf[] = null;
-        switch(aCmd)
-        {
-            case CMD_ANGLE:
-                dataLng = 2;
-                buf = new byte[5 + dataLng];
-                buf[3] = (byte) ((angle) & (byte)0xff);
-                buf[4] = (byte) ((angle >> 8) & (byte)0xff);
-                break;
-
-            case CMD_AZIMUTH:
-                dataLng = 2;
-                buf = new byte[5 + dataLng];
-                buf[3] = (byte) ((azimuth) & (byte)0xff);
-                buf[4] = (byte) ((azimuth >> 8) & (byte)0xff);
-                break;
-
-            case CMD_LEFT:
-            case CMD_RIGHT:
-            case CMD_UP:
-            case CMD_DOWN:
-                dataLng = 2;
-                buf = new byte[5 + dataLng];
-                buf[3] = (byte) ((angIncrement) & (byte)0xff);
-                buf[4] = (byte) ((angIncrement >> 8) & (byte)0xff);
-                break;
-
-            case CMD_STATE:
-                dataLng = 0;
-                buf = new byte[5 + dataLng];
-                break;
-
-            case CMD_CFG:
-                break;
-        }
-
-        if(aIP != null && buf != null)
-        {
-            buf[0] = ID_MASTER;
-            buf[1] = aCmd;
-            buf[2] = (byte) dataLng;
-
-            // add crc16
-            buf[dataLng + 3] = (byte) 0xcc;
-            buf[dataLng + 4] = (byte) 0xcc;
-
-            udpSend(buf, aIP);
-        }
-    }
+//            case CMD_AZIMUTH:
+//                dataLng = 2;
+//                buf = new byte[5 + dataLng];
+//                buf[3] = (byte) ((azimuth) & (byte)0xff);
+//                buf[4] = (byte) ((azimuth >> 8) & (byte)0xff);
+//                break;
+//
+//            case CMD_LEFT:
+//            case CMD_RIGHT:
+//            case CMD_UP:
+//            case CMD_DOWN:
+//                dataLng = 2;
+//                buf = new byte[5 + dataLng];
+//                buf[3] = (byte) ((angIncrement) & (byte)0xff);
+//                buf[4] = (byte) ((angIncrement >> 8) & (byte)0xff);
+//                break;
+//
+//            case CMD_STATE:
+//                dataLng = 0;
+//                buf = new byte[5 + dataLng];
+//                break;
+//
+//            case CMD_CFG:
+//                break;
+//        }
+//
+//        if(aIP != null && buf != null)
+//        {
+//            buf[0] = ID_MASTER;
+//            buf[1] = aCmd;
+//            buf[2] = (byte) dataLng;
+//
+//            // add crc16
+//            buf[dataLng + 3] = (byte) 0xcc;
+//            buf[dataLng + 4] = (byte) 0xcc;
+//
+//            udpSend(buf, aIP);
+//        }
+//    }
     //==============================================================================================
     void udpSend(byte[] aByte, InetAddress ip)
     {
@@ -305,7 +295,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         if(deviceIP == null) deviceIP = ip;
         try {
 
-            if(in[0] == ID_SLAVE)
+            if(in[0] == UDPCommands.ID_SLAVE)
             {
                 //==========================================
                 if(clientsIp == null)
@@ -340,19 +330,19 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 //==========================================
                 switch(in[1])
                 {
-                    case CMD_ANGLE:
+                    case UDPCommands.CMD_ANGLE:
                         break;
-                    case CMD_AZIMUTH:
+                    case UDPCommands.CMD_AZIMUTH:
                         break;
-                    case CMD_LEFT:
+                    case UDPCommands.CMD_LEFT:
                         break;
-                    case CMD_RIGHT:
+                    case UDPCommands.CMD_RIGHT:
                         break;
-                    case CMD_UP:
+                    case UDPCommands.CMD_UP:
                         break;
-                    case CMD_DOWN:
+                    case UDPCommands.CMD_DOWN:
                         break;
-                    case CMD_STATE:
+                    case UDPCommands.CMD_STATE:
 
                         String terms = "";
                         if((in[11] & (short)1) == 1)   terms += "1"; //btnIn1.setBackgroundColor(Color.RED);
@@ -399,7 +389,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
                         break;
 
-                    case CMD_CFG:
+                    case UDPCommands.CMD_CFG:
                         break;
                 }
             }

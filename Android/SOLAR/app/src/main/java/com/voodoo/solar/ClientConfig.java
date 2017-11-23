@@ -31,6 +31,10 @@ public class ClientConfig extends Activity {
     public static InetAddress ip;
     BroadcastReceiver br;
 
+    short azimuth;
+    short angle;
+    byte angIncrement  = 10;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,35 +77,36 @@ public class ClientConfig extends Activity {
         IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
         registerReceiver(br, intFilt);
 
+        //================================================
+        Button btnUp = (Button) findViewById(R.id.btnUp);
+        btnUp.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
 
+                UDPCommands.sendCmd(UDPCommands.CMD_UP,  (short)0, (short)0, (byte)0, ip);
+            }
+        });
         //================================================
         Button btnDown = (Button) findViewById(R.id.btndown);
         btnDown.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                MainActivity.sendCmd(MainActivity.CMD_DOWN, ip);
+                UDPCommands.sendCmd(UDPCommands.CMD_DOWN,  (short)0, (short)0, (byte)0, ip);
             }
         });
-//        //================================================
-//        Button btnRight = (Button) findViewById(R.id.btnRight);
-//        btnRight.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_RIGHT, deviceIP);
-//                else
-//                    sendCmd(CMD_RIGHT, broadcastIP);
-//            }
-//        });
-//        //================================================
-//        Button btnLeft = (Button) findViewById(R.id.btnLeft);
-//        btnLeft.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_LEFT, deviceIP);
-//                else
-//                    sendCmd(CMD_LEFT, broadcastIP);
-//            }
-//        });
+        //================================================
+        Button btnRight = (Button) findViewById(R.id.btnRight);
+        btnRight.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                UDPCommands.sendCmd(UDPCommands.CMD_RIGHT,  (short)0, (short)0, (byte)0, ip);
+            }
+        });
+        //================================================
+        Button btnLeft = (Button) findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                UDPCommands.sendCmd(UDPCommands.CMD_LEFT,  (short)0, (short)0, (byte)0, ip);
+            }
+        });
 
         //==========================================================================================
         sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
