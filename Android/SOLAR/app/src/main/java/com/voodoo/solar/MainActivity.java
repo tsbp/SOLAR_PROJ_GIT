@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -85,11 +86,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 //        tAngleH  = (TextView) findViewById(R.id.tvAngleH);
 //        tNorth   = (TextView) findViewById(R.id.tvNorth);
 //
-//        tAzimuth   = (TextView) findViewById(R.id.tvAzimuth);
-//        tAngle   = (TextView) findViewById(R.id.tvAngle);
-//
-//        sbCompass = (SeekBar) findViewById(R.id.sbCompass);
-//        sbAccel   = (SeekBar) findViewById(R.id.sbAccel);
+
 
         lvClients = (ListView)findViewById(R.id.lvClients);
         //lvBuid();
@@ -125,17 +122,14 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         catch (UnknownHostException e){}
 
         sendCmd((byte) 0, broadcastIP);
-//        //================================================
-//        Button btnUp = (Button) findViewById(R.id.btnUp);
-//        btnUp.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//
-//                if(deviceIP != null)
-//                    sendCmd(CMD_UP, deviceIP);
-//                else
-//                    sendCmd(CMD_UP, broadcastIP);
-//            }
-//        });
+        //================================================
+        Button btnUp = (Button) findViewById(R.id.bSet);
+        btnUp.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ClientConfig.class);
+                startActivity(intent);
+            }
+        });
 //        //================================================
 //        Button btnDown = (Button) findViewById(R.id.btndown);
 //        btnDown.setOnClickListener(new View.OnClickListener() {
@@ -166,56 +160,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 //                    sendCmd(CMD_LEFT, broadcastIP);
 //            }
 //        });
-//        //==========================================================================================
-//        sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-//
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//               tAzimuth.setText("Azimyth: " + progress*3.6);
-//                double tmp = Math.toRadians(progress * 3.6);
-//                //if(tmp > Math.PI) tmp -= Math.PI * 2;
-//                azimuth =  (short)(tmp * 10000);
-//
-//                cmdBuffer[2] = (byte) ((azimuth) & (byte)0xff);
-//                cmdBuffer[3] = (byte) ((azimuth >> 8) & (byte)0xff);
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_AZIMUTH, deviceIP);
-//                else
-//                    sendCmd(CMD_AZIMUTH, broadcastIP);
-//            }
-//        });
-//        //==========================================================================================
-//        sbAccel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-//
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                tAngle.setText("Angle: " + progress * 0.9);
-//                angle =  (short)(Math.toRadians(progress * 0.9) * 10000);
-//
-//                cmdBuffer[2] = (byte) ((angle) & (byte)0xff);
-//                cmdBuffer[3] = (byte) ((angle >> 8) & (byte)0xff);
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_ANGLE, deviceIP);
-//                else
-//                    sendCmd(CMD_ANGLE, broadcastIP);
-//            }
-//        });
+
         //==========================================================================================
 
         //==========================================================================================
@@ -321,6 +266,15 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         SimpleAdapter sAdapter = new SimpleAdapter(this, data, R.layout.client_item, from, to);
         //lvClients = (ListView) findViewById(R.id.lvClients);
         lvClients.setAdapter(sAdapter);
+        //==========================================================
+        lvClients.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id)
+            {
+                Intent intent = new Intent(MainActivity.this, ClientConfig.class);
+                startActivity(intent);
+            }
+        });
     }
     //==============================================================================================
     short azimuth;
