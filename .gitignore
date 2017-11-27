@@ -1,4 +1,4 @@
-# Object files
+﻿# Object files
 *.o
 *.ko
 *.obj
@@ -86,3 +86,25 @@ $RECYCLE.BIN/
 3D/~$оркаNew2.a3~
 *.m3~
 *.m3~
+*.CDR
+Android/SOLAR/app/build.gradle
+Android/SunPos/.idea/misc.xml
+Android/SOLAR/app/build.gradle
+Android/SOLAR/app/build.gradle
+Android/SunPos/.idea/vcs.xml
+Android/SunPos/.idea/runConfigurations.xml
+Android/SunPos/.idea/gradle.xml
+Android/SOLAR/app/build.gradle
+Android/SunPos/.idea/modules.xml
+Android/SunPos/.idea/modules/SunPos.iml
+Android/SunPos/.idea/modules/app/app.iml
+Android/SunPos/.idea/copyright/profiles_settings.xml
+Android/SunPos/.idea/.name
+Android/SOLAR/app/build.gradle
+Android/SOLAR/app/build.gradle
+PROGS/SOLAR_ESP_PROG/firmware/0x00000.bin
+PROGS/SOLAR_ESP_PROG/firmware/0x40000.bin
+*.gradle
+Android/SunPos/.idea/scopes/scope_settings.xml
+Android/SunPos/.idea/compiler.xml
+Android/SunPos/.idea/encodings.xml

@@ -7,8 +7,10 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
@@ -47,6 +49,14 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
 
 
+    TextView tvResult, tvDate;
+    EditText etLong, etLatit;
+    com.voodoo.solar.imgPosition imgSun;
+
+
+    Button btnAnim;
+    private Timer mTimer;
+    private animTimerTask mMyTimerTask;
 
     ListView lvClients;
     byte clientsIp[];
@@ -63,7 +73,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); // unfocus Edited text
 
         lvClients = (ListView)findViewById(R.id.lvClients);
 
@@ -77,15 +87,33 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         }
         catch (UnknownHostException e){}
 
-        //sendCmd((byte) 0, broadcastIP);
 
+        tvResult = (TextView)findViewById(R.id.tvResult);
+        tvDate   = (TextView)findViewById(R.id.tvDate);
+        etLong =  (EditText) findViewById(R.id.etLong);
+        etLatit =  (EditText) findViewById(R.id.etLatit);
+        imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
 
-        //================================================
-        Button bSunCalc = (Button) findViewById(R.id.bSet);
-        bSunCalc.setOnClickListener(new View.OnClickListener() {
+        Button btnCalc = (Button) findViewById(R.id.btnCalculate);
+        btnCalc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), sunPos.class);
-                startActivity(intent);
+
+                sunPos.Lon = sunPos.DEG_TO_RAD * Double.parseDouble(etLong.getText().toString());
+                sunPos.Lat = sunPos.DEG_TO_RAD * Double.parseDouble(etLatit.getText().toString());
+
+                Calendar currentTime    = Calendar.getInstance();
+
+                int d = currentTime.get(Calendar.DAY_OF_MONTH);
+                int m = 1 + currentTime.get(Calendar.MONTH);
+                int y = currentTime.get(Calendar.YEAR);
+
+                int h = currentTime.get(Calendar.HOUR_OF_DAY);
+                int min = currentTime.get(Calendar.MINUTE);
+                int s = currentTime.get(Calendar.SECOND);
+
+                tvDate.setText(y + "." + m + "." + d + " * " + h + ":" + min + ":" + s);
+
+                tvResult.setText(sunPos.getAngles());
             }
         });
 
@@ -133,6 +161,54 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 });
             }
         }, 0, 200);
+
+
+        mTimer = new Timer();
+        mMyTimerTask = new animTimerTask();
+        mTimer.schedule(mMyTimerTask, 1000, 1000);
+
+        btnAnim = (Button) findViewById(R.id.btnAnimate);
+        btnAnim.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(mTimer == null)
+                {
+                    sunPos.Lon = sunPos.DEG_TO_RAD * Double.parseDouble(etLong.getText().toString());
+                    sunPos.Lat = sunPos.DEG_TO_RAD * Double.parseDouble(etLatit.getText().toString());
+                    mTimer = new Timer();
+                    mMyTimerTask = new animTimerTask();
+                    mTimer.schedule(mMyTimerTask, 1000, 1000);
+                    hCntr = 3;
+                }
+                else
+                {
+                    mTimer.cancel();
+                    mTimer = null;
+                    btnAnim.setText("Animate");
+                }
+            }
+        });
+    }
+    //==============================================================================================
+    int hCntr;
+    //==============================================================================================
+    class animTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    hCntr++;
+                    if(hCntr >= 22) hCntr = 3;
+                    btnAnim.setText("Sun at " + hCntr + " hour");
+                    sunPos.Calculate(sunPos.Year, sunPos.Month, sunPos.Day, hCntr - sunPos.Zone, 0, 0);
+                    imgSun.azimuth   = sunPos.azimuth / sunPos.DEG_TO_RAD;
+                    imgSun.elevation = sunPos.elev / sunPos.DEG_TO_RAD;
+                    imgSun.invalidate();
+
+                }
+            });
+        }
     }
     //==============================================================================================
     int selectedClient = 0;
@@ -213,68 +289,6 @@ public class MainActivity extends Activity implements OnReceiveListener  {
             }
         });
     }
-    //==============================================================================================
-
-
-//    byte[] cmdBuffer = new byte[6];
-//    //==============================================================================================
-//    public  void sendCmd(byte aCmd, InetAddress aIP)
-//    {
-////        cmdBuffer[0] = (byte) 0xc0;
-////        cmdBuffer[1] =        aCmd;
-////
-////        cmdBuffer[4] = (byte) (0xcc);
-////        cmdBuffer[5] = (byte) (0xcc);
-//        int dataLng = 0;
-//        byte buf[] = null;
-//        switch(aCmd)
-//        {
-//            case CMD_ANGLE:
-//                dataLng = 2;
-//                buf = new byte[5 + dataLng];
-//                buf[3] = (byte) ((angle) & (byte)0xff);
-//                buf[4] = (byte) ((angle >> 8) & (byte)0xff);
-//                break;
-//
-//            case CMD_AZIMUTH:
-//                dataLng = 2;
-//                buf = new byte[5 + dataLng];
-//                buf[3] = (byte) ((azimuth) & (byte)0xff);
-//                buf[4] = (byte) ((azimuth >> 8) & (byte)0xff);
-//                break;
-//
-//            case CMD_LEFT:
-//            case CMD_RIGHT:
-//            case CMD_UP:
-//            case CMD_DOWN:
-//                dataLng = 2;
-//                buf = new byte[5 + dataLng];
-//                buf[3] = (byte) ((angIncrement) & (byte)0xff);
-//                buf[4] = (byte) ((angIncrement >> 8) & (byte)0xff);
-//                break;
-//
-//            case CMD_STATE:
-//                dataLng = 0;
-//                buf = new byte[5 + dataLng];
-//                break;
-//
-//            case CMD_CFG:
-//                break;
-//        }
-//
-//        if(aIP != null && buf != null)
-//        {
-//            buf[0] = ID_MASTER;
-//            buf[1] = aCmd;
-//            buf[2] = (byte) dataLng;
-//
-//            // add crc16
-//            buf[dataLng + 3] = (byte) 0xcc;
-//            buf[dataLng + 4] = (byte) 0xcc;
-//
-//            udpSend(buf, aIP);
-//        }
-//    }
     //==============================================================================================
     void udpSend(byte[] aByte, InetAddress ip)
     {
@@ -379,10 +393,10 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                 if(clientActivityCreated == 1) sendIntent();
 
 
-                                if(i == 0)
+                                if(i == selectedClient)
                                 {
-                                    pPitch = (double)ax/10000;
-                                    pRoll  = (double)ay/10000;
+                                    OpenGLRenderer.pitch = (float)ax/10000;
+                                    OpenGLRenderer.roll  = (float)ay/10000;
                                 }
                             }
                         }
@@ -409,124 +423,3 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
 }
 
-//class OpenGLRenderer implements GLSurfaceView.Renderer {
-//
-//    private Cube mCube = new Cube();
-//    private float mCubeRotation;
-//
-//    @Override
-//    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-//        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-//
-//        gl.glClearDepthf(1.0f);
-//        gl.glEnable(GL10.GL_DEPTH_TEST);
-//        gl.glDepthFunc(GL10.GL_LEQUAL);
-//
-//        gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT,
-//                GL10.GL_NICEST);
-//
-//    }
-//
-//    @Override
-//    public void onDrawFrame(GL10 gl) {
-//        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-//        gl.glLoadIdentity();
-//
-//        gl.glTranslatef(0.0f, 0.0f, -10.0f);
-//        //gl.glRotatef(mCubeRotation, 1.0f, 1.0f, 1.0f);
-//
-//        gl.glRotatef(mCubeRotation, 0.0f, 0.0f, 1.0f);
-//        gl.glRotatef((float)Math.toDegrees(MainActivity.pRoll), 1.0f, 0.0f, 0.0f);
-//        gl.glRotatef((float)Math.toDegrees(MainActivity.pHead), 0.0f, 1.0f, 0.0f);
-//
-//        mCube.draw(gl);
-//
-//        gl.glLoadIdentity();
-//
-//        mCubeRotation = (-1) * (float) Math.toDegrees(MainActivity.pPitch);
-//        //mCubeRotation -= 0.15f;
-//    }
-//
-//    @Override
-//    public void onSurfaceChanged(GL10 gl, int width, int height) {
-//        gl.glViewport(0, 0, width, height);
-//        gl.glMatrixMode(GL10.GL_PROJECTION);
-//        gl.glLoadIdentity();
-//        GLU.gluPerspective(gl, 20.0f, (float)width / (float)height, 0.1f, 100.0f);
-//        gl.glViewport(0, 0, width, height);
-//
-//        gl.glMatrixMode(GL10.GL_MODELVIEW);
-//        gl.glLoadIdentity();
-//    }
-//}
-//
-//class Cube {
-//
-//    private FloatBuffer mVertexBuffer;
-//    private FloatBuffer mColorBuffer;
-//    private ByteBuffer  mIndexBuffer;
-//
-//    private float vertices[] = {
-//            -1.0f, -0.2f, -1.0f,
-//            1.0f, -0.2f, -1.0f,
-//            1.0f,  0.2f, -1.0f,
-//            -1.0f, 0.2f, -1.0f,
-//            -1.0f, -0.2f,  1.0f,
-//            1.0f, -0.2f,  1.0f,
-//            1.0f,  0.2f,  1.0f,
-//            -1.0f,  0.2f,  1.0f
-//    };
-//    private float colors[] = {
-//            0.0f,  1.0f,  0.0f,  1.0f,
-//            0.0f,  1.0f,  0.0f,  1.0f,
-//            1.0f,  0.5f,  0.0f,  1.0f,
-//            1.0f,  0.5f,  0.0f,  1.0f,
-//            1.0f,  0.0f,  0.0f,  1.0f,
-//            1.0f,  0.0f,  0.0f,  1.0f,
-//            0.0f,  0.0f,  1.0f,  1.0f,
-//            1.0f,  0.0f,  1.0f,  1.0f
-//    };
-//
-//    private byte indices[] = {
-//            0, 4, 5, 0, 5, 1,
-//            1, 5, 6, 1, 6, 2,
-//            2, 6, 7, 2, 7, 3,
-//            3, 7, 4, 3, 4, 0,
-//            4, 7, 6, 4, 6, 5,
-//            3, 0, 1, 3, 1, 2
-//    };
-//
-//    public Cube() {
-//        ByteBuffer byteBuf = ByteBuffer.allocateDirect(vertices.length * 4);
-//        byteBuf.order(ByteOrder.nativeOrder());
-//        mVertexBuffer = byteBuf.asFloatBuffer();
-//        mVertexBuffer.put(vertices);
-//        mVertexBuffer.position(0);
-//
-//        byteBuf = ByteBuffer.allocateDirect(colors.length * 4);
-//        byteBuf.order(ByteOrder.nativeOrder());
-//        mColorBuffer = byteBuf.asFloatBuffer();
-//        mColorBuffer.put(colors);
-//        mColorBuffer.position(0);
-//
-//        mIndexBuffer = ByteBuffer.allocateDirect(indices.length);
-//        mIndexBuffer.put(indices);
-//        mIndexBuffer.position(0);
-//    }
-//
-//    public void draw(GL10 gl) {
-//        gl.glFrontFace(GL10.GL_CW);
-//
-//        gl.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexBuffer);
-//        gl.glColorPointer(4, GL10.GL_FLOAT, 0, mColorBuffer);
-//
-//        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-//        gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-//
-//        gl.glDrawElements(GL10.GL_TRIANGLES, 36, GL10.GL_UNSIGNED_BYTE,
-//                mIndexBuffer);
-//
-//        gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-//        gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
-//    }
-//}

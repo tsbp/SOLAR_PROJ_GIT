@@ -77,13 +77,112 @@
             android:layout_weight="1"
             android:id="@+id/lvClients">
         </ListView>
-        <Button
+
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/linearLayout">
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="butt"
-            android:id="@+id/bSet"/>
+            android:background="#ff6600"
+            android:text="Координаты"
+            android:layout_marginTop="5dp"
+            android:gravity="center_horizontal"
+            android:id="@+id/textView"            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#ffee00"
+            >
+            <TextView
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_marginLeft="5dp"
+                android:text="Широта"/>
+            <EditText
+                android:layout_weight="3"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:id="@+id/etLatit"
+                android:text="48.5" />
+            <TextView
+                android:layout_weight="2"
+                android:layout_marginLeft="5dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Долгота"/>
+            <EditText
+                android:layout_weight="3"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:id="@+id/etLong"
+                android:text="32.23"/>
 
 
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Cal"
+                android:id="@+id/btnCalculate"/>
+            <Button
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Ani"
+                android:id="@+id/btnAnimate"/>
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvDate"
+            android:gravity="center_horizontal"
+            android:background="#8800e99b"
+            android:textColor="#0000ff"
+            android:textSize="18sp" />
+
+        <com.voodoo.solar.imgPosition
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/compass"
+            android:id="@+id/imgPos"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:id="@+id/tvResult"/>
+
+        </ScrollView>
 
     </LinearLayout>
 

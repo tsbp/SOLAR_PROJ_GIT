@@ -11,14 +11,28 @@
     android:orientation="vertical"
     tools:context="com.voodoo.solar.ClientConfig">
 
-    <TextView
-        android:text="IP"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tvIP"
-        android:textAlignment="center"
-        android:background="#06f5e2"
-        android:textSize="25sp" />
+        android:orientation="horizontal"
+        android:background="#06f5e2">
+
+        <TextView
+            android:text="IP"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvIP"
+            android:textAlignment="center"
+            android:textSize="25sp" />
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="CFG"/>
+
+    </LinearLayout>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

@@ -19,6 +19,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
     private Cube mCube = new Cube();
     private float mCubeRotation;
 
+    public static float pitch, roll;
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
@@ -41,8 +43,8 @@ public class OpenGLRenderer implements GLSurfaceView.Renderer {
         //gl.glRotatef(mCubeRotation, 1.0f, 1.0f, 1.0f);
 
         gl.glRotatef(mCubeRotation, 0.0f, 0.0f, 1.0f);
-        gl.glRotatef((float)Math.toDegrees(MainActivity.pRoll), 1.0f, 0.0f, 0.0f);
-        gl.glRotatef((float)Math.toDegrees(MainActivity.pPitch), 0.0f, 0.0f, 1.0f);
+        gl.glRotatef((float)Math.toDegrees(roll), 1.0f, 0.0f, 0.0f);
+        gl.glRotatef((float)Math.toDegrees(pitch), 0.0f, 0.0f, 1.0f);
 
         mCube.draw(gl);
 
