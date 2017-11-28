@@ -1,19 +1,25 @@
 package com.voodoo.solar;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.voodoo.solar.UDPProcessor.OnReceiveListener;
@@ -414,6 +420,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         }
         cntr++;
     }
+
     //==============================================================================================
     @Override
     protected void onDestroy() {

@@ -8,12 +8,16 @@
 
 #define CMD_ANGLE   (0x10)
 #define CMD_AZIMUTH	(0x11)
+
 #define CMD_LEFT	(0x20)
 #define CMD_RIGHT	(0x21)
 #define CMD_UP	    (0x22)
 #define CMD_DOWN	(0x23)
+
 #define CMD_STATE	(0xA0)
+
 #define CMD_CFG		(0xC0)
+#define CMD_WIFI	(0xC1)
 
 
 void ICACHE_FLASH_ATTR UDP_Init();

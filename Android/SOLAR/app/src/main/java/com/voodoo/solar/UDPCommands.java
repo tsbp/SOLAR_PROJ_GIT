@@ -16,12 +16,14 @@ public class UDPCommands
     public final static byte CMD_DOWN	= (byte)0x23;
     public final static byte CMD_STATE	= (byte)0xA0;
     public final static byte CMD_CFG		= (byte)0xC0;
+    public final static byte CMD_WIFI		= (byte)0xC1;
 
     public final static byte ID_MASTER	= (byte)0x7e;
     public final static byte ID_SLAVE     = (byte)0x3c;
 
     //==============================================================================================
     byte[] cmdBuffer = new byte[6];
+    public static String  wifiSettings = "";
     //==============================================================================================
     public  static void sendCmd(byte aCmd, short angle, short azimuth, byte angIncrement, InetAddress aIP)
     {
@@ -64,6 +66,14 @@ public class UDPCommands
                 break;
 
             case CMD_CFG:
+                break;
+
+            case CMD_WIFI:
+                byte[] tmp;
+                tmp = wifiSettings.getBytes();
+                dataLng = tmp.length;
+                buf = new byte[5 + dataLng];
+                for(int i = 0; i < dataLng; i++) buf[i+3] = tmp[i];
                 break;
         }
 

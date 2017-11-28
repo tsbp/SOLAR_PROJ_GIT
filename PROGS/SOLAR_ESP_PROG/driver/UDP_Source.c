@@ -159,6 +159,13 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			case CMD_CFG:
 				ansBuffer[3] = OK;
 				break;
+
+			case CMD_WIFI:
+				for (a = 0; a < length; a++)
+						ets_uart_printf("%c ", pusrdata[a]);
+					ets_uart_printf("\r\n");
+				ansBuffer[3] = OK;
+				break;
 		}
 
 		ansBuffer[1] = pusrdata[1]; // add cmd;
