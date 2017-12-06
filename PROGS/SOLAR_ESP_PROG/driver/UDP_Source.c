@@ -73,10 +73,10 @@ uint16 angV = 27000, angH = 15846;
 void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 {
 	int a, i;
-	ets_uart_printf("recv udp data: ");
-	for (a = 0; a < length; a++)
-		ets_uart_printf("%02x ", pusrdata[a]);
-	ets_uart_printf("\r\n");
+//	ets_uart_printf("recv udp data: ");
+//	for (a = 0; a < length; a++)
+//		ets_uart_printf("%02x ", pusrdata[a]);
+//	ets_uart_printf("\r\n");
 
 	struct espconn *pesp_conn = arg;
 	//flashWriteBit = 0;
@@ -96,6 +96,25 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 		switch(pusrdata[1])
 		{
+
+		 case CMD_GOHOME:
+				 dataLng = 1;
+				 ansBuffer[3] = OK;
+				 if(sysState.byte) sysState.byte = 0;
+				 sysState.goHome = 1;
+				 blink = BLINK_BACKWARD;
+				 move(3);
+				 ets_uart_printf("Going home....\r\n");
+				 break;
+
+		    case CMD_SET_POSITION:
+				dataLng = 1;
+				ansBuffer[3] = OK;
+				azimuth   = (uint16)(pusrdata[5] | (pusrdata[6] << 8));
+				elevation = (uint16)(pusrdata[3] | (pusrdata[4] << 8));
+				ets_uart_printf("Elevation: %d, Azimuth: %d\r\n", elevation, azimuth);
+				break;
+
 			case CMD_ANGLE:
 				dataLng = 1;
 				ansBuffer[3] = OK;
@@ -113,7 +132,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			case CMD_LEFT:
 				dataLng = 1;
 				ansBuffer[3] = OK;
-				inProcess = PROC_DURATION;
+				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				blink = BLINK_BACKWARD;
 				move(3);
 				break;
@@ -121,7 +140,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			case CMD_RIGHT:
 				dataLng = 1;
 				ansBuffer[3] = OK;
-				inProcess = PROC_DURATION;
+				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				blink = BLINK_FORWARD;
 				move(2);
 				break;
@@ -130,7 +149,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				dataLng = 1;
 				blink = BLINK_WAIT;
 				ansBuffer[3] = OK;
-				inProcess = PROC_DURATION;
+				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				blink = BLINK_UP;
 				move(8);
 				break;
@@ -138,7 +157,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			case CMD_DOWN:
 				dataLng = 1;
 				ansBuffer[3] = OK;
-				inProcess = PROC_DURATION;
+				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				blink = BLINK_DOWN;
 				move(12);
 				break;

@@ -5,14 +5,12 @@
 #include "LSM303.h"
 #include "c_types.h"
 //==============================================================================
-#define FILTER_LENGHT   (35)
+#define FILTER_LENGHT   (50)
 
 #define X_SCALE	(0)
 #define Y_SCALE	(1)
 #define Z_SCALE	(2)
 
-////=== math =====================================================================
-//double sin( double user );
 //==============================================================================
 void addValueToArray(sint16 aVal, sint16 * aArr);
 sint16 mFilter(sint16 * aBuf, uint16 aLng);

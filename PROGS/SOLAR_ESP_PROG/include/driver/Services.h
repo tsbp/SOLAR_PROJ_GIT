@@ -39,10 +39,22 @@ void ICACHE_FLASH_ATTR leds(unsigned char aStt);
 void ICACHE_FLASH_ATTR move(uint8 a);
 
 extern unsigned int blink;
+extern uint16 azimuth, elevation;
 //==============================================================================
 #define PROC_DURATION	(50)
 extern uint8 terminators, inProcess;
 uint16 light;
-
+//==============================================================================
+typedef union
+{
+	uint8 byte;
+	struct
+	{
+		unsigned char manualMove	:1;
+		unsigned char automaticMove	:1;
+		unsigned char goHome		:1;
+	};
+}sSYSTEM_STATE;
+extern sSYSTEM_STATE sysState;
 //==============================================================================
 #endif /* INCLUDE_DRIVER_SERVICES_H_ */

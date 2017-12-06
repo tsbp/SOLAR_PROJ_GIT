@@ -53,9 +53,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     public static UDPProcessor udpProcessor ;
     InetAddress deviceIP = null, broadcastIP;
 
-
-
-    TextView tvResult, tvDate;
+    TextView tvDate, tvSunPos;
     EditText etLong, etLatit;
     com.voodoo.solar.imgPosition imgSun;
 
@@ -94,32 +92,22 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         catch (UnknownHostException e){}
 
 
-        tvResult = (TextView)findViewById(R.id.tvResult);
+        tvSunPos = (TextView)findViewById(R.id.tvSunPos);
+
         tvDate   = (TextView)findViewById(R.id.tvDate);
         etLong =  (EditText) findViewById(R.id.etLong);
         etLatit =  (EditText) findViewById(R.id.etLatit);
         imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
 
+        sunPos.Lon = Math.toRadians(Double.parseDouble(etLong.getText().toString()));
+        sunPos.Lat = Math.toRadians(Double.parseDouble(etLatit.getText().toString()));
+
         Button btnCalc = (Button) findViewById(R.id.btnCalculate);
         btnCalc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                sunPos.Lon = sunPos.DEG_TO_RAD * Double.parseDouble(etLong.getText().toString());
-                sunPos.Lat = sunPos.DEG_TO_RAD * Double.parseDouble(etLatit.getText().toString());
+                showSunInfo();
 
-                Calendar currentTime    = Calendar.getInstance();
-
-                int d = currentTime.get(Calendar.DAY_OF_MONTH);
-                int m = 1 + currentTime.get(Calendar.MONTH);
-                int y = currentTime.get(Calendar.YEAR);
-
-                int h = currentTime.get(Calendar.HOUR_OF_DAY);
-                int min = currentTime.get(Calendar.MINUTE);
-                int s = currentTime.get(Calendar.SECOND);
-
-                tvDate.setText(y + "." + m + "." + d + " * " + h + ":" + min + ":" + s);
-
-                tvResult.setText(sunPos.getAngles());
             }
         });
 
@@ -134,7 +122,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                     public void run() {
 
                         if(deviceIP == null)
-                            UDPCommands.sendCmd(UDPCommands.CMD_STATE, (short)0, (short)0, (byte)0, broadcastIP);
+                            UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
                         else
                             try
                             {
@@ -152,7 +140,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                     notAsweredCntr[currentClient]++;
                                 }
 
-                                UDPCommands.sendCmd(UDPCommands.CMD_STATE, (short)0, (short)0, (byte)0, InetAddress.getByAddress(addr));
+                                UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, InetAddress.getByAddress(addr));
 
                                 // check for not answered
 
@@ -168,34 +156,46 @@ public class MainActivity extends Activity implements OnReceiveListener  {
             }
         }, 0, 200);
 
-
-        mTimer = new Timer();
-        mMyTimerTask = new animTimerTask();
-        mTimer.schedule(mMyTimerTask, 1000, 1000);
-
         btnAnim = (Button) findViewById(R.id.btnAnimate);
         btnAnim.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(mTimer == null)
                 {
-                    sunPos.Lon = sunPos.DEG_TO_RAD * Double.parseDouble(etLong.getText().toString());
-                    sunPos.Lat = sunPos.DEG_TO_RAD * Double.parseDouble(etLatit.getText().toString());
+                    btnAnim.setText("Working...");
+                    sunPos.Lon = Math.toRadians(Double.parseDouble(etLong.getText().toString()));
+                    sunPos.Lat = Math.toRadians(Double.parseDouble(etLatit.getText().toString()));
                     mTimer = new Timer();
                     mMyTimerTask = new animTimerTask();
                     mTimer.schedule(mMyTimerTask, 1000, 1000);
-                    hCntr = 3;
                 }
                 else
                 {
-                    mTimer.cancel();
-                    mTimer = null;
-                    btnAnim.setText("Animate");
+                    stopCntr = 5;
+//                    mTimer.cancel();
+//                    mTimer = null;
+                    btnAnim.setText("Waiting...");
                 }
             }
         });
     }
     //==============================================================================================
-    int hCntr;
+    int [] getCurrentTime()
+    {
+        int tmp [] = new int[6];
+        Calendar currentTime    = Calendar.getInstance();
+
+        tmp[0] = currentTime.get(Calendar.YEAR);
+        tmp[1] = 1 + currentTime.get(Calendar.MONTH);
+        tmp[2] = currentTime.get(Calendar.DAY_OF_MONTH);
+
+        tmp[3] = currentTime.get(Calendar.HOUR_OF_DAY);
+        tmp[4] = currentTime.get(Calendar.MINUTE);
+        tmp[5] = currentTime.get(Calendar.SECOND);
+        return tmp;
+    }
+    //==============================================================================================
+    int stopCntr = 0;
+    //int hCntr;
     //==============================================================================================
     class animTimerTask extends TimerTask {
 
@@ -204,14 +204,49 @@ public class MainActivity extends Activity implements OnReceiveListener  {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    hCntr++;
-                    if(hCntr >= 22) hCntr = 3;
-                    btnAnim.setText("Sun at " + hCntr + " hour");
-                    sunPos.Calculate(sunPos.Year, sunPos.Month, sunPos.Day, hCntr - sunPos.Zone, 0, 0);
-                    imgSun.azimuth   = sunPos.azimuth / sunPos.DEG_TO_RAD;
-                    imgSun.elevation = sunPos.elev / sunPos.DEG_TO_RAD;
-                    imgSun.invalidate();
 
+                    if(stopCntr == 0)
+                    {
+                        int tmp[] = getCurrentTime();
+                        tvDate.setText(tmp[0] + "." + tmp[1] + "." + tmp[2] + " * " + tmp[3] + ":" + tmp[4] + ":" + tmp[5]);
+
+                        sunPos.Calculate(tmp[0], tmp[1], tmp[2], tmp[3] - sunPos.Zone, tmp[4], tmp[5]);
+
+                        tvSunPos.setText("Azimuth: " + String.format("%.3f", Math.toDegrees(sunPos.azimuth)) + ", Elevation: " + String.format("%.3f", Math.toDegrees(sunPos.elev)));
+
+                        imgPosition.azimuth = sunPos.azimuth;
+                        imgPosition.elevation = sunPos.elev;
+                        imgSun.invalidate();
+
+                        byte data[] = new byte[4];
+                        data[0] = (byte) ((int) (Math.toDegrees(sunPos.elev) * 100));
+                        data[1] = (byte) (((int) (Math.toDegrees(sunPos.elev) * 100) >> 8));
+                        data[2] = (byte) ((int) (Math.toDegrees(sunPos.azimuth) * 100));
+                        data[3] = (byte) (((int) (Math.toDegrees(sunPos.azimuth) * 100) >> 8));
+
+                        try {
+                            UDPCommands.sendCmd(UDPCommands.CMD_SET_POSITION, data, InetAddress.getByAddress(getBroadcastIP4AsBytes()));
+                        } catch (UnknownHostException e) {
+                        }
+                    }
+                    else
+                    {
+                        stopCntr--;
+                        if(stopCntr <= 0 )
+                        {
+                            mTimer.cancel();
+                            mTimer = null;
+                            btnAnim.setText("Start");
+                        }
+                        else
+                        {
+                            try {
+                                UDPCommands.sendCmd(UDPCommands.CMD_GOHOME, null, InetAddress.getByAddress(getBroadcastIP4AsBytes()));
+                            } catch (UnknownHostException e) {
+                            }
+                        }
+
+                    }
                 }
             });
         }
@@ -419,6 +454,36 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
         }
         cntr++;
+    }
+
+    //==============================================================================================
+    void showSunInfo() {
+        final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View Viewlayout = inflater.inflate(R.layout.sun_info, (ViewGroup) findViewById(R.id.info));
+
+        popDialog.setIcon(R.drawable.compass_small);
+        popDialog.setTitle("Angles");
+        popDialog.setView(Viewlayout);
+
+        sunPos.Lon = Math.toRadians(Double.parseDouble(etLong.getText().toString()));
+        sunPos.Lat = Math.toRadians(Double.parseDouble(etLatit.getText().toString()));
+
+        final TextView tvResult = (TextView)Viewlayout.findViewById(R.id.tvResult);
+        int tmp [] = getCurrentTime();
+        tvResult.setText("For " + tmp[0] + "." + tmp[1] + "." + tmp[2] + "\r\n"
+                + sunPos.getAngles());
+
+
+
+        popDialog.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        popDialog.create();
+        popDialog.show();
     }
 
     //==============================================================================================

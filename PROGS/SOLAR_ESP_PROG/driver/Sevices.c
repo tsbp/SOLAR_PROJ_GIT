@@ -19,7 +19,10 @@ uint8	serviceMode = MODE_NORMAL;
 int cntr = 5;
 
 uint16 light;
-uint8 terminators, inProcess = 0;
+uint8 terminators; //inProcess = 0;
+sSYSTEM_STATE sysState;
+
+uint16 azimuth, elevation;
 
 //==============================================================================
 void ICACHE_FLASH_ATTR service_timer_start (void)
@@ -172,3 +175,5 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 {
 	PCF8574_writeByte(0x3f, (a << 4) | 0x0f);
 }
+//==============================================================================
+

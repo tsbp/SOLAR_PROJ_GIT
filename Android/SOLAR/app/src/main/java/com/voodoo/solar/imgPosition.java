@@ -42,10 +42,10 @@ public class imgPosition extends View {
         // рисуем круг с центром в (100,200), радиус = 50
         //canvas.drawCircle(AREA_WIDTH / 2, AREA_HEIGH / 2, 10, p);
 
-        double ang = elevation;
+        double ang = Math.toDegrees(elevation);
         int lineLength = AREA_WIDTH/2 -(int)(ang * AREA_WIDTH/(2*90));
 
-        double angle = azimuth;
+        double angle = Math.toDegrees(azimuth);
         angle = 180 - angle;
         angle = angle * Math.PI / 180;
 
@@ -58,10 +58,10 @@ public class imgPosition extends View {
         p.setColor(Color.YELLOW);
         canvas.drawCircle(endX, endY, 15, p);
 
-        p.setTextSize(15);
-        p.setColor(Color.BLUE);
-        String str = String.format("%.2f", elevation) + ", " + String.format("%.2f", azimuth);
-        canvas.drawText(str, 15, (int)(AREA_HEIGH / 2.5), p);
+//        p.setTextSize(15);
+//        p.setColor(Color.BLUE);
+//        String str = String.format("%.2f", ang) + ", " + String.format("%.2f", angle);
+//        canvas.drawText(str, 15, (int)(AREA_HEIGH / 2.5), p);
 
     }
 }

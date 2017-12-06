@@ -19,7 +19,7 @@ public class sunPos  {
     public static double PI =  3.141592654;
     public static double TWOPI = 6.28318531;
 
-    public static int Hour, Minute = 0, Second = 0, Month = 11, Day = 15, Year, Zone = +2;
+    public static int Hour, Minute = 0, Second = 0, Month = 11, Day = 30, Year, Zone = +2;
     public static double Lon = -75 * DEG_TO_RAD, Lat = 40 * DEG_TO_RAD;
 
 //    TextView tvResult, tvDate;
@@ -136,7 +136,7 @@ public static void Calculate(int aYear, int aMonth, int aDay, int aHour, int aMi
         Year = 2017;
         // Changes may be required in for… loop to get complete
         // daylight coverage in time zones farther west.
-        for (Hour=4; Hour <= 22; Hour++)
+        for (Hour=0; Hour <= 22; Hour++)
         {
             Calculate(Year, Month, Day, Hour, Minute, Second);
 

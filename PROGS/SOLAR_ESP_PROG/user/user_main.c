@@ -28,25 +28,31 @@ uint8 out = 0;
 unsigned char tmp[6];
 
 sint16 Pitch, Roll, Yaw;
-//uint16 YawDegrees, RollDegrees;
 
-float ang = 483;
+
+int manualDuration = PROC_DURATION;
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
 {
 
 //	if (flashWriteBit == 1) saveConfigs();
-//
-//	configsProcced();
 
-	if(inProcess) inProcess--;
-	else
+	if(!sysState.byte)
 	{
-		if (wifi_station_get_connect_status() == STATION_GOT_IP) 	blink = BLINK_WAIT;
-		else														blink = BLINK_WAIT_UNCONNECTED;
-		move(0);
+		if(wifi_station_get_connect_status() == STATION_GOT_IP)		   blink = BLINK_WAIT;
+		else														   blink = BLINK_WAIT_UNCONNECTED;
 	}
 
+	if(sysState.manualMove)
+	{
+		if(manualDuration) manualDuration--;
+		else
+		{
+			sysState.manualMove = 0;
+			manualDuration = PROC_DURATION;
+			move(0);
+		}
+	}
 
 	//======== PCF8574 =====================
 	terminators = PCF8574_readByte(addr);
@@ -75,13 +81,38 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	_pitch   = mFilter(pitchArray, FILTER_LENGHT);
 	_heading = mFilter(yawArray,   FILTER_LENGHT);
 
+	long head = _heading  * 18000 / 31416;
+	if(head < 0) head += 36000;
+	//ets_uart_printf("head = %d\r\n", head);
 
-	//ets_uart_printf("_roll = %d, _pitch = %d, _heading = %d\r\n", _roll, _pitch, _heading);
-//
-//	long _tmp = (long) _heading;
-//	if(_tmp < 0) _tmp += 62832;
-//	YawDegrees  =  (int)_tmp;
-//	RollDegrees  = _roll;
+
+	//=== sun tracking ====================================================
+	//=== horizontal ==============
+	if(sysState.goHome)
+	{
+		if((uint16) head < 9000)
+		{
+			move(0);
+			azimuth = 0;
+			sysState.goHome = 0;
+		}
+
+	}
+	else
+	{
+		if(!sysState.automaticMove && (azimuth > (uint16) head))
+			{
+				sysState.automaticMove = 1;
+				blink = BLINK_FORWARD;
+				move(2);
+			}
+			else if(sysState.automaticMove && ((300 + azimuth) < (uint16) head))
+			{
+				sysState.automaticMove = 0;
+				move(0);
+			}
+	}
+
 
 }
 //==============================================================================

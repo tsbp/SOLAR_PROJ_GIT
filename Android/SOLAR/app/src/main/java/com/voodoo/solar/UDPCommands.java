@@ -10,22 +10,28 @@ public class UDPCommands
 {
     public final static byte CMD_ANGLE   = (byte)0x10;
     public final static byte CMD_AZIMUTH	= (byte)0x11;
+    public final static byte CMD_SET_POSITION	= (byte)0x12;
+
     public final static byte CMD_LEFT	= (byte)0x20;
     public final static byte CMD_RIGHT	= (byte)0x21;
     public final static byte CMD_UP	    = (byte)0x22;
     public final static byte CMD_DOWN	= (byte)0x23;
+    public final static byte CMD_GOHOME	= (byte)0x24;
+
     public final static byte CMD_STATE	= (byte)0xA0;
+
     public final static byte CMD_CFG		= (byte)0xC0;
     public final static byte CMD_WIFI		= (byte)0xC1;
 
     public final static byte ID_MASTER	= (byte)0x7e;
     public final static byte ID_SLAVE     = (byte)0x3c;
 
+//    //==============================================================================================
+//    byte[] cmdBuffer = new byte[6];
+//    public static String  wifiSettings = "";
     //==============================================================================================
-    byte[] cmdBuffer = new byte[6];
-    public static String  wifiSettings = "";
-    //==============================================================================================
-    public  static void sendCmd(byte aCmd, short angle, short azimuth, byte angIncrement, InetAddress aIP)
+    //public  static void sendCmd(byte aCmd, short angle, short azimuth, byte angIncrement, InetAddress aIP)
+    public  static void sendCmd(byte aCmd, byte [] aData, InetAddress aIP)
     {
 //        cmdBuffer[0] = (byte) 0xc0;
 //        cmdBuffer[1] =        aCmd;
@@ -36,18 +42,29 @@ public class UDPCommands
         byte buf[] = null;
         switch(aCmd)
         {
+            case CMD_GOHOME:
+                dataLng = 0;
+                buf = new byte[5 + dataLng];
+                break;
+
+            case CMD_SET_POSITION:
+                dataLng = aData.length;
+                buf = new byte[5 + aData.length];
+                for(int i = 0; i < aData.length; i++) buf[i+3] = aData[i];
+                break;
+
             case CMD_ANGLE:
                 dataLng = 2;
                 buf = new byte[5 + dataLng];
-                buf[3] = (byte) ((angle) & (byte)0xff);
-                buf[4] = (byte) ((angle >> 8) & (byte)0xff);
+//                buf[3] = (byte) ((angle) & (byte)0xff);
+//                buf[4] = (byte) ((angle >> 8) & (byte)0xff);
                 break;
 
             case CMD_AZIMUTH:
                 dataLng = 2;
                 buf = new byte[5 + dataLng];
-                buf[3] = (byte) ((azimuth) & (byte)0xff);
-                buf[4] = (byte) ((azimuth >> 8) & (byte)0xff);
+//                buf[3] = (byte) ((azimuth) & (byte)0xff);
+//                buf[4] = (byte) ((azimuth >> 8) & (byte)0xff);
                 break;
 
             case CMD_LEFT:
@@ -56,8 +73,8 @@ public class UDPCommands
             case CMD_DOWN:
                 dataLng = 2;
                 buf = new byte[5 + dataLng];
-                buf[3] = (byte) ((angIncrement) & (byte)0xff);
-                buf[4] = (byte) ((angIncrement >> 8) & (byte)0xff);
+//                buf[3] = (byte) ((angIncrement) & (byte)0xff);
+//                buf[4] = (byte) ((angIncrement >> 8) & (byte)0xff);
                 break;
 
             case CMD_STATE:
@@ -69,11 +86,9 @@ public class UDPCommands
                 break;
 
             case CMD_WIFI:
-                byte[] tmp;
-                tmp = wifiSettings.getBytes();
-                dataLng = tmp.length;
-                buf = new byte[5 + dataLng];
-                for(int i = 0; i < dataLng; i++) buf[i+3] = tmp[i];
+                dataLng = aData.length;
+                buf = new byte[5 + aData.length];
+                for(int i = 0; i < aData.length; i++) buf[i+3] = aData[i];
                 break;
         }
 

@@ -92,7 +92,7 @@ public class ClientConfig extends Activity {
         btnUp.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                UDPCommands.sendCmd(UDPCommands.CMD_UP,  (short)0, (short)0, (byte)0, ip);
+                UDPCommands.sendCmd(UDPCommands.CMD_UP,  null, ip);
             }
         });
         //================================================
@@ -100,21 +100,21 @@ public class ClientConfig extends Activity {
         btnDown.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                UDPCommands.sendCmd(UDPCommands.CMD_DOWN,  (short)0, (short)0, (byte)0, ip);
+                UDPCommands.sendCmd(UDPCommands.CMD_DOWN,  null, ip);
             }
         });
         //================================================
         Button btnRight = (Button) findViewById(R.id.btnRight);
         btnRight.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                UDPCommands.sendCmd(UDPCommands.CMD_RIGHT,  (short)0, (short)0, (byte)0, ip);
+                UDPCommands.sendCmd(UDPCommands.CMD_RIGHT,  null, ip);
             }
         });
         //================================================
         Button btnLeft = (Button) findViewById(R.id.btnLeft);
         btnLeft.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                UDPCommands.sendCmd(UDPCommands.CMD_LEFT,  (short)0, (short)0, (byte)0, ip);
+                UDPCommands.sendCmd(UDPCommands.CMD_LEFT,  null, ip);
             }
         });
 
@@ -184,7 +184,7 @@ public class ClientConfig extends Activity {
     private String[] wifiMode= {"NULL_MODE","STATION_MODE","SOFTAP_MODE","STATIONAP_MODE"};
     private String[] wifiSecurityMode = {"AUTH_OPEN","AUTH_WEP","AUTH_WPA_PSK","AUTH_WPA2_PSK","AUTH_WPA_WPA2_PSK","AUTH_MAX"};
     byte wMode, wSecur;
-    String wCfgStr;
+//    String wCfgStr;
     //==============================================================================================
     void dialog_wifi() {
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
@@ -245,11 +245,11 @@ public class ClientConfig extends Activity {
         popDialog.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        wCfgStr = (char)wMode + "" + (char)wSecur + ssid.getText().toString() + "$" + ssidPass.getText().toString();
+                        String wCfgStr = (char)wMode + "" + (char)wSecur + ssid.getText().toString() + "$" + ssidPass.getText().toString();
                         saveConfig(wCfgStr);
 //                        sendCmdmd(CMD_SET_WIFI, deviceIP);
-                        UDPCommands.wifiSettings = wCfgStr;
-                        UDPCommands.sendCmd(UDPCommands.CMD_WIFI, (short)0, (short)0, (byte)0, ip);
+//                        UDPCommands.wifiSettings = wCfgStr;
+                        UDPCommands.sendCmd(UDPCommands.CMD_WIFI, wCfgStr.getBytes(), ip);
                         dialog.dismiss();
                     }
                 });
