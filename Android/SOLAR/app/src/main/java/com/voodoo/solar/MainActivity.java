@@ -215,7 +215,8 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         tvSunPos.setText("Azimuth: " + String.format("%.3f", Math.toDegrees(sunPos.azimuth)) + ", Elevation: " + String.format("%.3f", Math.toDegrees(sunPos.elev)));
 
                         imgPosition.azimuth = sunPos.azimuth;
-                        imgPosition.elevation = sunPos.elev;
+                        if(sunPos.elev < 0) imgPosition.elevation = sunPos.elev;
+                        else                imgPosition.elevation = 0;
                         imgSun.invalidate();
 
                         byte data[] = new byte[4];
@@ -350,7 +351,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         if(deviceIP == null) deviceIP = ip;
         try {
 
-            if(in[0] == UDPCommands.ID_SLAVE)
+            if(in[0] == UDPCommands.ID_SLAVE || in[0] == UDPCommands.ID_METEO)
             {
                 //==========================================
                 if(clientsIp == null)
@@ -423,11 +424,20 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         {
                             if(ip.getAddress()[3] == clientsIp[i])
                             {
-                                clientData[i][0] = String.format("%.1f", Math.toDegrees((double)ax/10000));
-                                clientData[i][1] = String.format("%.1f", Math.toDegrees((double)ay/10000));
-                                clientData[i][2] = String.format("%.1f", tt);
+                                if(in[0] == UDPCommands.ID_SLAVE) {
+                                    clientData[i][0] = String.format("%.1f", Math.toDegrees((double) ax / 10000));
+                                    clientData[i][1] = String.format("%.1f", Math.toDegrees((double) ay / 10000));
+                                    clientData[i][2] = String.format("%.1f", tt);
+                                    clientData[i][4] = terms;
+                                }
+                                else
+                                {
+                                    clientData[i][0] = "Wind";
+                                    clientData[i][1] = "speed";
+                                    clientData[i][2] = "-";
+                                    clientData[i][4] = "---";
+                                }
                                 clientData[i][3] = "" + light;
-                                clientData[i][4] = terms;
                                 lvBuid();
                                 notAsweredCntr[i] = 0;
 

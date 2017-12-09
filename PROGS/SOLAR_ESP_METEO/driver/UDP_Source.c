@@ -41,21 +41,7 @@ void ICACHE_FLASH_ATTR UDP_Init_client()
 	espconn_create(UDP_PC);
 }
 //============================================================================================================================
-//void ICACHE_FLASH_ATTR addValueToArray(char * tPtr, sint16 *arPtr, char aRot)
-//{
-//	int i,j;
-//	if(aRot == ROTATE)
-//	{
-//		for(i = 0; i < POINTS_CNT-1; i++)
-//			arPtr[i]= arPtr[i+1];
-//	}
-//
-//    sint16 e = (tPtr[1]- '0') * 100 + (tPtr[2]- '0') * 10 + (tPtr[3] - '0');
-//
-//    if(tPtr[0] == '-')  e *= (-1);
-//
-//		arPtr[POINTS_CNT-1] = e;
-//}
+
 //=========================================================================================
 uint8 crcCalc(uint8 *aBuf, uint8 aLng)
     {
@@ -65,18 +51,21 @@ uint8 crcCalc(uint8 *aBuf, uint8 aLng)
         return  (((sum >> 8) & 0xff) + (sum & 0xff));
     }
 //=========================================================================================
-uint8 dataLng = 0;
-uint8 ansBuffer[20] = {ID_SLAVE, 0, 0};
+
+uint8 ansBuffer[20] = {ID_METEO, 0, 0};
 
 uint16 angV = 27000, angH = 15846;
 //=========================================================================================
 void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 {
 	int a, i;
+	uint8 needAnswer = 0;
 //	ets_uart_printf("recv udp data: ");
 //	for (a = 0; a < length; a++)
 //		ets_uart_printf("%02x ", pusrdata[a]);
 //	ets_uart_printf("\r\n");
+
+	uint8 dataLng = 0;
 
 	struct espconn *pesp_conn = arg;
 	//flashWriteBit = 0;
@@ -98,80 +87,41 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 		{
 
 		 case CMD_GOHOME:
-				 dataLng = 1;
-				 ansBuffer[3] = OK;
-				 if(sysState.byte) sysState.byte = 0;
-				 sysState.goHome = 1;
-				 blink = BLINK_BACKWARD;
-				 move(3);
-				 ets_uart_printf("Going home....\r\n");
 				 break;
 
 		    case CMD_SET_POSITION:
-				dataLng = 1;
-				ansBuffer[3] = OK;
-				azimuth   = (uint16)(pusrdata[5] | (pusrdata[6] << 8));
-				elevation = (uint16)(pusrdata[3] | (pusrdata[4] << 8));
-				ets_uart_printf("Elevation: %d, Azimuth: %d\r\n", elevation, azimuth);
 				break;
 
 			case CMD_ANGLE:
-				dataLng = 1;
-				ansBuffer[3] = OK;
-//				inProcess = 5;
-//				blink = BLINK_WAIT;
 				break;
 
 			case CMD_AZIMUTH:
-				dataLng = 1;
-				ansBuffer[3] = OK;
-//				inProcess = 5;
-//				blink = BLINK_WAIT;
 				break;
 
 			case CMD_LEFT:
-				dataLng = 1;
-				ansBuffer[3] = OK;
-				sysState.manualMove = 1; //inProcess = PROC_DURATION;
-				blink = BLINK_BACKWARD;
-				move(3);
 				break;
 
 			case CMD_RIGHT:
-				dataLng = 1;
-				ansBuffer[3] = OK;
-				sysState.manualMove = 1; //inProcess = PROC_DURATION;
-				blink = BLINK_FORWARD;
-				move(2);
 				break;
 
 			case CMD_UP:
-				dataLng = 1;
-				ansBuffer[3] = OK;
-				sysState.manualMove = 1; //inProcess = PROC_DURATION;
-				blink = BLINK_UP;
-				move(8);
 				break;
 
 			case CMD_DOWN:
-				dataLng = 1;
-				ansBuffer[3] = OK;
-				sysState.manualMove = 1; //inProcess = PROC_DURATION;
-				blink = BLINK_DOWN;
-				move(12);
 				break;
 
 			case CMD_STATE:
+				needAnswer = 1;
 				dataLng   = 9;
-				ansBuffer[3]  = _pitch;
-				ansBuffer[4]  = _pitch >> 8;
-				ansBuffer[5]  = _roll;
-				ansBuffer[6]  = _roll >> 8;
-				ansBuffer[7]  = _heading;
-				ansBuffer[8]  = _heading >> 8;
-				ansBuffer[9]  = light;
-				ansBuffer[10] = light >> 8;
-				ansBuffer[11] = terminators;
+//				ansBuffer[3]  = _pitch;
+//				ansBuffer[4]  = _pitch >> 8;
+//				ansBuffer[5]  = _roll;
+//				ansBuffer[6]  = _roll >> 8;
+//				ansBuffer[7]  = _heading;
+//				ansBuffer[8]  = _heading >> 8;
+				ansBuffer[9]  = freq;
+				ansBuffer[10] = freq >> 8;
+//				ansBuffer[11] = terminators;
 				break;
 
 			case CMD_CFG:
@@ -179,26 +129,54 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				break;
 
 			case CMD_WIFI:
-				for (a = 0; a < length; a++)
-						ets_uart_printf("%c ", pusrdata[a]);
-					ets_uart_printf("\r\n");
-				ansBuffer[3] = OK;
+				{
+
+						ets_uart_printf("recv udp data: ");
+						for (a = 0; a < length; a++)
+							ets_uart_printf("%02x ", pusrdata[a]);
+						ets_uart_printf("\r\n");
+
+					int i, j;
+
+					os_memset(configs.wifi.SSID,      0, sizeof(configs.wifi.SSID));
+					os_memset(configs.wifi.SSID_PASS, 0, sizeof(configs.wifi.SSID_PASS));
+
+					for (i = 0; i < length; i++)
+					{
+						if (pusrdata[i + 3] == '$')	break;
+						else	configs.wifi.byte[i] = pusrdata[i + 3];
+					}
+
+					j = i + 4;
+					for (i = 0; i < length - j - 2; i++) configs.wifi.SSID_PASS[i] = pusrdata[i + j];
+
+					ets_uart_printf("configs.wifi.SSID %s\r\n", configs.wifi.SSID);
+					ets_uart_printf("configs.wifi.SSID_PASS %s\r\n", configs.wifi.SSID_PASS);
+
+					serviceMode = MODE_SW_RESET;
+					service_timer_start();
+					flashWriteBit = 1;
+					ansBuffer[3] = OK;
+				}
 				break;
 		}
 
-		ansBuffer[1] = pusrdata[1]; // add cmd;
-		ansBuffer[2] = dataLng;     // add length;
-		// add crc16
+		if(needAnswer)
+		{
+				ansBuffer[1] = pusrdata[1]; // add cmd;
+				ansBuffer[2] = dataLng;     // add length;
+				// add crc16
 
-		ansBuffer[dataLng + 3] = 0xcc;
-		ansBuffer[dataLng + 4] = 0xcc;
+				ansBuffer[dataLng + 3] = 0xcc;
+				ansBuffer[dataLng + 4] = 0xcc;
 
-//		ets_uart_printf("ans udp data: ");
-//			for (a = 0; a < dataLng + 5; a++)
-//				ets_uart_printf("%02x ", ansBuffer[a]);
-//			ets_uart_printf("\r\n");
+		//		ets_uart_printf("ans udp data: ");
+		//			for (a = 0; a < dataLng + 5; a++)
+		//				ets_uart_printf("%02x ", ansBuffer[a]);
+		//			ets_uart_printf("\r\n");
 
-		espconn_sent(pesp_conn, ansBuffer, 5 + dataLng);
+				espconn_sent(pesp_conn, ansBuffer, 5 + dataLng);
+		}
 	}
 }
 

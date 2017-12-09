@@ -8,15 +8,12 @@
 #include "driver/uart.h"
 #include "driver/gpio16.h"
 #include "driver/services.h"
-#include "driver/PCF8574.h"
-#include "driver/BH1715.h"
-#include "driver/LSM303.h"
-#include "driver/Calculations.h"
+#include "driver/configs.h"
 //============================================================================================================================
 extern int ets_uart_printf(const char *fmt, ...);
 int (*console_printf)(const char *fmt, ...) = ets_uart_printf;
 
-#define LOOP_PERIOD		(50) // in msec
+#define LOOP_PERIOD		(1000) // in msec
 #define user_procTaskPrio        0
 #define user_procTaskQueueLen    1
 
@@ -34,128 +31,28 @@ sint16 Pitch, Roll, Yaw;
 
 int manualDuration = PROC_DURATION;
 int vertMoveCntr = 10;
+
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
 {
 
-//	if (flashWriteBit == 1) saveConfigs();
+	//ets_uart_printf("flashWriteBit = %d\r\n",  flashWriteBit);
+	if (flashWriteBit == 1)
+	{
+		//ets_uart_printf("FLASH WRITE!!!\r\n");
+		saveConfigs();
+	}
 
 	if(!sysState.byte) // standby
 	{
 		if(wifi_station_get_connect_status() == STATION_GOT_IP)		   blink = BLINK_WAIT;
 		else														   blink = BLINK_WAIT_UNCONNECTED;
 	}
-
-
-
-	//======== PCF8574 =====================
-	terminators = PCF8574_readByte(addr);
-	//PCF8574_writeByte(0x3f, ((out++) << 4) | 0x0f);
-
-	//======== BH1715  =====================
-	BH1715(I2C_READ, 0x23, 0x01, (unsigned char*)&light, 2);
-	light = ((unsigned char*)&light)[1] |
-			((unsigned char*)&light)[0] << 8;
-
-	//======== LSM303  =====================
-	lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6);
-	lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_OUT_X_H, tmp, 6);
-	compass.x = ((tmp[0] << 8) | tmp[1]) ;
-	compass.z = ((tmp[2] << 8) | tmp[3]) ;
-	compass.y = ((tmp[4] << 8) | tmp[5]) ;
-
-	//ets_uart_printf("x = %d, y = %d, z = %d\r\n", compass.x, compass.y, compass.z);
-
-	getAngles(&accel, &compass, &Pitch, &Roll, &Yaw);
-	addValueToArray((sint16)(Roll),  rollArray);
-	addValueToArray((sint16)(Pitch), pitchArray);
-	addValueToArray((sint16)(Yaw),   yawArray);
-
-	_roll    = mFilter(rollArray,  FILTER_LENGHT);
-	_pitch   = mFilter(pitchArray, FILTER_LENGHT);
-	_heading = mFilter(yawArray,   FILTER_LENGHT);
-
-	long angle = (_pitch  * 18000 / 31416);
-
-	long head = ( _heading  * 18000 / 31416);
-	if(head < 0) head += 36000;
-	//ets_uart_printf("angle = %d, elev = %d\r\n", angle, elevation);
-
-
-	if(sysState.manualMove)
-	{
-		if(manualDuration) manualDuration--;
-		else
-		{
-			sysState.manualMove = 0;
-			manualDuration = PROC_DURATION;
-			move(0);
-		}
-	}
-	//=== sun tracking ====================================================
-
-	ets_uart_printf("sysState = %d, head = %d, azimuth = %d\r\n", sysState, head, azimuth);
-	if(sysState.goHome == 1)
-	{
-		if((uint16) head < 9000)
-		{
-			move(0);
-			azimuth = 0;
-			sysState.goHome = 0;
-		}
-
-	}
-	else
-	{
-		//=== horizontal ==============
-		if(!sysState.automaticMoveH && (azimuth > (uint16) head))
-		{
-			sysState.automaticMoveH = 1;
-			blink = BLINK_FORWARD;
-			move(2);
-		}
-		else if(sysState.automaticMoveH && ((300 + azimuth) < (uint16) head))
-		{
-			sysState.automaticMoveH = 0;
-			sysState.automaticMoveV = 1;
-			vertMoveCntr = 400;
-			move(0);
-		}
-
-		//=== horizontal ==============
-		if(sysState.automaticMoveV)
-		{
-
-			if(vertMoveCntr)
-			{
-				if((elevation > ((uint16)angle + VERTICAL_OFFSET))) // move up
-				{
-					blink = BLINK_UP;
-					move(8);
-				}
-				else if ((elevation < ((uint16)angle - VERTICAL_OFFSET))) // move up
-				{
-					blink = BLINK_DOWN;
-					move(12);
-				}
-				else
-				{
-					sysState.automaticMoveV = 0;
-					move(0);
-				}
-			}
-			else
-			{
-				sysState.automaticMoveV = 0;
-				move(0);
-			}
-			vertMoveCntr--;
-		}
-
-	}
-
+    freq = pulseCntr;
+    pulseCntr = 0;
 
 }
+
 //==============================================================================
 void ICACHE_FLASH_ATTR setup(void)
 {
@@ -165,16 +62,10 @@ void ICACHE_FLASH_ATTR setup(void)
 	set_gpio_mode(2, GPIO_PULLUP, GPIO_OUTPUT);
 	set_gpio_mode(1, GPIO_PULLUP, GPIO_OUTPUT);
 
-	i2c_init();
-	//======== light sensor init =======================
-	BH1715(I2C_WRITE, 0x23, 0x01, 0, 1);
-	BH1715(I2C_WRITE, 0x23, 0x10, 0, 1);
-	//==================================================
-	LSM303Init();
 
-	PCF8574_writeByte(0x3f, 0 | 0x0f);
+	button_init();
+	freq_cntr_init();
 
-//	button_init();
 	UDP_Init_client();
 
 	// Start loop timer
@@ -192,21 +83,21 @@ void ICACHE_FLASH_ATTR user_init(void)
 	ets_uart_printf("System init...\r\n");
 
 //	//saveConfigs();
-//	readConfigs();
+	readConfigs();
 //	checkConfigs();
 
 
 	wifi_station_disconnect();
 	wifi_station_set_auto_connect(0);
 
-//
-//	ets_uart_printf("configs.wifi.SSID %s\r\n", configs.wifi.SSID);
-//	ets_uart_printf("configs.wifi.SSID_PASS %s\r\n", configs.wifi.SSID_PASS);
-//
-	//if(configs.wifi.mode == STATION_MODE)
+
+	ets_uart_printf("configs.wifi.SSID %s\r\n", configs.wifi.SSID);
+	ets_uart_printf("configs.wifi.SSID_PASS %s\r\n", configs.wifi.SSID_PASS);
+
+	if(configs.wifi.mode == STATION_MODE)
 		setup_wifi_st_mode();
-//	else if(configs.wifi.mode == SOFTAP_MODE)
-//		setup_wifi_ap_mode();
+	else if(configs.wifi.mode == SOFTAP_MODE)
+		setup_wifi_ap_mode();
 
 	// Start setup timer
 	os_timer_disarm(&loop_timer);

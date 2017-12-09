@@ -25,6 +25,7 @@ public class UDPCommands
 
     public final static byte ID_MASTER	= (byte)0x7e;
     public final static byte ID_SLAVE     = (byte)0x3c;
+    public final static byte ID_METEO     = (byte)0x3D;
 
 //    //==============================================================================================
 //    byte[] cmdBuffer = new byte[6];

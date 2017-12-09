@@ -39,7 +39,7 @@ void ICACHE_FLASH_ATTR leds(unsigned char aStt);
 void ICACHE_FLASH_ATTR move(uint8 a);
 
 extern unsigned int blink;
-extern uint16 azimuth, elevation;
+extern uint16 freq, pulseCntr;
 //==============================================================================
 #define PROC_DURATION	(50)
 extern uint8 terminators, inProcess;
