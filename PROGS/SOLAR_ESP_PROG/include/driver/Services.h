@@ -29,6 +29,7 @@ extern int cntr;
 #define BLINK_UP        (0xc0ff)
 #define BLINK_DOWN      (0xffc0)
 #define BLINK_WAIT      (0x9000)
+#define BLINK_WAIT_NODATA      (0x9090)
 #define BLINK_WAIT_UNCONNECTED      (0x0090)
 
 #define BLNK_MAX 		(15)
@@ -38,6 +39,7 @@ void ICACHE_FLASH_ATTR blinking(unsigned int blnk);
 void ICACHE_FLASH_ATTR leds(unsigned char aStt);
 void ICACHE_FLASH_ATTR move(uint8 a);
 
+extern uint16 dataPresent;
 extern unsigned int blink;
 extern uint16 azimuth, elevation;
 //==============================================================================

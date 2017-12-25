@@ -42,10 +42,10 @@ public class imgPosition extends View {
         // рисуем круг с центром в (100,200), радиус = 50
         //canvas.drawCircle(AREA_WIDTH / 2, AREA_HEIGH / 2, 10, p);
 
-        double ang = Math.toDegrees(elevation);
+        double ang = /*Math.toDegrees*/(elevation);
         int lineLength = AREA_WIDTH/2 -(int)(ang * AREA_WIDTH/(2*90));
 
-        double angle = Math.toDegrees(azimuth);
+        double angle = /*Math.toDegrees*/(azimuth);
         angle = 180 - angle;
         angle = angle * Math.PI / 180;
 

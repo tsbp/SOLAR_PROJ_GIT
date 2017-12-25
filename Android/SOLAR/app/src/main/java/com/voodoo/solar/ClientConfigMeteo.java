@@ -26,10 +26,9 @@ import java.net.InetAddress;
 
 import static com.voodoo.solar.MainActivity.BROADCAST_ACTION;
 
-public class ClientConfig extends Activity {
+public class ClientConfigMeteo extends Activity {
 
-    TextView tvIp, tvPitch, tvRoll, tvHead, tvLigth, tvTerm, tAzimuth, tAngle;
-    SeekBar sbCompass, sbAccel;
+    TextView tvIp, tvWind, tvTime, tvAzim, tvElev, tvWindS;
 
 
 
@@ -37,84 +36,55 @@ public class ClientConfig extends Activity {
     public static InetAddress ip;
     BroadcastReceiver br;
 
-    short azimuth;
-    short angle;
-    byte angIncrement  = 10;
+    public static byte data[];
+    double azimuth, elevation;
+
+
+    com.voodoo.solar.imgPosition imgSun;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_client_config);
+        setContentView(R.layout.activity_meteo);
 
-        GLSurfaceView view = (GLSurfaceView) findViewById(R.id.w3D);
-        view.setRenderer(new OpenGLRenderer());
+        tvWind = (TextView) findViewById(R.id.tvWind);
+        tvTime = (TextView) findViewById(R.id.tvMeteoTime);
+        tvAzim = (TextView) findViewById(R.id.tvMeteoAzimuth);
+        tvElev = (TextView) findViewById(R.id.tvMeteoElevation);
+        tvWindS = (TextView) findViewById(R.id.tvMeteoWind);
 
-        tAzimuth = (TextView)findViewById(R.id.tvAzimuth);
-        tAngle   = (TextView)findViewById(R.id.tvAngle);
-
-        tvPitch = (TextView) findViewById(R.id.tvPitch);
-        tvRoll  = (TextView) findViewById(R.id.tvRoll);
-        tvHead  = (TextView) findViewById(R.id.tvHead);
-        tvLigth = (TextView) findViewById(R.id.tvLigth);
-        tvTerm  = (TextView) findViewById(R.id.tvTerm);
-
-        tvIp = (TextView) findViewById(R.id.tvIP);
+        tvIp = (TextView) findViewById(R.id.tvIPMeteo);
         tvIp.setText("" + ip.getHostAddress());
 
-        sbCompass = (SeekBar) findViewById(R.id.sbCompass);
-        sbAccel = (SeekBar) findViewById(R.id.sbAccel);
+        imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
 
         //================================================
         br = new BroadcastReceiver() {
             // действия при получении сообщений
             public void onReceive(Context context, Intent intent) {
-                String input = intent.getStringExtra(MainActivity.PARAM_PITCH);
-                tvPitch.setText(input);
-                input = intent.getStringExtra(MainActivity.PARAM_ROLL);
-                tvRoll.setText(input);
-                input = intent.getStringExtra(MainActivity.PARAM_HEAD);
-                tvHead.setText(input);
-                input = intent.getStringExtra(MainActivity.PARAM_LIGTH);
-                tvLigth.setText(input);
-                input = intent.getStringExtra(MainActivity.PARAM_TERM);
-                tvTerm.setText(input);
+                String input = intent.getStringExtra(MainActivity.PARAM_LIGTH);
+                tvWind.setText(input);
+
+                tvTime.setText((data[0] & 0xff) + "." + (data[1] & 0xff) + "." + (data[2] & 0xff) + ", " +
+                               (data[3] & 0xff) + ":" + (data[4] & 0xff) + "." + (data[5] & 0xff));
+                azimuth   = 0.01 * (double)((data[6] & 0xff) | ((data[7] << 8)));
+                elevation = 0.01 * (double)((data[8] & 0xff) | ((data[9] << 8)));
+                tvAzim.setText(String.format("%.1f", azimuth));
+                tvElev.setText(String.format("%.1f", elevation));
+                tvWindS.setText("" + ((data[10] & 0xff) | ((data[11] << 8))));
+
+                imgPosition.azimuth = azimuth;//sunPos.azimuth;
+//                if(sunPos.elev < 0)
+                    imgPosition.elevation = elevation;
+                //else                imgPosition.elevation = 0;
+                imgSun.invalidate();
             }
         };
         IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
         registerReceiver(br, intFilt);
 
-        //================================================
-        Button btnUp = (Button) findViewById(R.id.btnUp);
-        btnUp.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
 
-                UDPCommands.sendCmd(UDPCommands.CMD_UP,  null, ip);
-            }
-        });
-        //================================================
-        Button btnDown = (Button) findViewById(R.id.btndown);
-        btnDown.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                UDPCommands.sendCmd(UDPCommands.CMD_DOWN,  null, ip);
-            }
-        });
-        //================================================
-        Button btnRight = (Button) findViewById(R.id.btnRight);
-        btnRight.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                UDPCommands.sendCmd(UDPCommands.CMD_RIGHT,  null, ip);
-            }
-        });
-        //================================================
-        Button btnLeft = (Button) findViewById(R.id.btnLeft);
-        btnLeft.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                UDPCommands.sendCmd(UDPCommands.CMD_LEFT,  null, ip);
-            }
-        });
-
-        Button wifi = (Button) findViewById(R.id.btnCfg);
+        Button wifi = (Button) findViewById(R.id.btnCfgMeteo);
         //================================================
         wifi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -122,65 +92,12 @@ public class ClientConfig extends Activity {
             }
         });
 
-        //==========================================================================================
-        sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-               tAzimuth.setText("Azimyth: " + progress*3.6);
-                double tmp = Math.toRadians(progress * 3.6);
-
-//                azimuth =  (short)(tmp * 10000);
-//
-//                cmdBuffer[2] = (byte) ((azimuth) & (byte)0xff);
-//                cmdBuffer[3] = (byte) ((azimuth >> 8) & (byte)0xff);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_AZIMUTH, deviceIP);
-//                else
-//                    sendCmd(CMD_AZIMUTH, broadcastIP);
-            }
-        });
-        //==========================================================================================
-        sbAccel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tAngle.setText("Angle: " + progress * 0.9);
-//                angle =  (short)(Math.toRadians(progress * 0.9) * 10000);
-//
-//                cmdBuffer[2] = (byte) ((angle) & (byte)0xff);
-//                cmdBuffer[3] = (byte) ((angle >> 8) & (byte)0xff);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_ANGLE, deviceIP);
-//                else
-//                    sendCmd(CMD_ANGLE, broadcastIP);
-            }
-        });
-
-
     }
 
     //==============================================================================================
     private String[] wifiMode= {"NULL_MODE","STATION_MODE","SOFTAP_MODE","STATIONAP_MODE"};
     private String[] wifiSecurityMode = {"AUTH_OPEN","AUTH_WEP","AUTH_WPA_PSK","AUTH_WPA2_PSK","AUTH_WPA_WPA2_PSK","AUTH_MAX"};
     byte wMode, wSecur;
-//    String wCfgStr;
     //==============================================================================================
     void dialog_wifi() {
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
@@ -243,8 +160,6 @@ public class ClientConfig extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         String wCfgStr = (char)wMode + "" + (char)wSecur + ssid.getText().toString() + "$" + ssidPass.getText().toString();
                         saveConfig(wCfgStr);
-//                        sendCmdmd(CMD_SET_WIFI, deviceIP);
-//                        UDPCommands.wifiSettings = wCfgStr;
                         UDPCommands.sendCmd(UDPCommands.CMD_WIFI, wCfgStr.getBytes(), ip);
                         dialog.dismiss();
                     }

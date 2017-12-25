@@ -36,7 +36,7 @@ extern int cntr;
 void ICACHE_FLASH_ATTR indicationInit(void);
 void ICACHE_FLASH_ATTR blinking(unsigned int blnk);
 void ICACHE_FLASH_ATTR leds(unsigned char aStt);
-void ICACHE_FLASH_ATTR move(uint8 a);
+
 
 extern unsigned int blink;
 extern uint16 freq, pulseCntr;
@@ -45,17 +45,40 @@ extern uint16 freq, pulseCntr;
 extern uint8 terminators, inProcess;
 uint16 light;
 //==============================================================================
-typedef union
+typedef union __attribute__ ((__packed__))
 {
-	uint16 byte;
+	uint8 byte[6];
 	struct
 	{
-		uint16 manualMove	    :1;
-		uint16 automaticMoveH	:1;
-		uint16 automaticMoveV	:1;
-		uint16 goHome		    :1;
+		uint8 year;
+		uint8 month;
+		uint8 day;
+		uint8 hour;
+		uint8 min;
+		uint8 sec;
+    };
+}s_DATE_TIME;
+//extern s_DATE_TIME dateTime;
+//=========================================================================================
+typedef union __packed
+{
+	uint8 byte[14];
+	struct
+	{
+		s_DATE_TIME dateTime;
+		uint16 azim;
+		uint16 elev;
+		uint16 wind;
+		uint16 light;
 	};
-}sSYSTEM_STATE;
-extern sSYSTEM_STATE sysState;
+}uMETEO_STATE;
+extern uMETEO_STATE mState;
+//=========================================================================================
+typedef struct
+{
+	uint16 present;
+	uint16 light;
+}sLanItem;
+extern sLanItem items[256];
 //==============================================================================
 #endif /* INCLUDE_DRIVER_SERVICES_H_ */

@@ -20,9 +20,13 @@ int cntr = 5;
 
 uint16 light;
 uint8 terminators; //inProcess = 0;
-sSYSTEM_STATE sysState;
+//s_DATE_TIME dateTime;
+uMETEO_STATE mState;
+
 
 uint16 freq, pulseCntr = 0;
+
+sLanItem items[256];
 //==============================================================================
 void ICACHE_FLASH_ATTR service_timer_start (void)
 {

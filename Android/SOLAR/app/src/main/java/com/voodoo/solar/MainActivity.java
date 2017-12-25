@@ -47,6 +47,11 @@ import static com.voodoo.solar.IPHelper.getBroadcastIP4AsBytes;
 public class MainActivity extends Activity implements OnReceiveListener  {
 
 
+    public final static String PARAM_PITCH = "pitch";
+    public final static String PARAM_ROLL  = "roll";
+    public final static String PARAM_HEAD  = "head";
+    public final static String PARAM_LIGTH = "ligth";
+    public final static String PARAM_TERM  = "term";
 
     public static double  pPitch, pRoll, pHead;
 
@@ -55,7 +60,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
     TextView tvDate, tvSunPos;
     EditText etLong, etLatit;
-    com.voodoo.solar.imgPosition imgSun;
+//    com.voodoo.solar.imgPosition imgSun;
 
 
     Button btnAnim;
@@ -97,7 +102,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         tvDate   = (TextView)findViewById(R.id.tvDate);
         etLong =  (EditText) findViewById(R.id.etLong);
         etLatit =  (EditText) findViewById(R.id.etLatit);
-        imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
+//        imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
 
         sunPos.Lon = Math.toRadians(Double.parseDouble(etLong.getText().toString()));
         sunPos.Lat = Math.toRadians(Double.parseDouble(etLatit.getText().toString()));
@@ -120,42 +125,51 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
-                        if(deviceIP == null)
-                            UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
-                        else
-                            try
-                            {
-                                byte [] addr = broadcastIP.getAddress();
-
-                                if(currentClient < clientsIp.length) currentClient++;
-                                if(currentClient >= clientsIp.length)
-                                {
-                                    addr[3] = (byte)255;
-                                    currentClient = -1;
-                                }
-                                else
-                                {
-                                    addr[3] = (byte) clientsIp[currentClient];
-                                    notAsweredCntr[currentClient]++;
-                                }
-
-                                UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, InetAddress.getByAddress(addr));
-
-                                // check for not answered
-
-                                for(int i = 0; i < clientsIp.length; i++)
-                                    if(notAsweredCntr[i] > 10) deleteListRow(i);
-
-                            }
-                            catch (UnknownHostException e){}
+                        if(clientsIp != null)
+                        {
+                            for (int i = 0; i < clientsIp.length; i++) notAsweredCntr[i]++;
+                            for (int i = 0; i < clientsIp.length; i++)
+                                if (notAsweredCntr[i] > 5) deleteListRow(i);
+                            byte time[] = getCurrentTime();
+                            UDPCommands.sendCmd(UDPCommands.CMD_SYNC, time, broadcastIP);
+                        }
+//
+//                        if(deviceIP == null)
+//                            UDPCommands.sendCmd(UDPCommands.CMD_STATE, time, broadcastIP);
+//                        else
+//                            try
+//                            {
+//                                byte [] addr = broadcastIP.getAddress();
+//
+//                                if(currentClient < clientsIp.length) currentClient++;
+//                                if(currentClient >= clientsIp.length)
+//                                {
+//                                    addr[3] = (byte)255;
+//                                    currentClient = -1;
+//                                }
+//                                else
+//                                {
+//                                    addr[3] = (byte) clientsIp[currentClient];
+//                                    notAsweredCntr[currentClient]++;
+//                                }
+//
+//                                UDPCommands.sendCmd(UDPCommands.CMD_STATE, time, InetAddress.getByAddress(addr));
+//
+//                                // check for not answered
+//
+//                                for(int i = 0; i < clientsIp.length; i++)
+//                                    if(notAsweredCntr[i] > 10) deleteListRow(i);
+//
+//                            }
+//                            catch (UnknownHostException e){}
 
 
                     }
                 });
             }
-        }, 0, 200);
+        }, 0, 1000);
 
+        //==========================================================================================
         btnAnim = (Button) findViewById(R.id.btnAnimate);
         btnAnim.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -179,18 +193,18 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         });
     }
     //==============================================================================================
-    int [] getCurrentTime()
+    byte [] getCurrentTime()
     {
-        int tmp [] = new int[6];
+        byte tmp [] = new byte[6];
         Calendar currentTime    = Calendar.getInstance();
 
-        tmp[0] = currentTime.get(Calendar.YEAR);
-        tmp[1] = 1 + currentTime.get(Calendar.MONTH);
-        tmp[2] = currentTime.get(Calendar.DAY_OF_MONTH);
+        tmp[0] = (byte)(currentTime.get(Calendar.YEAR) - 2000);
+        tmp[1] = (byte)(1 + currentTime.get(Calendar.MONTH));
+        tmp[2] = (byte)(currentTime.get(Calendar.DAY_OF_MONTH));
 
-        tmp[3] = currentTime.get(Calendar.HOUR_OF_DAY);
-        tmp[4] = currentTime.get(Calendar.MINUTE);
-        tmp[5] = currentTime.get(Calendar.SECOND);
+        tmp[3] = (byte)(currentTime.get(Calendar.HOUR_OF_DAY));
+        tmp[4] = (byte)(currentTime.get(Calendar.MINUTE));
+        tmp[5] = (byte)(currentTime.get(Calendar.SECOND));
         return tmp;
     }
     //==============================================================================================
@@ -207,17 +221,17 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
                     if(stopCntr == 0)
                     {
-                        int tmp[] = getCurrentTime();
-                        tvDate.setText(tmp[0] + "." + tmp[1] + "." + tmp[2] + " * " + tmp[3] + ":" + tmp[4] + ":" + tmp[5]);
+                        byte tmp[] = getCurrentTime();
+                        tvDate.setText((tmp[0]+2000) + "." + tmp[1] + "." + tmp[2] + " * " + tmp[3] + ":" + tmp[4] + ":" + tmp[5]);
 
-                        sunPos.Calculate(tmp[0], tmp[1], tmp[2], tmp[3] - sunPos.Zone, tmp[4], tmp[5]);
+                        sunPos.Calculate(tmp[0] + 2000, tmp[1], tmp[2], tmp[3] - sunPos.Zone, tmp[4], tmp[5]);
 
                         tvSunPos.setText("Azimuth: " + String.format("%.3f", Math.toDegrees(sunPos.azimuth)) + ", Elevation: " + String.format("%.3f", Math.toDegrees(sunPos.elev)));
 
-                        imgPosition.azimuth = sunPos.azimuth;
-                        if(sunPos.elev < 0) imgPosition.elevation = sunPos.elev;
-                        else                imgPosition.elevation = 0;
-                        imgSun.invalidate();
+//                        imgPosition.azimuth = sunPos.azimuth;
+//                        if(sunPos.elev < 0) imgPosition.elevation = sunPos.elev;
+//                        else                imgPosition.elevation = 0;
+//                        imgSun.invalidate();
 
                         byte data[] = new byte[4];
                         data[0] = (byte) ((int) (Math.toDegrees(sunPos.elev) * 100));
@@ -258,11 +272,11 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     void sendIntent()
     {
         Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
-        intent.putExtra(ClientConfig.PARAM_PITCH, clientData[selectedClient][0]);
-        intent.putExtra(ClientConfig.PARAM_ROLL,  clientData[selectedClient][1]);
-        intent.putExtra(ClientConfig.PARAM_HEAD,  clientData[selectedClient][2]);
-        intent.putExtra(ClientConfig.PARAM_LIGTH, clientData[selectedClient][3]);
-        intent.putExtra(ClientConfig.PARAM_TERM,  clientData[selectedClient][4]);
+        intent.putExtra(PARAM_PITCH, clientData[selectedClient][0]);
+        intent.putExtra(PARAM_ROLL,  clientData[selectedClient][1]);
+        intent.putExtra(PARAM_HEAD,  clientData[selectedClient][2]);
+        intent.putExtra(PARAM_LIGTH, clientData[selectedClient][3]);
+        intent.putExtra(PARAM_TERM,  clientData[selectedClient][4]);
         sendBroadcast(intent);
     }
     //==============================================================================================
@@ -318,15 +332,27 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                     int position, long id)
             {
                 byte [] ip = getBroadcastIP4AsBytes();
+                InetAddress iIP = null;
                 ip[3] = clientsIp[position];
                 try
                 {
-                    ClientConfig.ip = InetAddress.getByAddress(ip);
+                   iIP = InetAddress.getByAddress(ip);
                 }
                 catch (UnknownHostException e){}
                 clientActivityCreated = 1;
                 selectedClient = position;
-                Intent intent = new Intent(MainActivity.this, ClientConfig.class);
+
+                Intent intent;
+                if(clientData[selectedClient][0] == "M")
+                {
+                    ClientConfigMeteo.ip = iIP;
+                    intent = new Intent(MainActivity.this, ClientConfigMeteo.class);
+                }
+                else
+                {
+                    ClientConfig.ip = iIP;
+                    intent = new Intent(MainActivity.this, ClientConfig.class);
+                }
                 startActivity(intent);
             }
         });
@@ -427,17 +453,25 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                 if(in[0] == UDPCommands.ID_SLAVE) {
                                     clientData[i][0] = String.format("%.1f", Math.toDegrees((double) ax / 10000));
                                     clientData[i][1] = String.format("%.1f", Math.toDegrees((double) ay / 10000));
+                                    clientData[i][3] = "" + light;
                                     clientData[i][2] = String.format("%.1f", tt);
                                     clientData[i][4] = terms;
                                 }
                                 else
                                 {
-                                    clientData[i][0] = "Wind";
-                                    clientData[i][1] = "speed";
-                                    clientData[i][2] = "-";
-                                    clientData[i][4] = "---";
+                                    clientData[i][0] = "M";
+                                    clientData[i][1] = "E";
+                                    clientData[i][2] = "T";
+                                    clientData[i][3] = "E";
+                                    clientData[i][4] = "O";
+                                    ClientConfigMeteo.data = new byte[14];
+                                    for(int a = 0; a < 14; a++) ClientConfigMeteo.data[a] = in[a + 3];
+//                                    clientData[i][0] = "MST";
+//                                    clientData[i][1] = String.format("%.1f",  Math.toDegrees((double) ay / 1000));
+//                                    clientData[i][2] = String.format("%.1f",  Math.toDegrees((double) az / 1000));
+//                                    clientData[i][4] = "---";
                                 }
-                                clientData[i][3] = "" + light;
+
                                 lvBuid();
                                 notAsweredCntr[i] = 0;
 
@@ -480,8 +514,8 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         sunPos.Lat = Math.toRadians(Double.parseDouble(etLatit.getText().toString()));
 
         final TextView tvResult = (TextView)Viewlayout.findViewById(R.id.tvResult);
-        int tmp [] = getCurrentTime();
-        tvResult.setText("For " + tmp[0] + "." + tmp[1] + "." + tmp[2] + "\r\n"
+        byte tmp [] = getCurrentTime();
+        tvResult.setText("For " + (tmp[0] + 2000) + "." + tmp[1] + "." + tmp[2] + "\r\n"
                 + sunPos.getAngles());
 
 

@@ -9,11 +9,13 @@
 #include "driver/gpio16.h"
 #include "driver/services.h"
 #include "driver/configs.h"
+#include "driver/Calculations.h"
+#include "driver/UDP_Source.h"
 //============================================================================================================================
 extern int ets_uart_printf(const char *fmt, ...);
 int (*console_printf)(const char *fmt, ...) = ets_uart_printf;
 
-#define LOOP_PERIOD		(1000) // in msec
+#define LOOP_PERIOD		(100) // in msec
 #define user_procTaskPrio        0
 #define user_procTaskQueueLen    1
 
@@ -31,25 +33,55 @@ sint16 Pitch, Roll, Yaw;
 
 int manualDuration = PROC_DURATION;
 int vertMoveCntr = 10;
-
+struct ip_info ipconfig;
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
 {
+	static cntr = 10;
 
-	//ets_uart_printf("flashWriteBit = %d\r\n",  flashWriteBit);
-	if (flashWriteBit == 1)
-	{
-		//ets_uart_printf("FLASH WRITE!!!\r\n");
-		saveConfigs();
-	}
+	if (cntr == 0 && flashWriteBit == 1) saveConfigs();
 
-	if(!sysState.byte) // standby
+	//if(!sysState.byte) // standby
 	{
-		if(wifi_station_get_connect_status() == STATION_GOT_IP)		   blink = BLINK_WAIT;
+		if(wifi_station_get_connect_status() == STATION_GOT_IP)
+		{
+
+			wifi_get_ip_info(STATION_IF, &ipconfig);
+			currentIP = ipconfig.ip.addr;
+			//ets_uart_printf(IPSTR, IP2STR(&currentIP));
+			blink = BLINK_WAIT;
+			UDP_cmdState();
+		}
 		else														   blink = BLINK_WAIT_UNCONNECTED;
 	}
-    freq = pulseCntr;
-    pulseCntr = 0;
+	if(cntr == 0)
+	{
+		freq = pulseCntr;
+		pulseCntr = 0;
+
+		Calculate(
+				mState.dateTime.year + 2000,
+				mState.dateTime.month,
+				mState.dateTime.day,
+				mState.dateTime.hour - 2, //- time zone
+				mState.dateTime.min,
+				mState.dateTime.sec);
+
+
+//		ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,
+//				mState.dateTime.month,
+//				mState.dateTime.day,
+//				mState.dateTime.hour - 2, //- time zone
+//				mState.dateTime.min,
+//				mState.dateTime.sec);
+
+		ets_uart_printf("azim:%d, elev:%d\n", (int)(1000 * azimuth * 57.2958), (int)(1000 * elev * 57.2958));
+		mState.azim = (int)(100 * azimuth * 57.2958);
+		mState.elev = (int)(100 * elev * 57.2958);
+		mState.wind = freq;
+	}
+	if(cntr)cntr--;
+	else cntr = 10 ;
 
 }
 

@@ -52,8 +52,8 @@ void ICACHE_FLASH_ATTR setup_wifi_st_mode(void)
 	{
 		os_memset(stconfig.ssid, 0, sizeof(stconfig.ssid));
 		os_memset(stconfig.password, 0, sizeof(stconfig.password));
-		os_sprintf(stconfig.ssid, "%s", "Solar"/*configs.wifi.SSID*/);
-		os_sprintf(stconfig.password, "%s", "123454321"/*configs.wifi.SSID_PASS*/);
+		os_sprintf(stconfig.ssid, "%s", configs.wifi.SSID);
+		os_sprintf(stconfig.password, "%s", configs.wifi.SSID_PASS);
 		if(!wifi_station_set_config(&stconfig))
 		{
 			ets_uart_printf("ESP8266 not set station config!\r\n");

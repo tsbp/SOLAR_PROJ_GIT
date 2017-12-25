@@ -21,6 +21,8 @@
 #define CMD_CFG				(0xC0)
 #define CMD_WIFI			(0xC1)
 
+#define DATA_PRS_AMNT		(250)
+
 
 void ICACHE_FLASH_ATTR UDP_Init();
 void ICACHE_FLASH_ATTR UDP_Init_client();
@@ -28,6 +30,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length);
 void   mergeAnswerWith(char tPtr[2][24][4]);
 void ICACHE_FLASH_ATTR sendUDPbroadcast(uint8* abuf, uint16 aLen);
 //void ICACHE_FLASH_ATTR addValueToArray(char * tPtr, sint16 *arPtr, char aRot);
+
 
 
 extern uint8 channelFree;

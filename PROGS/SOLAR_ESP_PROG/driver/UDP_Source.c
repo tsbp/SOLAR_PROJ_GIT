@@ -73,10 +73,14 @@ uint16 angV = 27000, angH = 15846;
 void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 {
 	int a, i;
+	uint8 needAnswer = 0;
+	dataPresent = DATA_PRS_AMNT;
 //	ets_uart_printf("recv udp data: ");
 //	for (a = 0; a < length; a++)
 //		ets_uart_printf("%02x ", pusrdata[a]);
 //	ets_uart_printf("\r\n");
+
+	uint8 dataLng = 0;
 
 	struct espconn *pesp_conn = arg;
 	//flashWriteBit = 0;
@@ -91,7 +95,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 		pesp_conn->proto.udp->remote_ip[0] = premot->remote_ip[0];
 		pesp_conn->proto.udp->remote_ip[1] = premot->remote_ip[1];
 		pesp_conn->proto.udp->remote_ip[2] = premot->remote_ip[2];
-		pesp_conn->proto.udp->remote_ip[3] = premot->remote_ip[3];
+		pesp_conn->proto.udp->remote_ip[3] = 255;//premot->remote_ip[3];
 
 
 		switch(pusrdata[1])
@@ -99,16 +103,18 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 		 case CMD_GOHOME:
 				 dataLng = 1;
+				 needAnswer = 1;
 				 ansBuffer[3] = OK;
 				 if(sysState.byte) sysState.byte = 0;
 				 sysState.goHome = 1;
 				 blink = BLINK_BACKWARD;
-				 move(3);
+				 move(4);
 				 ets_uart_printf("Going home....\r\n");
 				 break;
 
 		    case CMD_SET_POSITION:
 				dataLng = 1;
+				needAnswer = 1;
 				ansBuffer[3] = OK;
 				azimuth   = (uint16)(pusrdata[5] | (pusrdata[6] << 8));
 				elevation = (uint16)(pusrdata[3] | (pusrdata[4] << 8));
@@ -117,6 +123,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 			case CMD_ANGLE:
 				dataLng = 1;
+				needAnswer = 1;
 				ansBuffer[3] = OK;
 //				inProcess = 5;
 //				blink = BLINK_WAIT;
@@ -124,6 +131,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 			case CMD_AZIMUTH:
 				dataLng = 1;
+				needAnswer = 1;
 				ansBuffer[3] = OK;
 //				inProcess = 5;
 //				blink = BLINK_WAIT;
@@ -134,35 +142,43 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				ansBuffer[3] = OK;
 				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				blink = BLINK_BACKWARD;
-				move(3);
+				move(4);
+				ets_uart_printf("cmd LEFT\r\n");
 				break;
 
 			case CMD_RIGHT:
 				dataLng = 1;
+				needAnswer = 1;
 				ansBuffer[3] = OK;
 				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				blink = BLINK_FORWARD;
-				move(2);
+				move(12);
+				ets_uart_printf("cmd RIGHT\r\n");
 				break;
 
 			case CMD_UP:
 				dataLng = 1;
+				needAnswer = 1;
 				ansBuffer[3] = OK;
 				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				blink = BLINK_UP;
-				move(8);
+				move(1);
+				ets_uart_printf("cmd UP\r\n");
 				break;
 
 			case CMD_DOWN:
 				dataLng = 1;
+				needAnswer = 1;
 				ansBuffer[3] = OK;
 				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				blink = BLINK_DOWN;
-				move(12);
+				move(3);
+				ets_uart_printf("cmd DOWN\r\n");
 				break;
 
 			case CMD_STATE:
 				dataLng   = 9;
+				needAnswer = 1;
 				ansBuffer[3]  = _pitch;
 				ansBuffer[4]  = _pitch >> 8;
 				ansBuffer[5]  = _roll;
@@ -175,30 +191,61 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				break;
 
 			case CMD_CFG:
+				needAnswer = 1;
 				ansBuffer[3] = OK;
 				break;
 
 			case CMD_WIFI:
-				for (a = 0; a < length; a++)
-						ets_uart_printf("%c ", pusrdata[a]);
-					ets_uart_printf("\r\n");
-				ansBuffer[3] = OK;
+				{
+
+				    ets_uart_printf("recv udp data: ");
+				    for (a = 0; a < length; a++)
+				    	ets_uart_printf("%02x ", pusrdata[a]);
+				    ets_uart_printf("\r\n");
+
+					int i, j;
+
+					os_memset(configs.wifi.SSID,      0, sizeof(configs.wifi.SSID));
+					os_memset(configs.wifi.SSID_PASS, 0, sizeof(configs.wifi.SSID_PASS));
+
+					for (i = 0; i < length; i++)
+					{
+						if (pusrdata[i + 3] == '$')	break;
+						else	configs.wifi.byte[i] = pusrdata[i + 3];
+					}
+
+					j = i + 4;
+					for (i = 0; i < length - j - 2; i++) configs.wifi.SSID_PASS[i] = pusrdata[i + j];
+
+					ets_uart_printf("configs.wifi.SSID %s\r\n", configs.wifi.SSID);
+					ets_uart_printf("configs.wifi.SSID_PASS %s\r\n", configs.wifi.SSID_PASS);
+
+					serviceMode = MODE_SW_RESET;
+					service_timer_start();
+					flashWriteBit = 1;
+					needAnswer = 1;
+					ansBuffer[3] = OK;
+					dataLng = 1;
+				}
 				break;
 		}
 
-		ansBuffer[1] = pusrdata[1]; // add cmd;
-		ansBuffer[2] = dataLng;     // add length;
-		// add crc16
+		if(needAnswer)
+		{
+			ansBuffer[1] = pusrdata[1]; // add cmd;
+			ansBuffer[2] = dataLng;     // add length;
+			// add crc16
 
-		ansBuffer[dataLng + 3] = 0xcc;
-		ansBuffer[dataLng + 4] = 0xcc;
+			ansBuffer[dataLng + 3] = 0xcc;
+			ansBuffer[dataLng + 4] = 0xcc;
 
-//		ets_uart_printf("ans udp data: ");
-//			for (a = 0; a < dataLng + 5; a++)
-//				ets_uart_printf("%02x ", ansBuffer[a]);
-//			ets_uart_printf("\r\n");
+	//		ets_uart_printf("ans udp data: ");
+	//			for (a = 0; a < dataLng + 5; a++)
+	//				ets_uart_printf("%02x ", ansBuffer[a]);
+	//			ets_uart_printf("\r\n");
 
-		espconn_sent(pesp_conn, ansBuffer, 5 + dataLng);
+			espconn_sent(pesp_conn, ansBuffer, 5 + dataLng);
+		}
 	}
 }
 

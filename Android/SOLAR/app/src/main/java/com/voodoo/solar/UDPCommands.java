@@ -23,6 +23,8 @@ public class UDPCommands
     public final static byte CMD_CFG		= (byte)0xC0;
     public final static byte CMD_WIFI		= (byte)0xC1;
 
+    public final static byte CMD_SYNC		= (byte)0xE0;
+
     public final static byte ID_MASTER	= (byte)0x7e;
     public final static byte ID_SLAVE     = (byte)0x3c;
     public final static byte ID_METEO     = (byte)0x3D;
@@ -78,9 +80,10 @@ public class UDPCommands
 //                buf[4] = (byte) ((angIncrement >> 8) & (byte)0xff);
                 break;
 
-            case CMD_STATE:
-                dataLng = 0;
+            case CMD_SYNC:
+                dataLng = 6;
                 buf = new byte[5 + dataLng];
+                for(int i = 0; i < aData.length; i++) buf[i+3] = aData[i];
                 break;
 
             case CMD_CFG:

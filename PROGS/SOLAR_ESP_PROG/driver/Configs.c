@@ -18,8 +18,8 @@ uint8 timeTrue = 0;
 //=============================================================================
 u_CONFIG configs = {
 	    .wifi.mode = STATION_MODE,
-		.wifi.SSID = "voodoo",
-        .wifi.SSID_PASS = "eminem82"
+		.wifi.SSID = "Solar",
+        .wifi.SSID_PASS = "123454321"
 };
 //=============================================================================
 uint16 getMinutes(uint8 aHour, uint8 aMinute)

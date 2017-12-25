@@ -18,6 +18,7 @@ uint8_t factory_reset_pin = 3;
 uint8	serviceMode = MODE_NORMAL;
 int cntr = 5;
 
+uint16 dataPresent = 0;
 uint16 light;
 uint8 terminators; //inProcess = 0;
 sSYSTEM_STATE sysState;
@@ -45,7 +46,7 @@ int8 scrOrientation = 0;
 //=======================
 void ICACHE_FLASH_ATTR button_intr_callback(unsigned pin, unsigned level)
 {
-	//ets_uart_printf("RESET BUTTON PRESSED!!!\r\n");
+	ets_uart_printf("RESET BUTTON PRESSED!!!\r\n");
 	serviceMode = MODE_BTN_RESET;
 		resetCntr = 0;
 		service_timer_start();
@@ -85,7 +86,7 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 						os_printf("do reset \r\n");
 
 						os_memset(configs.wifi.SSID, 0,sizeof(configs.wifi.SSID));
-						os_sprintf(configs.wifi.SSID, "%s", "AQUA");
+						os_sprintf(configs.wifi.SSID, "%s", "Solar");
 
 						configs.wifi.mode = SOFTAP_MODE;
 						configs.wifi.auth = AUTH_OPEN;

@@ -168,7 +168,7 @@
                 android:textSize="18sp" />
 
 
-            <com.voodoo.solar.imgPosition
+            <!--com.voodoo.solar.imgPosition
                 android:layout_width="210dp"
                 android:layout_height="0dp"
                 android:layout_weight="5"
@@ -176,7 +176,7 @@
                 android:layout_marginBottom="5dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/compass"
-                android:id="@+id/imgPos"/>
+                android:id="@+id/imgPos"/-->
 
             <TextView
                 android:layout_width="match_parent"

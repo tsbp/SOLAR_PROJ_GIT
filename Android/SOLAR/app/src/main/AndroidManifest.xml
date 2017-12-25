@@ -24,6 +24,7 @@
             android:name=".sunPos"
             android:screenOrientation="portrait"></activity>
         <activity android:name=".ClientConfig"></activity>
+        <activity android:name=".ClientConfigMeteo"></activity>
     </application>
 
 </manifest>
