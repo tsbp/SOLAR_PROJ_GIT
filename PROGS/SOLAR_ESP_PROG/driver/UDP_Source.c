@@ -11,7 +11,7 @@
 #include "driver/UDP_Source.h"
 #include "driver/services.h"
 #include "driver/configs.h"
-//#include "driver/LSM303.h"
+#include "driver/LSM303.h"
 #include "driver\Calculations.h"
 //=========================================================================================
 //extern u_CONFIG configs;
@@ -40,22 +40,6 @@ void ICACHE_FLASH_ATTR UDP_Init_client()
 	espconn_regist_recvcb(UDP_PC, UDP_Recieved);
 	espconn_create(UDP_PC);
 }
-//============================================================================================================================
-//void ICACHE_FLASH_ATTR addValueToArray(char * tPtr, sint16 *arPtr, char aRot)
-//{
-//	int i,j;
-//	if(aRot == ROTATE)
-//	{
-//		for(i = 0; i < POINTS_CNT-1; i++)
-//			arPtr[i]= arPtr[i+1];
-//	}
-//
-//    sint16 e = (tPtr[1]- '0') * 100 + (tPtr[2]- '0') * 10 + (tPtr[3] - '0');
-//
-//    if(tPtr[0] == '-')  e *= (-1);
-//
-//		arPtr[POINTS_CNT-1] = e;
-//}
 //=========================================================================================
 uint8 crcCalc(uint8 *aBuf, uint8 aLng)
     {
@@ -101,6 +85,33 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 		switch(pusrdata[1])
 		{
 
+		 case CMD_CALIB:
+			 if(pusrdata[3] == 0) // get
+			 {
+				 ets_uart_printf("CMD_CALIB_GET\r\n");
+				 dataLng = 6;
+				 needAnswer = 1;
+				 memcpy(ansBuffer + 3, compass.byte, 6);
+			 }
+			 else
+			 {
+				 memcpy(configs.calibs.byte, pusrdata + 3, 12);
+
+				 ets_uart_printf("CMD_CALIB_SET: %d, %d, %d, %d, %d, %d,  \r\n",
+						 configs.calibs.Max.x,
+						 configs.calibs.Max.y,
+						 configs.calibs.Max.z,
+						 configs.calibs.Min.x,
+						 configs.calibs.Min.y,
+						 configs.calibs.Min.z);
+
+				 flashWriteBit = 1;
+				 needAnswer = 1;
+				 ansBuffer[3] = OK;
+				 dataLng = 1;
+			 }
+			 break;
+
 		 case CMD_GOHOME:
 				 dataLng = 1;
 				 needAnswer = 1;
@@ -113,11 +124,15 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				 break;
 
 		    case CMD_SET_POSITION:
-				dataLng = 1;
-				needAnswer = 1;
-				ansBuffer[3] = OK;
-				azimuth   = (uint16)(pusrdata[5] | (pusrdata[6] << 8));
-				elevation = (uint16)(pusrdata[3] | (pusrdata[4] << 8));
+				//dataLng = 1;
+				//needAnswer = 1;
+				//ansBuffer[3] = OK;
+					ets_uart_printf("recv udp data: ");
+					for (a = 0; a < length; a++)
+						ets_uart_printf("%02x ", pusrdata[a]);
+					ets_uart_printf("\r\n");
+				azimuth   = (sint16)(pusrdata[5] | (pusrdata[6] << 8));
+				elevation = (sint16)(pusrdata[3] | (pusrdata[4] << 8));
 				ets_uart_printf("Elevation: %d, Azimuth: %d\r\n", elevation, azimuth);
 				break;
 

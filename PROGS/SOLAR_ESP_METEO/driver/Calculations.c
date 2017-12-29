@@ -1,4 +1,5 @@
 //==============================================================================
+#include "driver\services.h"
 #include "driver\Calculations.h"
 #include "driver\v_math.h"
 #include "math.h"
@@ -11,7 +12,7 @@ double PI =  3.141592654;
 double TWOPI = 6.28318531;
 
 int Hour, Minute = 0, Second = 0, Month = 11, Day = 30, Year, Zone = +2;
-double Lon = LON, Lat = LAT;
+//double Lon = LON, Lat = LAT;
 
 double azimuth, elev;
 //==============================================================================================
@@ -37,8 +38,11 @@ long JulianDate(int year, int month, int day)
 	return JD_whole;
 }
 //==============================================================================
-void ICACHE_FLASH_ATTR Calculate(int aYear, int aMonth, int aDay, int aHour, int aMinute, int aSecond)
-    {
+void ICACHE_FLASH_ATTR Calculate(double Lat, double Lon, int aYear, int aMonth, int aDay, int aHour, int aMinute, int aSecond)
+{
+	Lat *= DEG_TO_RAD;
+	Lon *= DEG_TO_RAD;
+
         double T, JD_frac, L0, M, e, C, L_true, f, R, GrHrAngle, Obl, RA, Decl, HrAngle;
         long JD_whole, JDx;
 
@@ -73,4 +77,21 @@ void ICACHE_FLASH_ATTR Calculate(int aYear, int aMonth, int aDay, int aHour, int
 
         //ets_uart_printf("Lat: %d, Decl: %d, HrAngle: %d\n", (int)(1000 * Lat), (int)(1000 * Decl), (int)(1000 * HrAngle));
     }
+//==============================================================================
+void ICACHE_FLASH_ATTR meteoProcessing(void)
+{
+	int i, cntr = 0;
+	long light;
 
+	for(i = 0; i < 256; i++)
+		if(items[i].present)
+		{
+			ets_uart_printf("");
+			//ets_uart_printf("pres at addr %d  light %d\r\n", i, items[i].light);
+			light += items[i].light;
+			cntr++;
+		}
+
+	if(cntr) mState.light = light / cntr;
+	//ets_uart_printf("light %d cntr %d\r\n", mState.light, cntr);
+}

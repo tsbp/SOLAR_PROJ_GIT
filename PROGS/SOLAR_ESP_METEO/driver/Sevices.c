@@ -194,9 +194,40 @@ void ICACHE_FLASH_ATTR indicator_loop(os_event_t *events)
 	leds(ledStt);
 }
 //==============================================================================
-void ICACHE_FLASH_ATTR move(uint8 a)
+uint8 daysInMonth[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 30};
+uint8 leapYear;
+//==============================================================================
+void ICACHE_FLASH_ATTR timeincrement(void)
 {
-	//PCF8574_writeByte(0x3f, (a << 4) | 0x0f);
+	if((mState.dateTime.year % 100 != 0 && mState.dateTime.year % 4 == 0) || mState.dateTime.year % 400 == 0) daysInMonth[2] = 29;
+	else daysInMonth[2] = 28;
+
+	mState.dateTime.sec++;
+	if(mState.dateTime.sec >= 60)
+	{
+		mState.dateTime.sec = 0;
+		mState.dateTime.min++;
+		if(mState.dateTime.min >= 60)
+		{
+			mState.dateTime.min = 0;
+			mState.dateTime.hour++;
+			if(mState.dateTime.hour >= 24)
+			{
+				mState.dateTime.hour = 0;
+				mState.dateTime.day++;
+				if(mState.dateTime.day > daysInMonth[mState.dateTime.month])
+				{
+					mState.dateTime.day = 1;
+					mState.dateTime.month++;
+					if(mState.dateTime.month > 12)
+					{
+						mState.dateTime.month = 0;
+						mState.dateTime.year++;
+					}
+				}
+			}
+		}
+	}
 }
 //==============================================================================
 

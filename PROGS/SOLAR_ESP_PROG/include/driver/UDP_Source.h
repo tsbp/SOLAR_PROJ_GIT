@@ -16,6 +16,8 @@
 #define CMD_DOWN			(0x23)
 #define CMD_GOHOME			(0x24)
 
+#define CMD_CALIB			(0x30)
+
 #define CMD_STATE			(0xA0)
 
 #define CMD_CFG				(0xC0)

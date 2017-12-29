@@ -130,9 +130,10 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                             for (int i = 0; i < clientsIp.length; i++) notAsweredCntr[i]++;
                             for (int i = 0; i < clientsIp.length; i++)
                                 if (notAsweredCntr[i] > 5) deleteListRow(i);
-                            byte time[] = getCurrentTime();
-                            UDPCommands.sendCmd(UDPCommands.CMD_SYNC, time, broadcastIP);
                         }
+//                        byte time[] = getCurrentTime();
+//                        UDPCommands.sendCmd(UDPCommands.CMD_SYNC, time, broadcastIP);
+
 //
 //                        if(deviceIP == null)
 //                            UDPCommands.sendCmd(UDPCommands.CMD_STATE, time, broadcastIP);
@@ -175,6 +176,8 @@ public class MainActivity extends Activity implements OnReceiveListener  {
             public void onClick(View v) {
                 if(mTimer == null)
                 {
+
+
                     btnAnim.setText("Working...");
                     sunPos.Lon = Math.toRadians(Double.parseDouble(etLong.getText().toString()));
                     sunPos.Lat = Math.toRadians(Double.parseDouble(etLatit.getText().toString()));
@@ -193,7 +196,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         });
     }
     //==============================================================================================
-    byte [] getCurrentTime()
+    public static byte [] getCurrentTime()
     {
         byte tmp [] = new byte[6];
         Calendar currentTime    = Calendar.getInstance();
@@ -255,10 +258,10 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         }
                         else
                         {
-                            try {
-                                UDPCommands.sendCmd(UDPCommands.CMD_GOHOME, null, InetAddress.getByAddress(getBroadcastIP4AsBytes()));
-                            } catch (UnknownHostException e) {
-                            }
+//                            try {
+//                                UDPCommands.sendCmd(UDPCommands.CMD_GOHOME, null, InetAddress.getByAddress(getBroadcastIP4AsBytes()));
+//                            } catch (UnknownHostException e) {
+//                            }
                         }
 
                     }
@@ -409,9 +412,17 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 //                                clientData[i][j] = tmpd[i][j];
                     }
                 }
+                Intent intent;
                 //==========================================
                 switch(in[1])
                 {
+                    case UDPCommands.CMD_CALIB:
+                        intent = new Intent(ClientConfig.CALIB_DATA);
+                        intent.putExtra("x_raw", "" + (short)(((in[4] << 8) & 0xff00) | in[3] & 0xff));
+                        intent.putExtra("y_raw", "" + (short)(((in[6] << 8) & 0xff00) | in[5] & 0xff));
+                        intent.putExtra("z_raw", "" + (short)(((in[8] << 8) & 0xff00) | in[7] & 0xff));
+                        sendBroadcast(intent);
+                        break;
                     case UDPCommands.CMD_ANGLE:
                         break;
                     case UDPCommands.CMD_AZIMUTH:
@@ -489,6 +500,10 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         break;
 
                     case UDPCommands.CMD_CFG:
+                        ClientConfigMeteo.cfgData = new byte[10];
+                        for(int a = 0; a < 10; a++) ClientConfigMeteo.cfgData[a] = in[a + 3];
+                        intent = new Intent(ClientConfigMeteo.BC_CFG_DATA);
+                        sendBroadcast(intent);
                         break;
                 }
             }

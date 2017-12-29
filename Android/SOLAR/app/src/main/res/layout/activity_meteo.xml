@@ -117,8 +117,43 @@
                 android:layout_weight="2"
                 android:id="@+id/tvMeteoWind" />
         </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="#bb00ff">
+            <TextView
+                android:text=" Light: "
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="2dp"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:id="@+id/tvMeteoLight" />
+        </LinearLayout>
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <Button
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="SET"
+        android:id="@+id/btnMeteoSett"/>
+    <Button
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="SYNC"
+        android:id="@+id/btnMeteoSync"/>
 
+</LinearLayout>
 
 
 

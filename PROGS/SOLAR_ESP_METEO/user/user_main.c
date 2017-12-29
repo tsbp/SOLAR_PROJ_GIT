@@ -43,10 +43,11 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 	//if(!sysState.byte) // standby
 	{
-		if(wifi_station_get_connect_status() == STATION_GOT_IP)
+		if(wifi_station_get_connect_status() == STATION_GOT_IP || configs.wifi.mode == SOFTAP_MODE)
 		{
 
-			wifi_get_ip_info(STATION_IF, &ipconfig);
+			if(configs.wifi.mode == SOFTAP_MODE) wifi_get_ip_info(SOFTAP_IF,  &ipconfig);
+			else                                 wifi_get_ip_info(STATION_IF, &ipconfig);
 			currentIP = ipconfig.ip.addr;
 			//ets_uart_printf(IPSTR, IP2STR(&currentIP));
 			blink = BLINK_WAIT;
@@ -59,13 +60,18 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		freq = pulseCntr;
 		pulseCntr = 0;
 
+		timeincrement();
+
 		Calculate(
+				0.01 * configs.meteo.latit,
+				0.01 * configs.meteo.longit,
 				mState.dateTime.year + 2000,
 				mState.dateTime.month,
 				mState.dateTime.day,
 				mState.dateTime.hour - 2, //- time zone
 				mState.dateTime.min,
 				mState.dateTime.sec);
+		UDP_Angles();
 
 
 //		ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,
@@ -75,10 +81,11 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 //				mState.dateTime.min,
 //				mState.dateTime.sec);
 
-		ets_uart_printf("azim:%d, elev:%d\n", (int)(1000 * azimuth * 57.2958), (int)(1000 * elev * 57.2958));
+//		ets_uart_printf("azim:%d, elev:%d\n", (int)(1000 * azimuth * 57.2958), (int)(1000 * elev * 57.2958));
 		mState.azim = (int)(100 * azimuth * 57.2958);
 		mState.elev = (int)(100 * elev * 57.2958);
 		mState.wind = freq;
+		meteoProcessing();
 	}
 	if(cntr)cntr--;
 	else cntr = 10 ;
@@ -112,6 +119,7 @@ void ICACHE_FLASH_ATTR user_init(void)
 
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(100000);
+	ets_uart_printf("flash size %d\r\n", system_get_flash_size_map());
 	ets_uart_printf("System init...\r\n");
 
 //	//saveConfigs();
@@ -125,6 +133,9 @@ void ICACHE_FLASH_ATTR user_init(void)
 
 	ets_uart_printf("configs.wifi.SSID %s\r\n", configs.wifi.SSID);
 	ets_uart_printf("configs.wifi.SSID_PASS %s\r\n", configs.wifi.SSID_PASS);
+
+	ets_uart_printf("configs.meteo.light %d\r\n", configs.meteo.light);
+	ets_uart_printf("configs.meteo.wind  %d\r\n", configs.meteo.wind);
 
 	if(configs.wifi.mode == STATION_MODE)
 		setup_wifi_st_mode();

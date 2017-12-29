@@ -18,11 +18,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.voodoo.solar.MainActivity.BROADCAST_ACTION;
 
@@ -31,8 +38,7 @@ public class ClientConfig extends Activity {
     TextView tvIp, tvPitch, tvRoll, tvHead, tvLigth, tvTerm, tAzimuth, tAngle;
     SeekBar sbCompass, sbAccel;
 
-
-
+    public final static String CALIB_DATA = "Calib data";
 
     public static InetAddress ip;
     BroadcastReceiver br;
@@ -122,6 +128,14 @@ public class ClientConfig extends Activity {
             }
         });
 
+        Button calib = (Button) findViewById(R.id.btnCmpCal);
+        //================================================
+        calib.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dialog_calibrate();
+            }
+        });
+
         //==========================================================================================
         sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
@@ -175,7 +189,111 @@ public class ClientConfig extends Activity {
 
 
     }
+    //==============================================================================================
+    private final String ATTRIBUTE_T = "attr_t";
+    private final String ATTRIBUTE_X = "attr_x";
+    private final String ATTRIBUTE_Y = "attr_y";
+    private final String ATTRIBUTE_Z = "attr_z";
+    String[][] vals = {
+            {" ",   "X", "Y", "Z"},
+            {"V",   "1", "2", "3"},
+            {"MAX", "4", "5", "6"},
+            {"MIN", "4", "5", "6"}};
+    //==============================================================================================
+    void dialog_calibrate() {
+        final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View Viewlayout = inflater.inflate(R.layout.dialo_calibrate, (ViewGroup) findViewById(R.id.lvCalib));
 
+        popDialog.setIcon(R.drawable.wifi_small);
+        popDialog.setTitle("Калибровка");
+        popDialog.setView(Viewlayout);
+
+        final ListView lvData = (ListView)Viewlayout.findViewById(R.id.lvCalib);
+
+        //================================================
+        final BroadcastReceiver brd = new BroadcastReceiver() {
+            // действия при получении сообщений
+            public void onReceive(Context context, Intent intent) {
+
+                vals[1][1] = intent.getStringExtra("x_raw");
+                vals[1][2] = intent.getStringExtra("y_raw");
+                vals[1][3] = intent.getStringExtra("z_raw");
+
+                for(int i = 1; i < 4; i++)
+                {
+                    if(Integer.parseInt(vals[1][i]) >= Integer.parseInt(vals[2][i])) vals[2][i] = vals[1][i];
+                    if(Integer.parseInt(vals[1][i]) <  Integer.parseInt(vals[3][i])) vals[3][i] = vals[1][i];
+                }
+
+                ArrayList<Map<String, Object>> data = new ArrayList<>(4);
+                Map<String, Object> m;
+                for (int i = 0; i < 4; i++) {
+
+                    m = new HashMap<>();
+                    m.put(ATTRIBUTE_T, vals[i][0]);
+                    m.put(ATTRIBUTE_X, vals[i][1]);
+                    m.put(ATTRIBUTE_Y, vals[i][2]);
+                    m.put(ATTRIBUTE_Z, vals[i][3]);
+                    data.add(m);
+                }
+                String[] from = {ATTRIBUTE_T, ATTRIBUTE_X, ATTRIBUTE_Y, ATTRIBUTE_Z};
+                int[] to = {R.id.i1, R.id.i2, R.id.i3, R.id.i4};
+                SimpleAdapter sAdapter = new SimpleAdapter(context, data, R.layout.calb_item, from, to);
+                lvData.setAdapter(sAdapter);
+
+            }
+        };
+        IntentFilter intFilt = new IntentFilter(CALIB_DATA);
+        registerReceiver(brd, intFilt);
+
+
+        //================================================
+        final Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        byte [] b = {UDPCommands.GET};
+                        UDPCommands.sendCmd(UDPCommands.CMD_CALIB, b, ip);
+                    }
+                });
+            }
+        }, 0, 300);
+        //================================================
+        popDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                unregisterReceiver(brd);
+                timer.cancel();
+                dialog.dismiss();
+            }
+        });
+        popDialog.setPositiveButton("Save",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        byte [] b = new byte[13];
+                        b[0] = UDPCommands.SET;
+                        int cnt = 0;
+                        for(int i = 0; i < 2; i++)
+                            for(int j = 0; j < 3; j++)
+                            {
+                                short a = (short)Integer.parseInt(vals[i + 2][j + 1]);
+                                b[cnt] = (byte)(a & 0xff); cnt++;
+                                b[cnt] = (byte)((a >> 8) & 0xff); cnt++;
+                            }
+
+
+                        UDPCommands.sendCmd(UDPCommands.CMD_CALIB, b, ip);
+                        timer.cancel();
+                        dialog.dismiss();
+                    }
+                });
+        popDialog.create();
+        popDialog.show();
+    }
     //==============================================================================================
     private String[] wifiMode= {"NULL_MODE","STATION_MODE","SOFTAP_MODE","STATIONAP_MODE"};
     private String[] wifiSecurityMode = {"AUTH_OPEN","AUTH_WEP","AUTH_WPA_PSK","AUTH_WPA2_PSK","AUTH_WPA_WPA2_PSK","AUTH_MAX"};

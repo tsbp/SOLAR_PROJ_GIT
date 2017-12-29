@@ -23,7 +23,7 @@ uint16 light;
 uint8 terminators; //inProcess = 0;
 sSYSTEM_STATE sysState;
 
-uint16 azimuth, elevation;
+sint16 azimuth, elevation;
 
 //==============================================================================
 void ICACHE_FLASH_ATTR service_timer_start (void)
@@ -85,8 +85,11 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 					{
 						os_printf("do reset \r\n");
 
-						os_memset(configs.wifi.SSID, 0,sizeof(configs.wifi.SSID));
+						os_memset(configs.wifi.SSID, 0, sizeof(configs.wifi.SSID));
 						os_sprintf(configs.wifi.SSID, "%s", "Solar");
+
+						os_memset(configs.wifi.SSID_PASS, 0, sizeof(configs.wifi.SSID_PASS));
+						//os_sprintf(configs.wifi.SSID_PASS, "%s", "Solar");
 
 						configs.wifi.mode = SOFTAP_MODE;
 						configs.wifi.auth = AUTH_OPEN;

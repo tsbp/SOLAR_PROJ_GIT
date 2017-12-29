@@ -92,6 +92,7 @@
 typedef union __attribute__ ((__packed__))
 {
   unsigned char byte[6];
+  sint16 data[3];
   struct
   {    
     sint16 x;

@@ -1,5 +1,6 @@
 //==============================================================================
 #include "driver\Calculations.h"
+#include "driver\Configs.h"
 #include "driver\v_math.h"
 #include "math.h"
 //==============================================================================
@@ -33,10 +34,15 @@ const sint16 Mag_maxz =  6540;
 #define X_SCALE	(0)
 #define Y_SCALE	(1)
 #define Z_SCALE	(2)
+//const sint16 MAG_MIN_MAX[3][2] = {
+//		{-634, 428}, // x
+//		{-761, 305}, // y
+//		{-267, 654}  // z
+
 const sint16 MAG_MIN_MAX[3][2] = {
-		{-634, 428}, // x
-		{-761, 305}, // y
-		{-267, 654}  // z
+		{-631, 517}, // x
+		{-565, 544}, // y
+		{-462, 530}  // z
 };
 //==============================================================================
 float scale(int aAxis, sint16 aVal)
@@ -46,8 +52,13 @@ float scale(int aAxis, sint16 aVal)
 //	Magy = (Magy-Mag_miny)/(Mag_maxy-Mag_miny)*2-1;
 //	Magz = (Magz-Mag_minz)/(Mag_maxz-Mag_minz)*2-1;
 
-	float a = (aVal                   - MAG_MIN_MAX[aAxis][0]);
-	float b = ((MAG_MIN_MAX[aAxis][1] - MAG_MIN_MAX[aAxis][0]));
+//	float a = (aVal                   - MAG_MIN_MAX[aAxis][0]);
+//	float b = ((MAG_MIN_MAX[aAxis][1] - MAG_MIN_MAX[aAxis][0]));
+//	float c = 2 * (a / b);
+//	return (c - 1);
+
+	float a = (aVal                   - configs.calibs.Min.data[aAxis]);
+	float b = ((configs.calibs.Max.data[aAxis] - configs.calibs.Min.data[aAxis]));
 	float c = 2 * (a / b);
 	return (c - 1);
 }

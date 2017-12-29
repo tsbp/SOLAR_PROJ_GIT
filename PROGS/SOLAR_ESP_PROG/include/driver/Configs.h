@@ -1,3 +1,4 @@
+#include "driver/LSM303.h"
 //==============================================================================
 #define PRIV_PARAM_START_SEC		0x3C
 #define PRIV_PARAM_SAVE     0
@@ -27,44 +28,23 @@ typedef union __packed
 	};
 }s_WIFI_CFG;
 //==============================================================================
-typedef union __packed
+typedef union
 {
-	uint8 byte[3];
-	struct __packed
+	uint8 byte[12];
+	struct
 	{
-		uint8 hour;
-		uint8 minute;
-		uint8 light;
+		u3AXIS_DATA Max;
+		u3AXIS_DATA Min;
 	};
-}u_LIGHT;
+}u_CALIBS;
 //==============================================================================
 typedef union __packed
 {
-	uint8 byte[4];
-	struct __packed
-	{
-		uint8 hStart;
-		uint8 mStart;
-		uint8 hStop;
-		uint8 mStop;
-	};
-}u_PERIPHERIAL;
-//==============================================================================
-#define LIGHT_CNT  (2)
-#define PERIPH_CNT (3)
-//==============================================================================
-typedef union __packed
-{
-	  uint8 byte[sizeof(uint16) + LIGHT_CNT * sizeof(u_LIGHT) + PERIPH_CNT * sizeof(u_PERIPHERIAL) + sizeof(s_WIFI_CFG)];
+	  uint8 byte[sizeof(u_CALIBS) + sizeof(s_WIFI_CFG)];
 	  struct __packed
 	  {
-		sint16 temperature;
-		u_LIGHT light[2];
-		u_PERIPHERIAL periph[3];
-		uint8 stepperTurnsFW;
-		uint8 stepperTurnsBW;
-		uint8 eatMinutes;
-		s_WIFI_CFG wifi;
+		  u_CALIBS calibs;
+		  s_WIFI_CFG wifi;
 	  };
 }u_CONFIG;
 extern u_CONFIG configs;

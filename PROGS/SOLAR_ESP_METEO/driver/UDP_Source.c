@@ -40,10 +40,36 @@ void ICACHE_FLASH_ATTR UDP_Init_client()
 	espconn_create(UDP_PC);
 }
 //=========================================================================================
+void ICACHE_FLASH_ATTR UDP_Angles() //send braodcast angles
+{
+	ets_uart_printf("CMD_POSITION azim: %d, elev: %d\r\n",mState.azim, mState.elev);
 
+
+	UDP_PC->proto.udp->remote_port  = UDP_PORT;
+	UDP_PC->proto.udp->remote_ip[0] = ip4_addr1(&currentIP);
+	UDP_PC->proto.udp->remote_ip[1] = ip4_addr2(&currentIP);
+	UDP_PC->proto.udp->remote_ip[2] = ip4_addr3(&currentIP);
+	UDP_PC->proto.udp->remote_ip[3] = 255;
+
+	uint8 buf[9] = {ID_MASTER, CMD_SET_POSITION, 4};
+
+	buf[3] = (mState.elev);
+	buf[4] = (mState.elev) >> 8;
+	buf[5] = (mState.azim);
+	buf[6] = (mState.azim) >> 8;
+	buf[7] = 0xcc;
+	buf[8] = 0xcc;
+
+	espconn_sent(UDP_PC, buf, sizeof(buf));
+}
 //=========================================================================================
 void ICACHE_FLASH_ATTR UDP_cmdState()
 {
+	//====== decrement cntr of presence of lan item =============
+	int i;
+	for(i = 0; i < 256; i++)
+		if(items[i].present) items[i].present--;
+
 
 	for(currentIPask; currentIPask < 255; currentIPask++)
 		if(items[currentIPask].present || (currentIPask == ip4_addr4(&currentIP))) break;
@@ -82,11 +108,11 @@ void ICACHE_FLASH_ATTR UDP_cmdState()
 	buf[dataLng + 3] = 0xcc;
 	buf[dataLng + 4] = 0xcc;
 
-	int a;
-		ets_uart_printf("ans: ");
-		for (a = 0; a < dataLng + 5; a++)
-			ets_uart_printf("%02x ", buf[a]);
-		ets_uart_printf("\r\n");
+//	int a;
+//		ets_uart_printf("ans: ");
+//		for (a = 0; a < dataLng + 5; a++)
+//			ets_uart_printf("%02x ", buf[a]);
+//		ets_uart_printf("\r\n");
 
 	espconn_sent(UDP_PC, buf, dataLng + 5);
 }
@@ -100,7 +126,7 @@ uint8 crcCalc(uint8 *aBuf, uint8 aLng)
     }
 //=========================================================================================
 
-uint8 ansBuffer[20] = {ID_METEO, 0, 0};
+uint8 ansBuffer[30] = {ID_METEO, 0, 0};
 
 
 //=========================================================================================
@@ -108,6 +134,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 {
 	int a, i;
 	uint8 needAnswer = 0;
+
 //	ets_uart_printf("recv udp data: ");
 //	for (a = 0; a < length; a++)
 //		ets_uart_printf("%02x ", pusrdata[a]);
@@ -131,7 +158,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 		pesp_conn->proto.udp->remote_ip[2] = premot->remote_ip[2];
 		pesp_conn->proto.udp->remote_ip[3] = premot->remote_ip[3];
 
-		items[premot->remote_ip[3]].present = 1;
+		items[premot->remote_ip[3]].present = 50;
 		//ets_uart_printf("pres at %d \r\n", premot->remote_ip[3]);
 
 		switch(pusrdata[1])
@@ -163,12 +190,12 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 			case CMD_SYNC:
 				for(i = 0; i < 6; i++) mState.dateTime.byte[i] = pusrdata[i+3];
-				ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,
-								mState.dateTime.month,
-								mState.dateTime.day,
-								mState.dateTime.hour - 2, //- time zone
-								mState.dateTime.min,
-								mState.dateTime.sec);
+//				ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,
+//								mState.dateTime.month,
+//								mState.dateTime.day,
+//								mState.dateTime.hour - 2, //- time zone
+//								mState.dateTime.min,
+//								mState.dateTime.sec);
 				needAnswer = 1;
 				dataLng   = 1;
 				ansBuffer[3] = OK;
@@ -179,10 +206,10 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				switch(pusrdata[0])
 				{
 				case ID_MASTER:
-
 					break;
 				case ID_SLAVE:
-					items[premot->remote_ip[3]].light = ansBuffer[9] | (ansBuffer[10] << 8);
+					items[premot->remote_ip[3]].light = (uint16) pusrdata[9] | (uint16)(pusrdata[10] << 8);
+					//ets_uart_printf("CMD_STATE ip %d light %d \r\n", premot->remote_ip[3], items[premot->remote_ip[3]].light);
 					break;
 				}
 
@@ -191,8 +218,40 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				break;
 
 			case CMD_CFG:
-				ansBuffer[3] = OK;
-				break;
+				{
+					ets_uart_printf("CMD_CFG: ");
+											for (a = 0; a < length; a++)
+												ets_uart_printf("%02x ", pusrdata[a]);
+											ets_uart_printf("\r\n");
+
+
+					if(pusrdata[3]) //set
+					{
+//						dataLng   = 1;
+//						ansBuffer[3] = OK;
+						flashWriteBit = 1;
+						memcpy (configs.meteo.byte, pusrdata + 4, 10);
+					}
+					else //get
+					{
+						needAnswer = 1;
+						dataLng   = 10;
+						ets_uart_printf("CMD GET CFG\r\n");
+						dataLng = sizeof(u_METEO);
+						memcpy (ansBuffer + 3, configs.meteo.byte, dataLng );
+
+								ets_uart_printf("ans udp data: ");
+											for (a = 0; a < dataLng + 5; a++)
+												ets_uart_printf("%02x ", ansBuffer[a]);
+											ets_uart_printf("\r\n");
+					}
+					ets_uart_printf("METEO: %d, %d, %d, %d, %d\r\n",
+													configs.meteo.latit,
+													configs.meteo.longit,
+													configs.meteo.timeZone,
+													configs.meteo.wind,
+													configs.meteo.light);
+				}break;
 
 			case CMD_WIFI:
 				{

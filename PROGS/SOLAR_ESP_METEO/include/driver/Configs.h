@@ -5,18 +5,6 @@
 //==============================================================================
 typedef union __packed
 {
-  uint32 byte[11];
-  struct __packed
-  {
-	uint8 day[7];
-    uint16 interval;
-    uint8 delta;
-  };
-}u_NASTROYKI;
-
-//==============================================================================
-typedef union __packed
-{
 	uint8 byte[98];
 	struct __packed
 	{
@@ -29,67 +17,35 @@ typedef union __packed
 //==============================================================================
 typedef union __packed
 {
-	uint8 byte[3];
-	struct __packed
+	uint8 byte[10];
+	struct
 	{
-		uint8 hour;
-		uint8 minute;
-		uint8 light;
+		uint16 latit;
+		uint16 longit;
+		uint16 timeZone;
+		uint16 wind;
+		uint16 light;
 	};
-}u_LIGHT;
+}u_METEO;
 //==============================================================================
 typedef union __packed
 {
-	uint8 byte[4];
-	struct __packed
-	{
-		uint8 hStart;
-		uint8 mStart;
-		uint8 hStop;
-		uint8 mStop;
-	};
-}u_PERIPHERIAL;
-//==============================================================================
-#define LIGHT_CNT  (2)
-#define PERIPH_CNT (3)
-//==============================================================================
-typedef union __packed
-{
-	  uint8 byte[sizeof(uint16) + LIGHT_CNT * sizeof(u_LIGHT) + PERIPH_CNT * sizeof(u_PERIPHERIAL) + sizeof(s_WIFI_CFG)];
+	  uint8 byte[sizeof(u_METEO) + sizeof(s_WIFI_CFG)];
 	  struct __packed
 	  {
-		sint16 temperature;
-		u_LIGHT light[2];
-		u_PERIPHERIAL periph[3];
-		uint8 stepperTurnsFW;
-		uint8 stepperTurnsBW;
-		uint8 eatMinutes;
-		s_WIFI_CFG wifi;
+		  u_METEO meteo;
+		  s_WIFI_CFG wifi;
 	  };
 }u_CONFIG;
 extern u_CONFIG configs;
 //==============================================================================
 extern u_CONFIG configs;
-extern u_CONFIG *cPtrH, *cPtrW;
 extern uint8 flashWriteBit;
-extern uint8 periphWord;
-extern uint8 day_night;
 extern uint8 timeTrue;
 //==============================================================================
 void checkConfigs(void);
 void configsProcced(void);
 void sntp_initialize(void);
 uint8 timeSync(void);
-////==============================================================================
-//typedef union __packed
-//{
-//  uint32 byte[2 + 2 * sizeof(u_LIGHT) + 3 * sizeof(u_PERIPHERIAL)];
-//  struct __packed
-//  {
-//	uint16 temperature;
-//	u_LIGHT light[2];
-//	u_PERIPHERIAL periph[3];
-//	s_WIFI_CFG wifiCfg;
-//  };
-//}u_CONFIGS;
+
 

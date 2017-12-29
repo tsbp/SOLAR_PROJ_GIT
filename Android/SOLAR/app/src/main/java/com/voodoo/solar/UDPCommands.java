@@ -8,6 +8,9 @@ import java.net.InetAddress;
 
 public class UDPCommands
 {
+    public final static byte GET   = (byte)0x0;
+    public final static byte SET   = (byte)0x1;
+
     public final static byte CMD_ANGLE   = (byte)0x10;
     public final static byte CMD_AZIMUTH	= (byte)0x11;
     public final static byte CMD_SET_POSITION	= (byte)0x12;
@@ -17,6 +20,8 @@ public class UDPCommands
     public final static byte CMD_UP	    = (byte)0x22;
     public final static byte CMD_DOWN	= (byte)0x23;
     public final static byte CMD_GOHOME	= (byte)0x24;
+
+    public final static byte CMD_CALIB	= (byte)0x30;
 
     public final static byte CMD_STATE	= (byte)0xA0;
 
@@ -29,70 +34,31 @@ public class UDPCommands
     public final static byte ID_SLAVE     = (byte)0x3c;
     public final static byte ID_METEO     = (byte)0x3D;
 
-//    //==============================================================================================
-//    byte[] cmdBuffer = new byte[6];
-//    public static String  wifiSettings = "";
     //==============================================================================================
     //public  static void sendCmd(byte aCmd, short angle, short azimuth, byte angIncrement, InetAddress aIP)
     public  static void sendCmd(byte aCmd, byte [] aData, InetAddress aIP)
     {
-//        cmdBuffer[0] = (byte) 0xc0;
-//        cmdBuffer[1] =        aCmd;
-//
-//        cmdBuffer[4] = (byte) (0xcc);
-//        cmdBuffer[5] = (byte) (0xcc);
-        int dataLng = 0;
-        byte buf[] = null;
+        int dataLng;// = aData.length;
+        if (aData != null) dataLng = aData.length;
+        else dataLng = 0;
+        byte buf[] = new byte[5 + dataLng];//null;
         switch(aCmd)
         {
             case CMD_GOHOME:
-                dataLng = 0;
-                buf = new byte[5 + dataLng];
-                break;
-
-            case CMD_SET_POSITION:
-                dataLng = aData.length;
-                buf = new byte[5 + aData.length];
-                for(int i = 0; i < aData.length; i++) buf[i+3] = aData[i];
-                break;
-
+            case CMD_CALIB:
             case CMD_ANGLE:
-                dataLng = 2;
-                buf = new byte[5 + dataLng];
-//                buf[3] = (byte) ((angle) & (byte)0xff);
-//                buf[4] = (byte) ((angle >> 8) & (byte)0xff);
-                break;
-
             case CMD_AZIMUTH:
-                dataLng = 2;
-                buf = new byte[5 + dataLng];
-//                buf[3] = (byte) ((azimuth) & (byte)0xff);
-//                buf[4] = (byte) ((azimuth >> 8) & (byte)0xff);
-                break;
-
             case CMD_LEFT:
             case CMD_RIGHT:
             case CMD_UP:
             case CMD_DOWN:
-                dataLng = 2;
-                buf = new byte[5 + dataLng];
-//                buf[3] = (byte) ((angIncrement) & (byte)0xff);
-//                buf[4] = (byte) ((angIncrement >> 8) & (byte)0xff);
-                break;
-
+            case CMD_SET_POSITION:
             case CMD_SYNC:
-                dataLng = 6;
-                buf = new byte[5 + dataLng];
-                for(int i = 0; i < aData.length; i++) buf[i+3] = aData[i];
-                break;
-
             case CMD_CFG:
-                break;
-
             case CMD_WIFI:
-                dataLng = aData.length;
-                buf = new byte[5 + aData.length];
-                for(int i = 0; i < aData.length; i++) buf[i+3] = aData[i];
+                //dataLng = aData.length;
+//                buf = new byte[5 + aData.length];
+                for(int i = 0; i < dataLng; i++) buf[i+3] = aData[i];
                 break;
         }
 

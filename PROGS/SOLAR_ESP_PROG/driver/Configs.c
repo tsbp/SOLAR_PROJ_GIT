@@ -22,41 +22,6 @@ u_CONFIG configs = {
         .wifi.SSID_PASS = "123454321"
 };
 //=============================================================================
-uint16 getMinutes(uint8 aHour, uint8 aMinute)
-{
-	return aHour * 60 + aMinute;
-}
-//=============================================================================
-void checkConfigs(void)
-{
-	int i;
-	for(i = 0; i < 3; i++)
-	{
-		if(configs.periph[i].hStart > 23) configs.periph[i].hStart = 0;
-		if(configs.periph[i].hStop  > 23) configs.periph[i].hStop = 0;
-
-		if(configs.periph[i].mStart > 59) configs.periph[i].mStart = 0;
-		if(configs.periph[i].mStop  > 59) configs.periph[i].mStop = 0;
-
-	}
-
-	for(i = 0; i < 2; i++)
-	{
-		if (configs.light[i].hour   > 23) configs.light[i].hour = 0;
-		if (configs.light[i].minute > 59) configs.light[i].minute = 0;
-	}
-}
-//=============================================================================
-#define DELTA	(2)
-uint8 currentLight = 0;
-uint8 day_night = 0;
-uint16 eatSecCounter;
-//=============================================================================
-void configsProcced(void)
-{
-
-}
-//=============================================================================
 void ICACHE_FLASH_ATTR saveConfigs(void) {
     flashWriteBit = 0;
 	int result = -1;
