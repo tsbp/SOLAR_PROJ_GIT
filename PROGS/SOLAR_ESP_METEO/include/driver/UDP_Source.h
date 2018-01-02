@@ -20,6 +20,7 @@
 #define CMD_STATE			(0xA0)
 
 #define CMD_SYNC			(0xE0)
+#define CMD_SERVICE			(0xE1)
 
 #define CMD_CFG				(0xC0)
 #define CMD_WIFI			(0xC1)

@@ -25,7 +25,9 @@ extern int cntr;
 #define BLINK_UP        (0xc0ff)
 #define BLINK_DOWN      (0xffc0)
 #define BLINK_WAIT      (0x9000)
+#define BLINK_WAIT_NODATA      (0x90ff)
 #define BLINK_WAIT_UNCONNECTED      (0x0090)
+#define BLINK_TRACK_STOPPPED        (0x8090)
 
 #define BLNK_MAX 		(15)
 
@@ -56,9 +58,12 @@ typedef union __attribute__ ((__packed__))
 }s_DATE_TIME;
 //extern s_DATE_TIME dateTime;
 //=========================================================================================
+#define STOPPED (0)
+#define TRACKING (1)
+//=========================================================================================
 typedef union __packed
 {
-	uint8 byte[14];
+	uint8 byte[15];
 	struct
 	{
 		s_DATE_TIME dateTime;
@@ -66,6 +71,7 @@ typedef union __packed
 		sint16 elev;
 		uint16 wind;
 		uint16 light;
+		uint8 stt;
 	};
 }uMETEO_STATE;
 extern uMETEO_STATE mState;

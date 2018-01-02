@@ -116,6 +116,16 @@ public class MainActivity extends Activity implements OnReceiveListener  {
             }
         });
 
+        Button btnFind = (Button) findViewById(R.id.btnFind);
+        btnFind.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+
+                UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
+
+            }
+        });
+
         //==========================================================================================
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -475,8 +485,8 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                     clientData[i][2] = "T";
                                     clientData[i][3] = "E";
                                     clientData[i][4] = "O";
-                                    ClientConfigMeteo.data = new byte[14];
-                                    for(int a = 0; a < 14; a++) ClientConfigMeteo.data[a] = in[a + 3];
+                                    ClientConfigMeteo.data = new byte[15];
+                                    for(int a = 0; a < 15; a++) ClientConfigMeteo.data[a] = in[a + 3];
 //                                    clientData[i][0] = "MST";
 //                                    clientData[i][1] = String.format("%.1f",  Math.toDegrees((double) ay / 1000));
 //                                    clientData[i][2] = String.format("%.1f",  Math.toDegrees((double) az / 1000));

@@ -41,7 +41,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 	if (cntr == 0 && flashWriteBit == 1) saveConfigs();
 
-	//if(!sysState.byte) // standby
+	if(cntr != 0) // standby
 	{
 		if(wifi_station_get_connect_status() == STATION_GOT_IP || configs.wifi.mode == SOFTAP_MODE)
 		{
@@ -50,12 +50,13 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			else                                 wifi_get_ip_info(STATION_IF, &ipconfig);
 			currentIP = ipconfig.ip.addr;
 			//ets_uart_printf(IPSTR, IP2STR(&currentIP));
-			blink = BLINK_WAIT;
+			if(mState.stt == TRACKING)	blink = BLINK_WAIT;
+			else   blink = BLINK_WAIT_NODATA;
 			UDP_cmdState();
 		}
-		else														   blink = BLINK_WAIT_UNCONNECTED;
+		else blink = BLINK_WAIT_UNCONNECTED;
 	}
-	if(cntr == 0)
+	else
 	{
 		freq = pulseCntr;
 		pulseCntr = 0;
@@ -71,7 +72,8 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 				mState.dateTime.hour - 2, //- time zone
 				mState.dateTime.min,
 				mState.dateTime.sec);
-		UDP_Angles();
+
+		if(mState.stt) UDP_Angles();
 
 
 //		ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,

@@ -11,6 +11,7 @@ public class UDPCommands
     public final static byte GET   = (byte)0x0;
     public final static byte SET   = (byte)0x1;
 
+
     public final static byte CMD_ANGLE   = (byte)0x10;
     public final static byte CMD_AZIMUTH	= (byte)0x11;
     public final static byte CMD_SET_POSITION	= (byte)0x12;
@@ -29,6 +30,7 @@ public class UDPCommands
     public final static byte CMD_WIFI		= (byte)0xC1;
 
     public final static byte CMD_SYNC		= (byte)0xE0;
+    public final static byte CMD_SERVICE	= (byte)0xE1;
 
     public final static byte ID_MASTER	= (byte)0x7e;
     public final static byte ID_SLAVE     = (byte)0x3c;
@@ -44,6 +46,7 @@ public class UDPCommands
         byte buf[] = new byte[5 + dataLng];//null;
         switch(aCmd)
         {
+            case CMD_SERVICE:
             case CMD_GOHOME:
             case CMD_CALIB:
             case CMD_ANGLE:

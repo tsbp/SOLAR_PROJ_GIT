@@ -21,7 +21,7 @@ int cntr = 5;
 uint16 light;
 uint8 terminators; //inProcess = 0;
 //s_DATE_TIME dateTime;
-uMETEO_STATE mState;
+uMETEO_STATE mState = {.stt = TRACKING};
 
 
 uint16 freq, pulseCntr = 0;

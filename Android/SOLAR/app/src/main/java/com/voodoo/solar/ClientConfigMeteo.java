@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -39,6 +40,13 @@ public class ClientConfigMeteo extends Activity {
     double azimuth, elevation;
 
 
+    public final static byte STOPPED   = (byte)0x0;
+    public final static byte TRACKING  = (byte)0x1;
+    byte meteoState = 0;
+
+    Button bServ;
+
+
     com.voodoo.solar.imgPosition imgSun;
 
     @Override
@@ -59,11 +67,35 @@ public class ClientConfigMeteo extends Activity {
         imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
 
         //================================================
+        bServ = (Button) findViewById(R.id.btnMeteoServ);
+        bServ.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                byte buf[] = new byte[1];
+                if(meteoState == TRACKING) buf[0] = STOPPED;
+                else buf[0] = TRACKING;
+                UDPCommands.sendCmd(UDPCommands.CMD_SERVICE, buf, ip);
+            }
+        });
+
+        //================================================
         br = new BroadcastReceiver() {
             // действия при получении сообщений
             public void onReceive(Context context, Intent intent) {
                 String input = intent.getStringExtra(MainActivity.PARAM_LIGTH);
                 tvWind.setText(input);
+
+                if(data[14] == TRACKING)
+                {
+                    meteoState = TRACKING;
+                    bServ.setBackgroundColor(Color.GREEN);
+                    bServ.setText("TRACKING STARTED");
+                }
+                else
+                {
+                    meteoState = STOPPED;
+                    bServ.setBackgroundColor(Color.RED);
+                    bServ.setText("TRACKING STOPPED");
+                }
 
                 tvTime.setText((data[0] & 0xff) + "." + (data[1] & 0xff) + "." + (data[2] & 0xff) + ", " +
                                (data[3] & 0xff) + ":" + (data[4] & 0xff) + ":" + (data[5] & 0xff));
@@ -122,6 +154,8 @@ public class ClientConfigMeteo extends Activity {
                 UDPCommands.sendCmd(UDPCommands.CMD_SYNC, time, ip);
             }
         });
+
+
     }
 
     //==============================================================================================

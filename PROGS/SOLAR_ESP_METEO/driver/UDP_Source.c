@@ -81,25 +81,18 @@ void ICACHE_FLASH_ATTR UDP_cmdState()
 	UDP_PC->proto.udp->remote_ip[3] = currentIPask;
 //	ets_uart_printf("currentIPask: %d\r\n", currentIPask);
 
-	uint8 dataLng;
+	uint8 dataLng = 0;
 	uint8 buf[30] = {ID_MASTER, CMD_STATE};
 
 	//ets_uart_printf("? %d\r\n", ip4_addr4(&currentIP));
 
-	if(currentIPask != ip4_addr4(&currentIP))
-	{
-		///ets_uart_printf("CMD_STATE master\r\n");
-		dataLng = 0;
-	}
-	else
+	if(currentIPask == ip4_addr4(&currentIP))
 	{
 		//ets_uart_printf("CMD_STATE meteo\r\n");
 		UDP_PC->proto.udp->remote_ip[3] = 255;
-		dataLng = 14;
+		dataLng = 15;
 		buf[0]  = ID_METEO;
 		memcpy (buf+3, mState.byte, dataLng );
-//		int i;
-//		for(i = 0; i < 14; i++) buf[i+3] = mState.byte[i];
 
 	}
 	currentIPask++;
@@ -135,10 +128,10 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 	int a, i;
 	uint8 needAnswer = 0;
 
-//	ets_uart_printf("recv udp data: ");
-//	for (a = 0; a < length; a++)
-//		ets_uart_printf("%02x ", pusrdata[a]);
-//	ets_uart_printf("\r\n");
+	ets_uart_printf("recv udp data: ");
+	for (a = 0; a < length; a++)
+		ets_uart_printf("%02x ", pusrdata[a]);
+	ets_uart_printf("\r\n");
 
 	uint8 dataLng = 0;
 
@@ -148,7 +141,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 	uint8 crc = crcCalc(pusrdata, pusrdata[0] + 1);
 	//ets_uart_printf("crc = %02x, in_crc = %02x\r\n", crc, pusrdata[length - 1]);
-	if (espconn_get_connection_info(pesp_conn, &premot, 0) == ESPCONN_OK  &&  premot->remote_ip[3] != ip4_addr4(&currentIP))
+	if (espconn_get_connection_info(pesp_conn, &premot, 0) == ESPCONN_OK  /*&&  premot->remote_ip[3] != ip4_addr4(&currentIP)*/)
 			//&& 			crc == pusrdata[length - 1])
 	{
 		//ets_uart_printf("from ip: %d\r\n", premot->remote_ip[3]);
@@ -188,6 +181,14 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			case CMD_DOWN:
 				break;
 
+			case CMD_SERVICE:
+				mState.stt = pusrdata[3];
+				ets_uart_printf("%d\n",mState.stt);
+				needAnswer = 1;
+				dataLng   = 1;
+				ansBuffer[3] = OK;
+				break;
+
 			case CMD_SYNC:
 				for(i = 0; i < 6; i++) mState.dateTime.byte[i] = pusrdata[i+3];
 //				ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,
@@ -206,6 +207,11 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				switch(pusrdata[0])
 				{
 				case ID_MASTER:
+					//UDP_PC->proto.udp->remote_ip[3] = 255;
+					needAnswer = 1;
+					dataLng = 15;
+					ansBuffer[0]  = ID_METEO;
+					memcpy (ansBuffer+3, mState.byte, dataLng );
 					break;
 				case ID_SLAVE:
 					items[premot->remote_ip[3]].light = (uint16) pusrdata[9] | (uint16)(pusrdata[10] << 8);
@@ -295,10 +301,10 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				ansBuffer[dataLng + 3] = 0xcc;
 				ansBuffer[dataLng + 4] = 0xcc;
 
-		//		ets_uart_printf("ans udp data: ");
-		//			for (a = 0; a < dataLng + 5; a++)
-		//				ets_uart_printf("%02x ", ansBuffer[a]);
-		//			ets_uart_printf("\r\n");
+				ets_uart_printf("ans udp data: ");
+					for (a = 0; a < dataLng + 5; a++)
+						ets_uart_printf("%02x ", ansBuffer[a]);
+					ets_uart_printf("\r\n");
 
 				espconn_sent(pesp_conn, ansBuffer, 5 + dataLng);
 		}
