@@ -61,7 +61,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		freq = pulseCntr;
 		pulseCntr = 0;
 
-		timeincrement();
+		//timeincrement();
 
 		Calculate(
 				0.01 * configs.meteo.latit,
@@ -88,6 +88,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		mState.elev = (int)(100 * elev * 57.2958);
 		mState.wind = freq;
 		meteoProcessing();
+		rtc_get_current_time();
 	}
 	if(cntr)cntr--;
 	else cntr = 10 ;
@@ -103,6 +104,11 @@ void ICACHE_FLASH_ATTR setup(void)
 	set_gpio_mode(2, GPIO_PULLUP, GPIO_OUTPUT);
 	set_gpio_mode(1, GPIO_PULLUP, GPIO_OUTPUT);
 
+	//======= RTC ==========
+	ets_uart_printf("i2c scan\r\n");
+	i2c_master_gpio_init();
+	i2c_bus_scan();
+	//======================
 
 	button_init();
 	freq_cntr_init();

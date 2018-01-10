@@ -13,6 +13,7 @@
 #include "driver/configs.h"
 //#include "driver/LSM303.h"
 #include "driver\Calculations.h"
+#include "driver/rtc.h"
 //=========================================================================================
 //extern u_CONFIG configs;
 struct espconn *UDP_PC;
@@ -42,7 +43,7 @@ void ICACHE_FLASH_ATTR UDP_Init_client()
 //=========================================================================================
 void ICACHE_FLASH_ATTR UDP_Angles() //send braodcast angles
 {
-	ets_uart_printf("CMD_POSITION azim: %d, elev: %d\r\n",mState.azim, mState.elev);
+	//ets_uart_printf("CMD_POSITION azim: %d, elev: %d\r\n",mState.azim, mState.elev);
 
 
 	UDP_PC->proto.udp->remote_port  = UDP_PORT;
@@ -128,10 +129,10 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 	int a, i;
 	uint8 needAnswer = 0;
 
-	ets_uart_printf("recv udp data: ");
-	for (a = 0; a < length; a++)
-		ets_uart_printf("%02x ", pusrdata[a]);
-	ets_uart_printf("\r\n");
+//	ets_uart_printf("recv udp data: ");
+//	for (a = 0; a < length; a++)
+//		ets_uart_printf("%02x ", pusrdata[a]);
+//	ets_uart_printf("\r\n");
 
 	uint8 dataLng = 0;
 
@@ -197,6 +198,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 //								mState.dateTime.hour - 2, //- time zone
 //								mState.dateTime.min,
 //								mState.dateTime.sec);
+				rtc_set_time(&mState.dateTime);
 				needAnswer = 1;
 				dataLng   = 1;
 				ansBuffer[3] = OK;

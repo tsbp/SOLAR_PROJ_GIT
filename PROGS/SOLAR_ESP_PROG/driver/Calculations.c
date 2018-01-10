@@ -63,6 +63,10 @@ float scale(int aAxis, sint16 aVal)
 	return (c - 1);
 }
 //==============================================================================
+#define X 0
+#define Y 1
+#define Z 2
+//==============================================================================
 void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sint16 * aPitch, sint16 * aRoll, sint16 * aHead)
 {
   //===== roll, pitch ===========
@@ -104,6 +108,47 @@ void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sin
 	// arctangent of y/x
 	*aHead = (sint16)(atan2f(magycomp, magxcomp) * 10000);
 	//ets_uart_printf("atan_fx = %d \r\n", *aHead);
+
+
+
+
+  /*//===================================
+  // Soft an dHard Iron Calibration
+  // Values calculated by Magneto
+  //===================================
+  double cal_matrix[3][3]={
+		  { 1, 0, 0},
+		  {0,  1, 0},
+		  {0, 0,  1}} ;
+
+  double cal_offsets[3] = {0, 0,0};
+
+  double fx = (double)aRawMag->x;
+  double fy = (double)aRawMag->y;
+  double fz = (double)aRawMag->z;
+
+//  fx += cal_offsets[X];
+//  fy += cal_offsets[Y];
+//  fz += cal_offsets[Z];
+//  fx = cal_matrix[X][X]*fx + cal_matrix[X][Y]*fy + cal_matrix[X][Z]*fz;
+//  fy = cal_matrix[Y][X]*fx + cal_matrix[Y][Y]*fy + cal_matrix[Y][Z]*fz;
+//  fz = cal_matrix[Z][X]*fx + cal_matrix[Z][Y]*fy + cal_matrix[Z][Z]*fz;
+
+  double _roll = atan2( aRawAcc->x, -aRawAcc->z);
+  double _pitch = atan2( (aRawAcc->x), ((aRawAcc->y*sin(_roll))+(-aRawAcc->z*cos(_roll))) );
+
+  double cmx = fx*cos(_pitch) + (fy)*sin(_pitch)*sin(_roll) + (fz)*sin(_pitch)*cos(_roll);
+  double cmy = fy*cos(_roll) - (fz)*sin(_roll);
+  double cmz = -fx*sin(_pitch) + fy*cos(_pitch)*sin(_roll) + fz*cos(_pitch)*cos(_roll);
+
+  double _heading = atan2f(cmy, cmx);
+
+  if(_heading < 0)
+      _heading += 2*PI;
+      if(_heading > 2*PI)
+      _heading -= 2*PI;
+
+  *aHead = (sint16)(_heading * 10000);*/
 }
 //==============================================================================
 sint16 avgBuf[FILTER_LENGHT];

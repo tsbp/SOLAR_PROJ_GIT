@@ -30,11 +30,12 @@ unsigned char tmp[6];
 
 sint16 Pitch, Roll, Yaw;
 
-#define VERTICAL_OFFSET	(50)
+#define VERTICAL_OFFSET	    (600)
+#define HORIZONTAL_OFFSET	(600)
 
 
 int manualDuration = PROC_DURATION;
-int vertMoveCntr = 10;
+int vertMove = 10;
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
 {
@@ -72,6 +73,8 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	compass.z = ((tmp[2] << 8) | tmp[3]) ;
 	compass.y = ((tmp[4] << 8) | tmp[5]) ;
 
+	//ets_uart_printf("%d\t%d\t%d\n", compass.x, compass.y, compass.z);
+
 	//ets_uart_printf("x = %d, y = %d, z = %d\r\n", compass.x, compass.y, compass.z);
 
 	getAngles(&accel, &compass, &Pitch, &Roll, &Yaw);
@@ -95,71 +98,47 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		if(manualDuration) manualDuration--;
 		else
 		{
-			sysState.manualMove = 0;
 			manualDuration = PROC_DURATION;
+			azimuth   = (uint16) head;
+			elevation = (uint16) angle;
 			move(0);
 		}
 	}
+
 	//=== sun tracking ====================================================
-
-	//ets_uart_printf("sysState = %d, head = %d, azimuth = %d\r\n", sysState, head, azimuth);
-	if(sysState.goHome == 1)
-	{
-		if((uint16) head < 9000)
-		{
-			move(0);
-			azimuth = 0;
-			sysState.goHome = 0;
-		}
-
-	}
-	else
+	//ets_uart_printf("sysState = %d, head = %d, angle = %d\r\n", sysState, head, angle);
 	{
 		//=== horizontal ==============
-		if(!sysState.automaticMoveH && (azimuth > (uint16) head))
+
+		if(sysState.newPosition)
 		{
 			sysState.automaticMoveH = 1;
-			blink = BLINK_FORWARD;
-			move(12);
+			if(azimuth > ((uint16) head + HORIZONTAL_OFFSET))		move(RIGHT);
+			else if (azimuth < ((uint16) head - HORIZONTAL_OFFSET))	move(LEFT);
 		}
-		else if(sysState.automaticMoveH && ((300 + azimuth) < (uint16) head))
+		if(sysState.automaticMoveH &&
+				(azimuth <= ((uint16) head + HORIZONTAL_OFFSET)) &&
+				(azimuth >= ((uint16) head - HORIZONTAL_OFFSET)))
 		{
 			sysState.automaticMoveH = 0;
-			sysState.automaticMoveV = 1;
-			vertMoveCntr = 400;
 			move(0);
 		}
 
-		//=== horizontal ==============
-		if(sysState.automaticMoveV)
+		//=== vertical ==============
+		if(sysState.newPosition && !sysState.automaticMoveH)
 		{
-
-			if(vertMoveCntr)
-			{
-				if((elevation > ((uint16)angle + VERTICAL_OFFSET))) // move up
-				{
-					blink = BLINK_UP;
-					move(1);
-				}
-				else if ((elevation < ((uint16)angle - VERTICAL_OFFSET))) // move up
-				{
-					blink = BLINK_DOWN;
-					move(3);
-				}
-				else
-				{
-					sysState.automaticMoveV = 0;
-					move(0);
-				}
-			}
-			else
-			{
-				sysState.automaticMoveV = 0;
-				move(0);
-			}
-			vertMoveCntr--;
+			sysState.automaticMoveV = 1;
+			if(elevation > ( angle + VERTICAL_OFFSET))		move(UP);
+			else if (elevation < (angle - VERTICAL_OFFSET))	move(DOWN);
 		}
-
+		if (sysState.automaticMoveV &&
+				(elevation <= (angle + VERTICAL_OFFSET)) &&
+				(elevation >= (angle - VERTICAL_OFFSET)))
+		{
+			sysState.newPosition = 0;
+			sysState.automaticMoveV = 0;
+			move(0);
+		}
 	}
 
 

@@ -113,27 +113,13 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			 break;
 
 		 case CMD_GOHOME:
-				 dataLng = 1;
-				 needAnswer = 1;
-				 ansBuffer[3] = OK;
-				 if(sysState.byte) sysState.byte = 0;
-				 sysState.goHome = 1;
-				 blink = BLINK_BACKWARD;
-				 move(4);
-				 ets_uart_printf("Going home....\r\n");
 				 break;
 
 		    case CMD_SET_POSITION:
-				//dataLng = 1;
-				//needAnswer = 1;
-				//ansBuffer[3] = OK;
-					ets_uart_printf("recv udp data: ");
-					for (a = 0; a < length; a++)
-						ets_uart_printf("%02x ", pusrdata[a]);
-					ets_uart_printf("\r\n");
 				azimuth   = (sint16)(pusrdata[5] | (pusrdata[6] << 8));
 				elevation = (sint16)(pusrdata[3] | (pusrdata[4] << 8));
 				ets_uart_printf("Elevation: %d, Azimuth: %d\r\n", elevation, azimuth);
+				sysState.newPosition = 1;
 				break;
 
 			case CMD_ANGLE:
@@ -155,9 +141,9 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			case CMD_LEFT:
 				dataLng = 1;
 				ansBuffer[3] = OK;
+				sysState.byte = 0;
 				sysState.manualMove = 1; //inProcess = PROC_DURATION;
-				blink = BLINK_BACKWARD;
-				move(4);
+				move(LEFT);
 				ets_uart_printf("cmd LEFT\r\n");
 				break;
 
@@ -165,9 +151,9 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				dataLng = 1;
 				needAnswer = 1;
 				ansBuffer[3] = OK;
+				sysState.byte = 0;
 				sysState.manualMove = 1; //inProcess = PROC_DURATION;
-				blink = BLINK_FORWARD;
-				move(12);
+				move(RIGHT);
 				ets_uart_printf("cmd RIGHT\r\n");
 				break;
 
@@ -175,9 +161,9 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				dataLng = 1;
 				needAnswer = 1;
 				ansBuffer[3] = OK;
+				sysState.byte = 0;
 				sysState.manualMove = 1; //inProcess = PROC_DURATION;
-				blink = BLINK_UP;
-				move(1);
+				move(UP);
 				ets_uart_printf("cmd UP\r\n");
 				break;
 
@@ -185,9 +171,9 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				dataLng = 1;
 				needAnswer = 1;
 				ansBuffer[3] = OK;
+				sysState.byte = 0;
 				sysState.manualMove = 1; //inProcess = PROC_DURATION;
-				blink = BLINK_DOWN;
-				move(3);
+				move(DOWN);
 				ets_uart_printf("cmd DOWN\r\n");
 				break;
 

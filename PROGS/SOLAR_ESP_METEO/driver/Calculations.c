@@ -1,7 +1,6 @@
 //==============================================================================
 #include "driver\services.h"
 #include "driver\Calculations.h"
-#include "driver\v_math.h"
 #include "math.h"
 //==============================================================================
 
@@ -81,7 +80,7 @@ void ICACHE_FLASH_ATTR Calculate(double Lat, double Lon, int aYear, int aMonth, 
 void ICACHE_FLASH_ATTR meteoProcessing(void)
 {
 	int i, cntr = 0;
-	long light;
+	long light = 0;
 
 	for(i = 0; i < 256; i++)
 		if(items[i].present)
@@ -93,5 +92,6 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 		}
 
 	if(cntr) mState.light = light / cntr;
+	else mState.light = 0;
 	//ets_uart_printf("light %d cntr %d\r\n", mState.light, cntr);
 }
