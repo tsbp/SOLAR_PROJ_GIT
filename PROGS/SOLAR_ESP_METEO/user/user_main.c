@@ -21,19 +21,15 @@ int (*console_printf)(const char *fmt, ...) = ets_uart_printf;
 
 static volatile os_timer_t loop_timer;
 static void  loop(os_event_t *events);
-uint8 addr = 0x3f;
 
-uint8 out = 0;
-unsigned char tmp[6];
+#define HOME_AZIMUTH	(3000)
+#define HOME_ELEVATION	(0)
+#define MAX_ELEVATION	(9000)
 
-sint16 Pitch, Roll, Yaw;
-
-#define VERTICAL_OFFSET	(50)
-
-
-int manualDuration = PROC_DURATION;
-int vertMoveCntr = 10;
 struct ip_info ipconfig;
+
+sint16 windArr[FILTER_LENGHT];
+uint8 windHigh = 0;
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
 {
@@ -41,8 +37,9 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 	if (cntr == 0 && flashWriteBit == 1) saveConfigs();
 
-	if(cntr != 0) // standby
+	if(cntr) // standby
 	{
+		cntr--;
 		if(wifi_station_get_connect_status() == STATION_GOT_IP || configs.wifi.mode == SOFTAP_MODE)
 		{
 
@@ -58,12 +55,14 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	}
 	else
 	{
+		cntr = 10 ;
 		freq = pulseCntr;
 		pulseCntr = 0;
 
 		//timeincrement();
 
-		Calculate(
+		if(mState.stt == TRACKING)
+			Calculate(
 				0.01 * configs.meteo.latit,
 				0.01 * configs.meteo.longit,
 				mState.dateTime.year + 2000,
@@ -73,7 +72,10 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 				mState.dateTime.min,
 				mState.dateTime.sec);
 
+
+
 		if(mState.stt) UDP_Angles();
+
 
 
 //		ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,
@@ -84,14 +86,32 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 //				mState.dateTime.sec);
 
 //		ets_uart_printf("azim:%d, elev:%d\n", (int)(1000 * azimuth * 57.2958), (int)(1000 * elev * 57.2958));
+
+		//====================================
 		mState.azim = (int)(100 * azimuth * 57.2958);
-		mState.elev = (int)(100 * elev * 57.2958);
-		mState.wind = freq;
+		mState.elev = (int)(9000 - 100 * elev * 57.2958);
+		if(mState.elev > MAX_ELEVATION)
+		{
+			mState.azim = HOME_AZIMUTH;
+			mState.elev = HOME_ELEVATION;
+		}
+
+		//=== wind ====
+		addValueToArray((sint16)freq, windArr); //[];
+		mState.wind = mFilter(windArr, FILTER_LENGHT);
+
+		if(mState.stt != MANUAL_ALARM )
+		{
+			if     (mState.wind >= configs.meteo.wind)                             mState.stt = ALARM;
+			else if(mState.stt != STOPPED && mState.wind < configs.meteo.wind - 2) mState.stt = TRACKING;
+		}
+
+
+		if(mState.stt == ALARM || mState.stt == MANUAL_ALARM) mState.elev = HOME_ELEVATION; // wind to fast
+		//====================================
 		meteoProcessing();
 		rtc_get_current_time();
 	}
-	if(cntr)cntr--;
-	else cntr = 10 ;
 
 }
 

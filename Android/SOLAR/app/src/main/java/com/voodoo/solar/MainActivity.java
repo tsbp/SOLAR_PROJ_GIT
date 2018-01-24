@@ -483,8 +483,14 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                     clientData[i][0] = "M";
                                     clientData[i][1] = "E";
                                     clientData[i][2] = "T";
-                                    clientData[i][3] = "E";
-                                    clientData[i][4] = "O";
+                                    clientData[i][3] = String.format("%.1f", 0.01 * (double)((in[9]  & 0xff) | ((in[10] << 8))));
+                                    clientData[i][4] = String.format("%.1f", 0.01 * (double)((in[11] & 0xff) | ((in[12] << 8))));;
+
+//                                    azimuth   = 0.01 * (double)((data[6] & 0xff) | ((data[7] << 8)));
+//                                    elevation = 0.01 * (double)((data[8] & 0xff) | ((data[9] << 8)));
+//                                    tvAzim.setText(String.format("%.1f", azimuth));
+//                                    tvElev.setText(String.format("%.1f", elevation));
+
                                     ClientConfigMeteo.data = new byte[15];
                                     for(int a = 0; a < 15; a++) ClientConfigMeteo.data[a] = in[a + 3];
 //                                    clientData[i][0] = "MST";

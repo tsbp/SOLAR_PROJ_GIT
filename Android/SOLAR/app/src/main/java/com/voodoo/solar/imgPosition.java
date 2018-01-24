@@ -43,7 +43,7 @@ public class imgPosition extends View {
         //canvas.drawCircle(AREA_WIDTH / 2, AREA_HEIGH / 2, 10, p);
 
         double ang = /*Math.toDegrees*/(elevation);
-        int lineLength = AREA_WIDTH/2 -(int)(ang * AREA_WIDTH/(2*90));
+        int lineLength = (int)(ang * AREA_WIDTH/(2*90));
 
         double angle = /*Math.toDegrees*/(azimuth);
         angle = 180 - angle;

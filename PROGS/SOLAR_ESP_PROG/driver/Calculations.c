@@ -6,9 +6,8 @@
 //==============================================================================
 sint16 _roll, _pitch, _heading;
 sint16 rollArray[FILTER_LENGHT], pitchArray[FILTER_LENGHT], yawArray[FILTER_LENGHT];
-
 //==============================================================================
-void addValueToArray(sint16 aVal, sint16 * aArr)
+void ICACHE_FLASH_ATTR addValueToArray(sint16 aVal, sint16 * aArr)
 {
   unsigned int k;
   for(k = FILTER_LENGHT-1; k > 0; k--)
@@ -17,55 +16,32 @@ void addValueToArray(sint16 aVal, sint16 * aArr)
   aArr[0] = aVal;
 }
 //==============================================================================
-const sint16 Mag_minx = -6340;
-const sint16 Mag_miny = -7610;
-const sint16 Mag_minz = -2670;
-const sint16 Mag_maxx =  4280;
-const sint16 Mag_maxy =  3050;
-const sint16 Mag_maxz =  6540;
-
-//const int Mag_minx = -518;
-//const int Mag_miny = -646;
-//const int Mag_minz = -814;
-//const int Mag_maxx =  674;
-//const int Mag_maxy =  561;
-//const int Mag_maxz =  334;
-
 #define X_SCALE	(0)
 #define Y_SCALE	(1)
 #define Z_SCALE	(2)
-//const sint16 MAG_MIN_MAX[3][2] = {
-//		{-634, 428}, // x
-//		{-761, 305}, // y
-//		{-267, 654}  // z
-
-const sint16 MAG_MIN_MAX[3][2] = {
-		{-631, 517}, // x
-		{-565, 544}, // y
-		{-462, 530}  // z
-};
 //==============================================================================
-float scale(int aAxis, sint16 aVal)
+#define MEAS_90	( 1.43117f)
+#define MEAS_0	(-0.0558505f)
+//#define MEAS_90	( 1.79769f)
+//#define MEAS_0	(-0.010472f)
+//==============================================================================
+double ICACHE_FLASH_ATTR getScaled(double aVal)
+{
+	return ((aVal - MEAS_0)/(MEAS_90 - MEAS_0)) * M_PI/2;
+}
+//==============================================================================
+float ICACHE_FLASH_ATTR scale(int aAxis, sint16 aVal)
 {
 
 //	Magx = (Magx-Mag_minx)/(Mag_maxx-Mag_minx)*2-1;
 //	Magy = (Magy-Mag_miny)/(Mag_maxy-Mag_miny)*2-1;
 //	Magz = (Magz-Mag_minz)/(Mag_maxz-Mag_minz)*2-1;
 
-//	float a = (aVal                   - MAG_MIN_MAX[aAxis][0]);
-//	float b = ((MAG_MIN_MAX[aAxis][1] - MAG_MIN_MAX[aAxis][0]));
-//	float c = 2 * (a / b);
-//	return (c - 1);
-
-	float a = (aVal                   - configs.calibs.Min.data[aAxis]);
+	float a = (aVal                            - configs.calibs.Min.data[aAxis]);
 	float b = ((configs.calibs.Max.data[aAxis] - configs.calibs.Min.data[aAxis]));
 	float c = 2 * (a / b);
 	return (c - 1);
 }
-//==============================================================================
-#define X 0
-#define Y 1
-#define Z 2
 //==============================================================================
 void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sint16 * aPitch, sint16 * aRoll, sint16 * aHead)
 {
@@ -74,22 +50,29 @@ void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sin
 	double b = (double)aRawAcc->y;
 	double c = (double)aRawAcc->z;
 
+//	ets_uart_printf("x = %d, y = %d, z = %d\r\n",
+//			aRawAcc->x,
+//			aRawAcc->y,
+//			aRawAcc->z);
+
 	double cdf = sqrt((double) (a * a + b * b + c * c));
 
-	double accxnorm = (double) aRawAcc->x / cdf;
-	double accynorm = (double) aRawAcc->y / cdf;
-	double accznorm = (double) aRawAcc->z / cdf;
-
-	double sinP = 0 - accxnorm;
-	double sinR = 0 - accynorm;
-	double cosP = sqrt(1 - sinP * sinP);
-	double cosR = sqrt(1 - sinR * sinR);
+	double accxnorm =  a / cdf;
+	double accynorm =  b / cdf;
+	double accznorm =  c / cdf;
 
 	double tP = asin(-accxnorm);
-	double tR = asin(accynorm/cos(tP));
+	double tR = 0;//asin(accynorm/cos(tP));
+
+	if(c < 0) tP = (M_PI - tP);
+	tP = getScaled(tP);
+
 
 	*aPitch =(sint16)(10000 * tP);
 	*aRoll = (sint16)(10000 * tR);
+
+//	*aPitch = 0;
+//	*aRoll = 0;
 
 	//====== heading ======================
 	// use calibration values to shift and scale magnetometer measurements
@@ -98,8 +81,11 @@ void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sin
 	double Magz = scale(Z_SCALE, aRawMag->z);
 
 	// tilt compensated magnetic sensor measurements
-	double magxcomp = Magx*cosP + Magz*sinP;
-	double magycomp = Magx*sinR*sinP + Magy*cosR - Magz*sinR*cosP;
+//	double magxcomp = Magx*cosP + Magz*sinP;
+//	double magycomp = Magx*sinR*sinP + Magy*cosR - Magz*sinR*cosP;
+
+	double magxcomp = Magx*cos(tP)+Magz*sin(tP);
+	double magycomp = Magx*sin(tR)*sin(tP)+Magy*cos(tR)- Magz*sin(tR)*cos(tP);
 //
 //	ets_uart_printf("magxcomp = %d, magycomp = %d\r\n",
 //					(int)(magxcomp*10000),
@@ -108,47 +94,6 @@ void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sin
 	// arctangent of y/x
 	*aHead = (sint16)(atan2f(magycomp, magxcomp) * 10000);
 	//ets_uart_printf("atan_fx = %d \r\n", *aHead);
-
-
-
-
-  /*//===================================
-  // Soft an dHard Iron Calibration
-  // Values calculated by Magneto
-  //===================================
-  double cal_matrix[3][3]={
-		  { 1, 0, 0},
-		  {0,  1, 0},
-		  {0, 0,  1}} ;
-
-  double cal_offsets[3] = {0, 0,0};
-
-  double fx = (double)aRawMag->x;
-  double fy = (double)aRawMag->y;
-  double fz = (double)aRawMag->z;
-
-//  fx += cal_offsets[X];
-//  fy += cal_offsets[Y];
-//  fz += cal_offsets[Z];
-//  fx = cal_matrix[X][X]*fx + cal_matrix[X][Y]*fy + cal_matrix[X][Z]*fz;
-//  fy = cal_matrix[Y][X]*fx + cal_matrix[Y][Y]*fy + cal_matrix[Y][Z]*fz;
-//  fz = cal_matrix[Z][X]*fx + cal_matrix[Z][Y]*fy + cal_matrix[Z][Z]*fz;
-
-  double _roll = atan2( aRawAcc->x, -aRawAcc->z);
-  double _pitch = atan2( (aRawAcc->x), ((aRawAcc->y*sin(_roll))+(-aRawAcc->z*cos(_roll))) );
-
-  double cmx = fx*cos(_pitch) + (fy)*sin(_pitch)*sin(_roll) + (fz)*sin(_pitch)*cos(_roll);
-  double cmy = fy*cos(_roll) - (fz)*sin(_roll);
-  double cmz = -fx*sin(_pitch) + fy*cos(_pitch)*sin(_roll) + fz*cos(_pitch)*cos(_roll);
-
-  double _heading = atan2f(cmy, cmx);
-
-  if(_heading < 0)
-      _heading += 2*PI;
-      if(_heading > 2*PI)
-      _heading -= 2*PI;
-
-  *aHead = (sint16)(_heading * 10000);*/
 }
 //==============================================================================
 sint16 avgBuf[FILTER_LENGHT];
@@ -179,3 +124,47 @@ sint16 mFilter(sint16 * aBuf, uint16 aLng)
   
 #endif
 }
+//==============================================================================
+// Kalman's filter
+//==============================================================================
+#define Q  (1000.0f)
+#define R  (10000.0)
+#define F  (1.0)
+#define H  (1.0)
+
+double ICACHE_FLASH_ATTR kfs(double data)
+{
+	static double X0 = 0.0;
+	static double 	P0 = 0.0;
+
+	static double State = 0.0;
+	static double Covariance = 0.0;
+//
+//	def __init__(self, q, r, f, h):
+//		self.Q = q
+//		self.R = r
+//		self.F = f
+//		self.H = h
+
+//	def correct(self, data):
+//		# +180 -> -180  or -180 -> +180
+//		if (data > 90 and self.State < -90) or (data < -90 and self.State > 90):
+//			if data > 0:
+//				self.State = self.State + 360
+//			if data < -0:
+//				self.State = self.State - 360
+
+		X0 = F*State;
+		P0 = F*Covariance*F + Q;
+		double K = H * P0/(H * P0 * H + R);
+		State = X0 + K * (data - H * X0);
+		Covariance = (1 - K * H) * P0;
+
+//		if self.State > 180:
+//			self.State = self.State - 360
+//		if self.State < -180:
+//			self.State = self.State + 360
+		return State;
+}
+
+

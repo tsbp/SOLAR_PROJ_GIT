@@ -58,8 +58,10 @@ typedef union __attribute__ ((__packed__))
 }s_DATE_TIME;
 //extern s_DATE_TIME dateTime;
 //=========================================================================================
-#define STOPPED (0)
-#define TRACKING (1)
+#define STOPPED         (0)
+#define TRACKING        (1)
+#define ALARM           (2)
+#define MANUAL_ALARM    (3)
 //=========================================================================================
 typedef union __packed
 {

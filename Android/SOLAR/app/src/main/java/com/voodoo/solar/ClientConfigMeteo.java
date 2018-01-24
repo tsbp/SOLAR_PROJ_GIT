@@ -42,9 +42,11 @@ public class ClientConfigMeteo extends Activity {
 
     public final static byte STOPPED   = (byte)0x0;
     public final static byte TRACKING  = (byte)0x1;
+    public final static byte ALARM     = (byte)0x2;
+    public final static byte MANUAL_ALARM     = (byte)0x3;
     byte meteoState = 0;
 
-    Button bServ;
+    Button bServ, bAlarm;
 
 
     com.voodoo.solar.imgPosition imgSun;
@@ -78,24 +80,53 @@ public class ClientConfigMeteo extends Activity {
         });
 
         //================================================
+        bAlarm = (Button) findViewById(R.id.btnMeteoAlarm);
+        bAlarm.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                byte buf[] = new byte[1];
+                if(meteoState != MANUAL_ALARM) buf[0] = MANUAL_ALARM;
+                else buf[0] = STOPPED;
+                UDPCommands.sendCmd(UDPCommands.CMD_SERVICE, buf, ip);
+            }
+        });
+
+        //================================================
         br = new BroadcastReceiver() {
             // действия при получении сообщений
             public void onReceive(Context context, Intent intent) {
                 String input = intent.getStringExtra(MainActivity.PARAM_LIGTH);
                 tvWind.setText(input);
 
-                if(data[14] == TRACKING)
+                meteoState = data[14];
+                switch(meteoState)
                 {
-                    meteoState = TRACKING;
-                    bServ.setBackgroundColor(Color.GREEN);
-                    bServ.setText("TRACKING STARTED");
+                    case TRACKING:
+                    {
+                        bServ.setEnabled(true);
+                        bServ.setBackgroundColor(Color.GREEN);
+                        bServ.setText("TRACKING STARTED");
+                        bAlarm.setBackgroundColor(Color.GREEN);
+                        bAlarm.setText("ALARM INACTIVE");
+                    }break;
+
+                    case STOPPED:
+                    {
+                        bServ.setEnabled(true);
+                        bServ.setBackgroundColor(Color.RED);
+                        bServ.setText("TRACKING STOPPED");
+                        bAlarm.setBackgroundColor(Color.GREEN);
+                        bAlarm.setText("ALARM INACTIVE");
+                    }break;
+
+                    case ALARM:
+                    case MANUAL_ALARM:
+                    {
+                        bServ.setEnabled(false);
+                        bAlarm.setText("ALARM ACTIVATED");
+                        bAlarm.setBackgroundColor(Color.RED);
+                    }break;
                 }
-                else
-                {
-                    meteoState = STOPPED;
-                    bServ.setBackgroundColor(Color.RED);
-                    bServ.setText("TRACKING STOPPED");
-                }
+
 
                 tvTime.setText((data[0] & 0xff) + "." + (data[1] & 0xff) + "." + (data[2] & 0xff) + ", " +
                                (data[3] & 0xff) + ":" + (data[4] & 0xff) + ":" + (data[5] & 0xff));

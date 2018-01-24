@@ -31,11 +31,21 @@ unsigned char tmp[6];
 sint16 Pitch, Roll, Yaw;
 
 #define VERTICAL_OFFSET	    (600)
-#define HORIZONTAL_OFFSET	(600)
+#define HORIZONTAL_OFFSET	(100)
 
 
 int manualDuration = PROC_DURATION;
 int vertMove = 10;
+
+sint16 cx[FILTER_LENGHT], cy[FILTER_LENGHT], cz[FILTER_LENGHT];
+u3AXIS_DATA cc;
+
+sint16 ax[FILTER_LENGHT], ay[FILTER_LENGHT], az[FILTER_LENGHT];
+u3AXIS_DATA aa;
+
+uint16 mTout = 1000;
+
+sint16 headF, headFarr[FILTER_LENGHT];
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
 {
@@ -55,16 +65,13 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			blink = BLINK_WAIT_UNCONNECTED;
 	}
 
-
-
 	//======== PCF8574 =====================
-	terminators = PCF8574_readByte(addr);
-	//PCF8574_writeByte(0x3f, ((out++) << 4) | 0x0f);
+		terminators = PCF8574_readByte(addr);
+		//======== BH1715  =====================
+		BH1715(I2C_READ, 0x23, 0x01, (unsigned char*)&light, 2);
+		light = ((unsigned char*)&light)[1] |
+				((unsigned char*)&light)[0] << 8;
 
-	//======== BH1715  =====================
-	BH1715(I2C_READ, 0x23, 0x01, (unsigned char*)&light, 2);
-	light = ((unsigned char*)&light)[1] |
-			((unsigned char*)&light)[0] << 8;
 
 	//======== LSM303  =====================
 	lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6);
@@ -75,29 +82,36 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 	//ets_uart_printf("%d\t%d\t%d\n", compass.x, compass.y, compass.z);
 
-	//ets_uart_printf("x = %d, y = %d, z = %d\r\n", compass.x, compass.y, compass.z);
 
-	getAngles(&accel, &compass, &Pitch, &Roll, &Yaw);
-	addValueToArray((sint16)(Roll),  rollArray);
-	addValueToArray((sint16)(Pitch), pitchArray);
-	addValueToArray((sint16)(Yaw),   yawArray);
+	addValueToArray(compass.x,  cx); addValueToArray(compass.y,  cy); addValueToArray(compass.z,  cz);
+	addValueToArray(accel.x,  ax); 	 addValueToArray(accel.y,  ay);	  addValueToArray(accel.z,  az);
 
-	_roll    = mFilter(rollArray,  FILTER_LENGHT);
-	_pitch   = mFilter(pitchArray, FILTER_LENGHT);
-	_heading = mFilter(yawArray,   FILTER_LENGHT);
+	cc.x = mFilter(cx,  FILTER_LENGHT);	cc.y = mFilter(cy,  FILTER_LENGHT);	cc.z = mFilter(cz,  FILTER_LENGHT);
+	aa.x = mFilter(ax,  FILTER_LENGHT);	aa.y = mFilter(ay,  FILTER_LENGHT);	aa.z = mFilter(az,  FILTER_LENGHT);
+
+	getAngles(&aa, &cc, &Pitch, &Roll, &Yaw);
+
+	_roll    = Roll;
+	_pitch   = Pitch;
+	_heading = Yaw;
+	//_heading = ;
 
 	long angle = (_pitch  * 18000 / 31416);
 
 	long head = ( _heading  * 18000 / 31416);
 	if(head < 0) head += 36000;
-	//ets_uart_printf("angle = %d, elev = %d\r\n", angle, elevation);
 
+	addValueToArray(head,  headFarr);
+	headF =  mFilter(headFarr,  FILTER_LENGHT);
+	//ets_uart_printf("_heading = %d, head = %d, angle = %d, cx= %d, cy = %d, cz = %d\r\n", _heading, head, angle,  cc.x, cc.y, cc.z);
 
+	//=====================================================================
 	if(sysState.manualMove)
 	{
 		if(manualDuration) manualDuration--;
 		else
 		{
+			sysState.byte = 0;
 			manualDuration = PROC_DURATION;
 			azimuth   = (uint16) head;
 			elevation = (uint16) angle;
@@ -106,49 +120,71 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	}
 
 	//=== sun tracking ====================================================
-	//ets_uart_printf("sysState = %d, head = %d, angle = %d\r\n", sysState, head, angle);
-	{
-		//=== horizontal ==============
+	else {
 
 		if(sysState.newPosition)
 		{
-			sysState.automaticMoveH = 1;
-			if(azimuth > ((uint16) head + HORIZONTAL_OFFSET))		move(RIGHT);
-			else if (azimuth < ((uint16) head - HORIZONTAL_OFFSET))	move(LEFT);
-		}
-		if(sysState.automaticMoveH &&
-				(azimuth <= ((uint16) head + HORIZONTAL_OFFSET)) &&
-				(azimuth >= ((uint16) head - HORIZONTAL_OFFSET)))
-		{
-			sysState.automaticMoveH = 0;
-			move(0);
-		}
+			static uint8 moving = 0;
 
-		//=== vertical ==============
-		if(sysState.newPosition && !sysState.automaticMoveH)
-		{
-			sysState.automaticMoveV = 1;
-			if(elevation > ( angle + VERTICAL_OFFSET))		move(UP);
-			else if (elevation < (angle - VERTICAL_OFFSET))	move(DOWN);
-		}
-		if (sysState.automaticMoveV &&
-				(elevation <= (angle + VERTICAL_OFFSET)) &&
-				(elevation >= (angle - VERTICAL_OFFSET)))
-		{
-			sysState.newPosition = 0;
-			sysState.automaticMoveV = 0;
-			move(0);
+			if(!moving)
+			{
+				if      (azimuth   > ((uint16) headF + 6 * HORIZONTAL_OFFSET)) moving = RIGHT;
+				else if (azimuth   < ((uint16) headF - 6 * HORIZONTAL_OFFSET)) moving = LEFT;
+				else if (elevation > ((uint16) angle + 6 * HORIZONTAL_OFFSET)) moving = UP;
+				else if (elevation < ((uint16) angle - 6 * HORIZONTAL_OFFSET)) moving = DOWN;
+
+				if(!moving) sysState.newPosition = 0;
+
+				mTout = 500;
+			}
+
+			switch(moving)
+			{
+					case RIGHT:
+					case LEFT:
+					{
+						if (azimuth <= ((uint16) head + HORIZONTAL_OFFSET) &&
+							azimuth >= ((uint16) head - HORIZONTAL_OFFSET))
+						{
+							moving = 0;
+							sysState.newPosition = 0;
+						}
+					}break;
+
+					case UP:
+					case DOWN:
+					{
+						if (elevation <= (angle + HORIZONTAL_OFFSET) &&
+							elevation >= (angle - HORIZONTAL_OFFSET))
+						{
+							moving = 0;
+							sysState.newPosition = 0;
+						}
+					}break;
+			}
+			//if(!moving) ets_uart_printf("sysState = %d, head = %d, angle = %d\r\n", sysState, head, angle);
+			//ets_uart_printf("sS = %d, m = %d, h = %d, az = %d\r\n", sysState, moving, head, azimuth);
+			move(moving);
+
+			if(mTout) mTout--;
+			else moving = 0;
 		}
 	}
 
 
+//	//=====================================================================
+//		static c = 50;
+//		if(c) c--;
+//		else
+//		{
+//			c = 50;
+//			ets_uart_printf("sysState = %d, head = %d, angle = %d\r\n", sysState, head, angle);
+//
+//		}
 }
 //==============================================================================
 void ICACHE_FLASH_ATTR setup(void)
 {
-
-
-
 	indicationInit();
 
 	set_gpio_mode(2, GPIO_PULLUP, GPIO_OUTPUT);
@@ -176,8 +212,6 @@ void ICACHE_FLASH_ATTR setup(void)
 
 	button_init();
 	UDP_Init_client();
-
-
 
 	// Start loop timer
 	os_timer_disarm(&loop_timer);

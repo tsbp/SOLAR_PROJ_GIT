@@ -95,3 +95,41 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 	else mState.light = 0;
 	//ets_uart_printf("light %d cntr %d\r\n", mState.light, cntr);
 }
+//==============================================================================
+void addValueToArray(sint16 aVal, sint16 * aArr)
+{
+  unsigned int k;
+  for(k = FILTER_LENGHT-1; k > 0; k--)
+    aArr[k] = aArr[k-1];
+
+  aArr[0] = aVal;
+}
+//==============================================================================
+sint16 avgBuf[FILTER_LENGHT];
+//==============================================================================
+sint16 mFilter(sint16 * aBuf, uint16 aLng)
+{
+#define MEDIAN
+	unsigned int i, k;
+#ifdef MEDIAN
+
+  for(i = 0; i < aLng; i++) avgBuf[i] = aBuf[i];
+
+  for(k = 0; k < aLng - 1; k++)
+    for(i = k + 1; i < aLng - 1; i++)
+    {
+      if(avgBuf[k] < avgBuf[i])
+      {
+        sint16 tmp =  avgBuf[k];
+        avgBuf[k] = avgBuf[i];
+        avgBuf[i] = tmp;
+      }
+    }
+  return avgBuf[aLng >> 1];
+#else
+  long sum = 0;
+  for(i = 0; i < aLng; i++)sum += aBuf[i];
+  return sum / aLng;
+
+#endif
+}

@@ -43,8 +43,8 @@ public class ClientConfig extends Activity {
     public static InetAddress ip;
     BroadcastReceiver br;
 
-    short azimuth;
-    short angle;
+    short azimuth = 0;
+    short angle = 0;
     byte angIncrement  = 10;
 
     @Override
@@ -136,13 +136,26 @@ public class ClientConfig extends Activity {
             }
         });
 
+        Button bSendPos = (Button) findViewById(R.id.btnSendPos);
+        //================================================
+        bSendPos.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                byte [] tmp = new byte[4];
+                tmp[0] = (byte) (angle & 0xff);
+                tmp[1] = (byte)((angle >> 8) & 0xff);
+                tmp[2] = (byte) (azimuth & 0xff);
+                tmp[3] = (byte)((azimuth >> 8) & 0xff);
+                UDPCommands.sendCmd(UDPCommands.CMD_SET_POSITION, tmp, ip);
+            }
+        });
+
         //==========================================================================================
         sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                tAzimuth.setText("Azimyth: " + progress*3.6);
-                double tmp = Math.toRadians(progress * 3.6);
+                azimuth = (short)(progress * 3.6 * 100);
 
 //                azimuth =  (short)(tmp * 10000);
 //
@@ -168,7 +181,7 @@ public class ClientConfig extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tAngle.setText("Angle: " + progress * 0.9);
-//                angle =  (short)(Math.toRadians(progress * 0.9) * 10000);
+                angle =  (short)(progress * 0.9 * 100);
 //
 //                cmdBuffer[2] = (byte) ((angle) & (byte)0xff);
 //                cmdBuffer[3] = (byte) ((angle >> 8) & (byte)0xff);

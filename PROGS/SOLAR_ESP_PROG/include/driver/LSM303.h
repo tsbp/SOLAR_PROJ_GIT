@@ -81,7 +81,7 @@
 #define LSM_Acc_Sensitivity_8g     (float)     4           /*!< accelerometer sensitivity with 8 g full scale [LSB/mg] */
 #define LSM_Acc_Sensitivity_16g    (float)     12         /*!< accelerometer sensitivity with 12 g full scale [LSB/mg] */
 
-#define PI                         (float)     3.14159265f
+#define PI                         (double)     3.14159265f
 
 
 #define LSM303DLHC_FULLSCALE_2G            ((uint8_t)0x00)  /*!< ±2 g */

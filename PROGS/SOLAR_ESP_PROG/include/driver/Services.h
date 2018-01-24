@@ -21,6 +21,11 @@ void ICACHE_FLASH_ATTR button_init(void);
 #define MODE_REMOTE_CONTROL	(3)
 #define MODE_FLASH_WRITE	(4)
 //==============================================================================
+#define LEFT	(4)
+#define RIGHT	(12)
+#define UP		(1)
+#define DOWN	(3)
+//==============================================================================
 extern uint8	serviceMode;
 extern int cntr;
 //==============================================================================
@@ -43,7 +48,7 @@ extern uint16 dataPresent;
 extern unsigned int blink;
 extern sint16 azimuth, elevation;
 //==============================================================================
-#define PROC_DURATION	(50)
+#define PROC_DURATION	(80)
 extern uint8 terminators, inProcess;
 uint16 light;
 //==============================================================================
@@ -53,9 +58,10 @@ typedef union
 	struct
 	{
 		uint16 manualMove	    :1;
-		uint16 automaticMoveH	:1;
+		uint16 moving       	:1;
 		uint16 automaticMoveV	:1;
-		uint16 goHome		    :1;
+		uint16 newPosition  	:1;
+		//uint16 goHome		    :1;
 	};
 }sSYSTEM_STATE;
 extern sSYSTEM_STATE sysState;

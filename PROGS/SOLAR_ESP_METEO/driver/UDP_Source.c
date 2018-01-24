@@ -137,7 +137,6 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 	uint8 dataLng = 0;
 
 	struct espconn *pesp_conn = arg;
-	//flashWriteBit = 0;
 	remot_info *premot = NULL;
 
 	uint8 crc = crcCalc(pusrdata, pusrdata[0] + 1);
@@ -247,11 +246,6 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 						ets_uart_printf("CMD GET CFG\r\n");
 						dataLng = sizeof(u_METEO);
 						memcpy (ansBuffer + 3, configs.meteo.byte, dataLng );
-
-								ets_uart_printf("ans udp data: ");
-											for (a = 0; a < dataLng + 5; a++)
-												ets_uart_printf("%02x ", ansBuffer[a]);
-											ets_uart_printf("\r\n");
 					}
 					ets_uart_printf("METEO: %d, %d, %d, %d, %d\r\n",
 													configs.meteo.latit,
@@ -263,12 +257,6 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 			case CMD_WIFI:
 				{
-
-						ets_uart_printf("recv udp data: ");
-						for (a = 0; a < length; a++)
-							ets_uart_printf("%02x ", pusrdata[a]);
-						ets_uart_printf("\r\n");
-
 					int i, j;
 
 					os_memset(configs.wifi.SSID,      0, sizeof(configs.wifi.SSID));
@@ -303,10 +291,10 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				ansBuffer[dataLng + 3] = 0xcc;
 				ansBuffer[dataLng + 4] = 0xcc;
 
-				ets_uart_printf("ans udp data: ");
-					for (a = 0; a < dataLng + 5; a++)
-						ets_uart_printf("%02x ", ansBuffer[a]);
-					ets_uart_printf("\r\n");
+//				ets_uart_printf("ans udp data: ");
+//					for (a = 0; a < dataLng + 5; a++)
+//						ets_uart_printf("%02x ", ansBuffer[a]);
+//					ets_uart_printf("\r\n");
 
 				espconn_sent(pesp_conn, ansBuffer, 5 + dataLng);
 		}
