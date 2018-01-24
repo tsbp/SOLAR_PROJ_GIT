@@ -76,15 +76,6 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 		if(mState.stt) UDP_Angles();
 
-
-
-//		ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,
-//				mState.dateTime.month,
-//				mState.dateTime.day,
-//				mState.dateTime.hour - 2, //- time zone
-//				mState.dateTime.min,
-//				mState.dateTime.sec);
-
 //		ets_uart_printf("azim:%d, elev:%d\n", (int)(1000 * azimuth * 57.2958), (int)(1000 * elev * 57.2958));
 
 		//====================================
