@@ -1,18 +1,15 @@
 //==============================================================================
 #include "driver\services.h"
 #include "driver\Calculations.h"
+#include "driver\Configs.h"
 #include "math.h"
 //==============================================================================
-
 #define  DEG_TO_RAD (0.01745329)
 #define LAT	(48.5 * DEG_TO_RAD)
 #define LON ( 32.23 * DEG_TO_RAD)
 double PI =  3.141592654;
 double TWOPI = 6.28318531;
-
 int Hour, Minute = 0, Second = 0, Month = 11, Day = 30, Year, Zone = +2;
-//double Lon = LON, Lat = LAT;
-
 double azimuth, elev;
 //==============================================================================================
 double _fmod(double x, double y)
@@ -77,25 +74,6 @@ void ICACHE_FLASH_ATTR Calculate(double Lat, double Lon, int aYear, int aMonth, 
         //ets_uart_printf("Lat: %d, Decl: %d, HrAngle: %d\n", (int)(1000 * Lat), (int)(1000 * Decl), (int)(1000 * HrAngle));
     }
 //==============================================================================
-void ICACHE_FLASH_ATTR meteoProcessing(void)
-{
-	int i, cntr = 0;
-	long light = 0;
-
-	for(i = 0; i < 256; i++)
-		if(items[i].present)
-		{
-			ets_uart_printf("");
-			//ets_uart_printf("pres at addr %d  light %d\r\n", i, items[i].light);
-			light += items[i].light;
-			cntr++;
-		}
-
-	if(cntr) mState.light = light / cntr;
-	else mState.light = 0;
-	//ets_uart_printf("light %d cntr %d\r\n", mState.light, cntr);
-}
-//==============================================================================
 void addValueToArray(sint16 aVal, sint16 * aArr)
 {
   unsigned int k;
@@ -133,3 +111,5 @@ sint16 mFilter(sint16 * aBuf, uint16 aLng)
 
 #endif
 }
+
+

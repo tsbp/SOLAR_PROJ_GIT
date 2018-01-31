@@ -16,15 +16,14 @@ static volatile os_timer_t service_timer;
 static void  service_timer_cb(os_event_t *events);
 uint8_t factory_reset_pin = 3, freqPin = 7;
 uint8	serviceMode = MODE_NORMAL;
-int cntr = 5;
 
 uint16 light;
-uint8 terminators; //inProcess = 0;
-//s_DATE_TIME dateTime;
+uint8 terminators;
 uMETEO_STATE mState = {.stt = TRACKING};
 
-
+int cntr = 5;
 uint16 freq, pulseCntr = 0;
+sint16 windArr[FILTER_LENGHT];
 
 sLanItem items[256];
 //==============================================================================
@@ -65,15 +64,6 @@ void ICACHE_FLASH_ATTR button_init(void)
 	if (set_gpio_mode(factory_reset_pin, GPIO_FLOAT, GPIO_INT))
 		if (gpio_intr_init(factory_reset_pin, gpio_type))  gpio_intr_attach(button_intr_callback);
 }
-//======================= Freq code function ============================================================
-//void ICACHE_FLASH_ATTR pwm_intr_callback(unsigned pin, unsigned level)
-//{
-//	//ets_uart_printf("RESET BUTTON PRESSED!!!\r\n");
-////	serviceMode = MODE_BTN_RESET;
-////		resetCntr = 0;
-////		service_timer_start();
-//	pulseCntr++;
-//}
 //======================= GPIO init function ============================================================
 void ICACHE_FLASH_ATTR freq_cntr_init(void)
 {
@@ -230,4 +220,37 @@ void ICACHE_FLASH_ATTR timeincrement(void)
 	}
 }
 //==============================================================================
+void ICACHE_FLASH_ATTR meteoProcessing(void)
+{
+	//========= wind ==========
+	cntr = 10;
+	freq = pulseCntr;
+	pulseCntr = 0;
+	addValueToArray((sint16)freq, windArr); //[];
+	mState.wind = mFilter(windArr, FILTER_LENGHT);
+
+	if(mState.stt != MANUAL_ALARM )
+	{
+		if     (mState.wind >= configs.meteo.wind)                             mState.stt = ALARM;
+		else if(mState.stt != STOPPED && mState.wind < configs.meteo.wind - 2) mState.stt = TRACKING;
+	}
+
+	if(mState.stt == ALARM || mState.stt == MANUAL_ALARM) mState.elev = HOME_ELEVATION; // wind to fast
+	//========= Light ==========
+	int i, cntr_a = 0;
+	long light = 0;
+
+	for(i = 0; i < 256; i++)
+		if(items[i].present)
+		{
+			ets_uart_printf("");
+			//ets_uart_printf("pres at addr %d  light %d\r\n", i, items[i].light);
+			light += items[i].light;
+			cntr_a++;
+		}
+
+	if(cntr_a) mState.light = light / cntr_a;
+	else mState.light = 0;
+	//ets_uart_printf("light %d cntr %d\r\n", mState.light, cntr);
+}
 

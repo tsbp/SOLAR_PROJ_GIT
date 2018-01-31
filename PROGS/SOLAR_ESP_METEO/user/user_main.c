@@ -22,32 +22,30 @@ int (*console_printf)(const char *fmt, ...) = ets_uart_printf;
 static volatile os_timer_t loop_timer;
 static void  loop(os_event_t *events);
 
-#define HOME_AZIMUTH	(3000)
-#define HOME_ELEVATION	(0)
-#define MAX_ELEVATION	(9000)
 
 struct ip_info ipconfig;
 
-sint16 windArr[FILTER_LENGHT];
-uint8 windHigh = 0;
+
+//uint8 windHigh = 0;
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
 {
-	static cntr = 10;
+	static int cntr_b = 10;
 
-	if (cntr == 0 && flashWriteBit == 1) saveConfigs();
+	if (cntr_b == 0 && flashWriteBit == 1) saveConfigs();
 
-	if(cntr) // standby
+	//ets_uart_printf("wStat  = %d, cn %d\r\n", wifi_station_get_connect_status(), cntr_b);
+	if(cntr_b) // standby
 	{
-		cntr--;
+		cntr_b--;
+
 		if(wifi_station_get_connect_status() == STATION_GOT_IP || configs.wifi.mode == SOFTAP_MODE)
 		{
-
 			if(configs.wifi.mode == SOFTAP_MODE) wifi_get_ip_info(SOFTAP_IF,  &ipconfig);
 			else                                 wifi_get_ip_info(STATION_IF, &ipconfig);
 			currentIP = ipconfig.ip.addr;
-			//ets_uart_printf(IPSTR, IP2STR(&currentIP));
-			if(mState.stt == TRACKING)	blink = BLINK_WAIT;
+			ets_uart_printf(IPSTR, IP2STR(&currentIP));
+			if(mState.stt)	blink = BLINK_WAIT;
 			else   blink = BLINK_WAIT_NODATA;
 			UDP_cmdState();
 		}
@@ -55,12 +53,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	}
 	else
 	{
-		cntr = 10 ;
-		freq = pulseCntr;
-		pulseCntr = 0;
-
-		//timeincrement();
-
+		cntr_b = 10;
 		if(mState.stt == TRACKING)
 			Calculate(
 				0.01 * configs.meteo.latit,
@@ -72,13 +65,11 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 				mState.dateTime.min,
 				mState.dateTime.sec);
 
-
-
 		if(mState.stt) UDP_Angles();
 
 //		ets_uart_printf("azim:%d, elev:%d\n", (int)(1000 * azimuth * 57.2958), (int)(1000 * elev * 57.2958));
 
-		//====================================
+		//====== check if sun is under horizont ========================
 		mState.azim = (int)(100 * azimuth * 57.2958);
 		mState.elev = (int)(9000 - 100 * elev * 57.2958);
 		if(mState.elev > MAX_ELEVATION)
@@ -86,20 +77,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			mState.azim = HOME_AZIMUTH;
 			mState.elev = HOME_ELEVATION;
 		}
-
-		//=== wind ====
-		addValueToArray((sint16)freq, windArr); //[];
-		mState.wind = mFilter(windArr, FILTER_LENGHT);
-
-		if(mState.stt != MANUAL_ALARM )
-		{
-			if     (mState.wind >= configs.meteo.wind)                             mState.stt = ALARM;
-			else if(mState.stt != STOPPED && mState.wind < configs.meteo.wind - 2) mState.stt = TRACKING;
-		}
-
-
-		if(mState.stt == ALARM || mState.stt == MANUAL_ALARM) mState.elev = HOME_ELEVATION; // wind to fast
-		//====================================
+		//==============================================================
 		meteoProcessing();
 		rtc_get_current_time();
 	}

@@ -3,13 +3,14 @@
 #define INCLUDE_DRIVER_SERVICES_H_
 //==============================================================================
 #include "c_types.h"
+#include "driver/Calculations.h"
 //==============================================================================
-
 void ICACHE_FLASH_ATTR service_timer_start (void);
 void ICACHE_FLASH_ATTR service_timer_stop (void);
 void ICACHE_FLASH_ATTR button_intr_callback(unsigned pin, unsigned level);
 void ICACHE_FLASH_ATTR button_init(void);
 void ICACHE_FLASH_ATTR timeincrement(void);
+void ICACHE_FLASH_ATTR meteoProcessing(void);
 //==============================================================================
 #define MODE_NORMAL		(0)
 #define MODE_SW_RESET	(1)
@@ -38,6 +39,7 @@ void ICACHE_FLASH_ATTR leds(unsigned char aStt);
 
 extern unsigned int blink;
 extern uint16 freq, pulseCntr;
+extern sint16 windArr[FILTER_LENGHT];
 //==============================================================================
 #define PROC_DURATION	(50)
 extern uint8 terminators, inProcess;
@@ -84,5 +86,9 @@ typedef struct
 	uint16 light;
 }sLanItem;
 extern sLanItem items[256];
+//==============================================================================
+#define HOME_AZIMUTH	(3000)
+#define HOME_ELEVATION	(0)
+#define MAX_ELEVATION	(9100)
 //==============================================================================
 #endif /* INCLUDE_DRIVER_SERVICES_H_ */
