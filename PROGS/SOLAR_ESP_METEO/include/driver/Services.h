@@ -19,7 +19,7 @@ void ICACHE_FLASH_ATTR meteoProcessing(void);
 #define MODE_FLASH_WRITE	(4)
 //==============================================================================
 extern uint8	serviceMode;
-extern int cntr;
+//extern int cntr;
 //==============================================================================
 #define BLINK_FORWARD   (0x8040)
 #define BLINK_BACKWARD  (0x4080)

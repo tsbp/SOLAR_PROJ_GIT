@@ -21,7 +21,7 @@ uint16 light;
 uint8 terminators;
 uMETEO_STATE mState = {.stt = TRACKING};
 
-int cntr = 5;
+//int cntr = 5;
 uint16 freq, pulseCntr = 0;
 sint16 windArr[FILTER_LENGHT];
 
@@ -223,7 +223,7 @@ void ICACHE_FLASH_ATTR timeincrement(void)
 void ICACHE_FLASH_ATTR meteoProcessing(void)
 {
 	//========= wind ==========
-	cntr = 10;
+	//cntr = 10;
 	freq = pulseCntr;
 	pulseCntr = 0;
 	addValueToArray((sint16)freq, windArr); //[];
