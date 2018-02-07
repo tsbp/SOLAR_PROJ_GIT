@@ -10,6 +10,7 @@
 #include "driver/wifi.h"
 #include "driver/gpio16.h"
 #include "driver/services.h"
+
 //==============================================================================
 
 static volatile os_timer_t service_timer;
@@ -97,11 +98,14 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 					{
 						os_printf("do reset \r\n");
 
-						os_memset(configs.wifi.SSID, 0,sizeof(configs.wifi.SSID));
-						os_sprintf(configs.wifi.SSID, "%s", "SOLAR");
+						os_memset(configs.wifi.SSID, 0, sizeof(configs.wifi.SSID));
+						os_sprintf(configs.wifi.SSID, "%s", "Solar");
 
-						configs.wifi.mode = SOFTAP_MODE;
-						configs.wifi.auth = AUTH_OPEN;
+						os_memset(configs.wifi.SSID_PASS, 0, sizeof(configs.wifi.SSID_PASS));
+						os_sprintf(configs.wifi.SSID_PASS, "%s", "123454321");
+
+						configs.wifi.mode = STATION_MODE;
+						configs.wifi.auth = AUTH_WPA_WPA2_PSK;
 						saveConfigs();
 						system_restart();					
 					}
@@ -253,4 +257,5 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 	else mState.light = 0;
 	//ets_uart_printf("light %d cntr %d\r\n", mState.light, cntr);
 }
+
 

@@ -35,6 +35,8 @@ extern uint8	serviceMode;
 void ICACHE_FLASH_ATTR indicationInit(void);
 void ICACHE_FLASH_ATTR blinking(unsigned int blnk);
 void ICACHE_FLASH_ATTR leds(unsigned char aStt);
+void ICACHE_FLASH_ATTR sntp_initialize(void);
+void ICACHE_FLASH_ATTR sntp_get_stamp(void);
 
 
 extern unsigned int blink;
@@ -87,8 +89,9 @@ typedef struct
 }sLanItem;
 extern sLanItem items[256];
 //==============================================================================
-#define HOME_AZIMUTH	(3000)
-#define HOME_ELEVATION	(0)
-#define MAX_ELEVATION	(9100)
+#define HOME_AZIMUTH	    (3000)
+#define HOME_ELEVATION	    (0)
+#define MAX_ELEVATION	    (9100)
+#define MAX_ELEVATION_SET	(7500)
 //==============================================================================
 #endif /* INCLUDE_DRIVER_SERVICES_H_ */

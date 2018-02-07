@@ -11,6 +11,7 @@
 #include "driver/configs.h"
 #include "driver/Calculations.h"
 #include "driver/UDP_Source.h"
+#include "mem.h"
 //============================================================================================================================
 extern int ets_uart_printf(const char *fmt, ...);
 int (*console_printf)(const char *fmt, ...) = ets_uart_printf;
@@ -27,6 +28,50 @@ struct ip_info ipconfig;
 
 
 //uint8 windHigh = 0;
+//================== SNTP ==================================================
+void ICACHE_FLASH_ATTR sntp_initialize(void)
+{
+	ip_addr_t *addr = (ip_addr_t *)os_zalloc(sizeof(ip_addr_t));
+	sntp_setservername(0, "us.pool.ntp.org"); // set server 0 by domain name
+	//sntp_setservername(0, "domain.kbp.radiy.com");
+	sntp_setservername(1, "ntp.sjtu.edu.cn"); // set server 1 by domain name
+	//ipaddr_aton("210.72.145.44", addr);
+	ipaddr_aton("10.10.10.2", addr);
+	sntp_setserver(2, addr); // set server 2 by IP address
+	sntp_init();
+	os_free(addr);
+
+	sntp_set_timezone((sint8)configs.meteo.timeZone);
+}
+//================== SNTP ==================================================
+void ICACHE_FLASH_ATTR sntp_get_stamp(void)
+{
+	sint8 tz  = sntp_get_timezone();
+	uint32 ts = sntp_get_current_timestamp();
+	ets_uart_printf("sntp: %d, %s zone = %d\n",ts, sntp_get_real_time(ts), tz);
+
+	uint8 t[24], i;
+	os_memset(t, 0, sizeof(t));
+	os_sprintf(t, "%s", sntp_get_real_time(ts));
+
+	if(ts != 0)
+	{
+		mState.dateTime.sec  = (t[17]-'0')*10 + (t[18]-'0');
+		mState.dateTime.min  = (t[14]-'0')*10 + (t[15]-'0');
+		mState.dateTime.hour = (t[11]-'0')*10 + (t[12]-'0');
+
+		mState.dateTime.day  = (t[8]-'0')*10 + (t[9]-'0');
+		mState.dateTime.year  = /*(t[20]-'0')*1000 + (t[21]-'0')*100 + */(t[22]-'0')*10 + (t[23]-'0');
+
+		char mon [12][3]= {
+				{'J','a','n'}, {'F','e','b'}, {'M','a','r'},{'A','p','r'}, {'M','a','y'}, {'J','u','n'},
+				{'J','u','l'}, {'A','u','g'}, {'S','e','p'},{'O','c','t'}, {'N','o','v'}, {'D','e','c'}};
+		for(i = 0; i < 12; i++)
+			if(t[4] == mon[i][0] && t[5] == mon[i][1] && t[6] == mon[i][2]) mState.dateTime.month = i+1;
+	}
+
+}
+
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
 {
@@ -44,12 +89,16 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			if(configs.wifi.mode == SOFTAP_MODE) wifi_get_ip_info(SOFTAP_IF,  &ipconfig);
 			else                                 wifi_get_ip_info(STATION_IF, &ipconfig);
 			currentIP = ipconfig.ip.addr;
-			ets_uart_printf(IPSTR, IP2STR(&currentIP));
+			//ets_uart_printf(IPSTR, IP2STR(&currentIP));
 			if(mState.stt)	blink = BLINK_WAIT;
 			else   blink = BLINK_WAIT_NODATA;
+			if(cntr_b == 1 && !rtc_get_current_time()) sntp_get_stamp();
 			UDP_cmdState();
 		}
-		else blink = BLINK_WAIT_UNCONNECTED;
+		else
+		{
+			blink = BLINK_WAIT_UNCONNECTED;
+		}
 	}
 	else
 	{
@@ -65,7 +114,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 				mState.dateTime.min,
 				mState.dateTime.sec);
 
-		if(mState.stt) UDP_Angles();
+
 
 //		ets_uart_printf("azim:%d, elev:%d\n", (int)(1000 * azimuth * 57.2958), (int)(1000 * elev * 57.2958));
 
@@ -77,10 +126,22 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			mState.azim = HOME_AZIMUTH;
 			mState.elev = HOME_ELEVATION;
 		}
+		//else if(mState.elev > MAX_ELEVATION_SET) mState.elev = MAX_ELEVATION_SET;
 		//==============================================================
 		meteoProcessing();
-		rtc_get_current_time();
+
+		//==============================================================
+		if(mState.stt) UDP_Angles();
 	}
+
+//	static c = 10;
+//	if(c) c--;
+//	else
+//	{
+//		c = 10;
+//
+//	}
+
 
 }
 
@@ -103,6 +164,7 @@ void ICACHE_FLASH_ATTR setup(void)
 	freq_cntr_init();
 
 	UDP_Init_client();
+	sntp_initialize();
 
 	// Start loop timer
 	os_timer_disarm(&loop_timer);

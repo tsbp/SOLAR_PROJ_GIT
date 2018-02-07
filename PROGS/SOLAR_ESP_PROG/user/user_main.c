@@ -32,6 +32,7 @@ sint16 Pitch, Roll, Yaw;
 
 #define VERTICAL_OFFSET	    (600)
 #define HORIZONTAL_OFFSET	(100)
+#define ELEVATION_MAX		(7500)
 
 
 int manualDuration = PROC_DURATION;
@@ -122,16 +123,18 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	//=== sun tracking ====================================================
 	else {
 
+		if(elevation > ELEVATION_MAX) elevation = ELEVATION_MAX;
 		if(sysState.newPosition)
 		{
 			static uint8 moving = 0;
 
 			if(!moving)
 			{
-				if      (azimuth   > ((uint16) headF + 6 * HORIZONTAL_OFFSET)) moving = RIGHT;
-				else if (azimuth   < ((uint16) headF - 6 * HORIZONTAL_OFFSET)) moving = LEFT;
-				else if (elevation > ((uint16) angle + 6 * HORIZONTAL_OFFSET)) moving = UP;
+
+				if      (elevation > ((uint16) angle + 6 * HORIZONTAL_OFFSET)) moving = UP;
 				else if (elevation < ((uint16) angle - 6 * HORIZONTAL_OFFSET)) moving = DOWN;
+				else if (azimuth   > ((uint16) headF + 6 * HORIZONTAL_OFFSET)) moving = RIGHT;
+				else if (azimuth   < ((uint16) headF - 6 * HORIZONTAL_OFFSET)) moving = LEFT;
 
 				if(!moving) sysState.newPosition = 0;
 
@@ -162,6 +165,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 						}
 					}break;
 			}
+			//ets_uart_printf("head = %d, headF = %d\r\n", head, headF);
 			//if(!moving) ets_uart_printf("sysState = %d, head = %d, angle = %d\r\n", sysState, head, angle);
 			//ets_uart_printf("sS = %d, m = %d, h = %d, az = %d\r\n", sysState, moving, head, azimuth);
 			move(moving);
@@ -172,15 +176,15 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	}
 
 
-//	//=====================================================================
-//		static c = 50;
-//		if(c) c--;
-//		else
-//		{
-//			c = 50;
-//			ets_uart_printf("sysState = %d, head = %d, angle = %d\r\n", sysState, head, angle);
-//
-//		}
+	//=====================================================================
+		static c = 50;
+		if(c) c--;
+		else
+		{
+			c = 50;
+			ets_uart_printf("elevation = %d, head = %d, angle = %d\r\n", elevation, head, angle);
+
+		}
 }
 //==============================================================================
 void ICACHE_FLASH_ATTR setup(void)

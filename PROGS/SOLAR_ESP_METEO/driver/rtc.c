@@ -49,7 +49,7 @@ int getDayOfWeek(int aYear, int aMonth, int aDay)
 			yy + yy / 4 - yy / 100 + yy / 400) % 7;
 }
 //=================== Returns the current time from EPOC (using RTC) ===================
-void rtc_get_current_time()
+uint8_t rtc_get_current_time()
 {
     uint8_t     rtc_bytes[8];
     uint8_t     bytes_read;
@@ -59,6 +59,7 @@ void rtc_get_current_time()
     //os_printf("Corrected time: %d:%d:%d %d/%d/%d\r\n", ts->tm_hour, ts->tm_min, ts->tm_sec, ts->tm_mday, ts->tm_mon, ts->tm_year);
     os_memset(rtc_bytes, 0, 7);
     bytes_read = RTC_Read(0x00, 7, rtc_bytes);
+    if(!bytes_read)return 0;
     //if (bytes_read < 7) return timestamp;
 
     /* unload contents in to the TS structure */

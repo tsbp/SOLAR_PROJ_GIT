@@ -19,7 +19,7 @@
 
 void i2c_bus_scan();
 void rtc_set_time(s_DATE_TIME *aTime);
-void rtc_get_current_time();
+uint8_t rtc_get_current_time();
 int getDayOfWeek(int aYear, int aMonth, int aDay);
 
 #endif

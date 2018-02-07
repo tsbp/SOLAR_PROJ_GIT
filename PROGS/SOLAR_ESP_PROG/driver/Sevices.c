@@ -89,10 +89,10 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 						os_sprintf(configs.wifi.SSID, "%s", "Solar");
 
 						os_memset(configs.wifi.SSID_PASS, 0, sizeof(configs.wifi.SSID_PASS));
-						//os_sprintf(configs.wifi.SSID_PASS, "%s", "Solar");
+						os_sprintf(configs.wifi.SSID_PASS, "%s", "123454321");
 
-						configs.wifi.mode = SOFTAP_MODE;
-						configs.wifi.auth = AUTH_OPEN;
+						configs.wifi.mode = STATION_MODE;
+						configs.wifi.auth = AUTH_WPA_WPA2_PSK;
 						saveConfigs();
 						system_restart();					
 					}
