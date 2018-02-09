@@ -6,7 +6,7 @@
 #include "user_interface.h"
 #include "driver/uart.h"
 #include "espconn.h"
-#include "at_custom.h"
+//#include "at_custom.h"
 #include "mem.h"
 #include "driver/UDP_Source.h"
 #include "driver/services.h"
@@ -80,7 +80,7 @@ void ICACHE_FLASH_ATTR UDP_cmdState()
 	UDP_PC->proto.udp->remote_ip[1] = ip4_addr2(&currentIP);
 	UDP_PC->proto.udp->remote_ip[2] = ip4_addr3(&currentIP);
 	UDP_PC->proto.udp->remote_ip[3] = currentIPask;
-//	ets_uart_printf("currentIPask: %d\r\n", currentIPask);
+	ets_uart_printf("currentIPask: %d\r\n", currentIPask);
 
 	uint8 dataLng = 0;
 	uint8 buf[30] = {ID_MASTER, CMD_STATE};
