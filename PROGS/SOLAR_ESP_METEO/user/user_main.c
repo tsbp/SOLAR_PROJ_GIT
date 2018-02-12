@@ -148,7 +148,6 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 //==============================================================================
 void ICACHE_FLASH_ATTR setup(void)
 {
-
 	indicationInit();
 
 	set_gpio_mode(2, GPIO_PULLUP, GPIO_OUTPUT);

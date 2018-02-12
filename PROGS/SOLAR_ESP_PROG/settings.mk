@@ -31,11 +31,11 @@ BOOT ?= none
 # APP = 0 - eagle.flash.bin + eagle.irom0text.bin
 # APP = 1 - user1.bin
 # APP = 2 - user2.bin
-APP ?= 0
+APP ?= 1
 # SPI_SPEED = 40, 26, 20, 80
 SPI_SPEED ?= 40
 # SPI_MODE: QIO, QOUT, DIO, DOUT
-SPI_MODE ?= QIO
+SPI_MODE ?= DOUT
 # SPI_SIZE_MAP
 # 0 : 512 KB (256 KB + 256 KB)
 # 1 : 256 KB

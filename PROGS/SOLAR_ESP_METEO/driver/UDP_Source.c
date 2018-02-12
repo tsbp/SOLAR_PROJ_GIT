@@ -4,15 +4,12 @@
 #include "os_type.h"
 #include "user_config.h"
 #include "user_interface.h"
-#include "driver/uart.h"
 #include "espconn.h"
-//#include "at_custom.h"
 #include "mem.h"
+#include "driver/uart.h"
 #include "driver/UDP_Source.h"
 #include "driver/services.h"
 #include "driver/configs.h"
-//#include "driver/LSM303.h"
-#include "driver\Calculations.h"
 #include "driver/rtc.h"
 //=========================================================================================
 //extern u_CONFIG configs;
@@ -66,21 +63,38 @@ void ICACHE_FLASH_ATTR UDP_Angles() //send braodcast angles
 //=========================================================================================
 void ICACHE_FLASH_ATTR UDP_cmdState()
 {
+	static int bcAskCntr = 10;
 	//====== decrement cntr of presence of lan item =============
 	int i;
 	for(i = 0; i < 256; i++)
 		if(items[i].present) items[i].present--;
 
 
+
 	for(currentIPask; currentIPask < 255; currentIPask++)
 		if(items[currentIPask].present || (currentIPask == ip4_addr4(&currentIP))) break;
+
+	//broadcast pack one per 10 cycles
+		if(currentIPask == 255)
+		{
+			if(bcAskCntr)
+			{
+				bcAskCntr--;
+				currentIPask++;
+				for(currentIPask; currentIPask < 255; currentIPask++)
+						if(items[currentIPask].present || (currentIPask == ip4_addr4(&currentIP))) break;
+			}
+			else bcAskCntr = 10;
+		}
+		//================================
+
 
 	UDP_PC->proto.udp->remote_port  = UDP_PORT;
 	UDP_PC->proto.udp->remote_ip[0] = ip4_addr1(&currentIP);
 	UDP_PC->proto.udp->remote_ip[1] = ip4_addr2(&currentIP);
 	UDP_PC->proto.udp->remote_ip[2] = ip4_addr3(&currentIP);
 	UDP_PC->proto.udp->remote_ip[3] = currentIPask;
-	ets_uart_printf("currentIPask: %d\r\n", currentIPask);
+	//ets_uart_printf("currentIPask: %d, c = %d\r\n", currentIPask, bcAskCntr);
 
 	uint8 dataLng = 0;
 	uint8 buf[30] = {ID_MASTER, CMD_STATE};

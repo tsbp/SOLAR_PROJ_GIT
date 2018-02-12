@@ -21,10 +21,10 @@ void ICACHE_FLASH_ATTR button_init(void);
 #define MODE_REMOTE_CONTROL	(3)
 #define MODE_FLASH_WRITE	(4)
 //==============================================================================
-#define LEFT	(4)
-#define RIGHT	(12)
-#define UP		(1)
-#define DOWN	(3)
+#define LEFT	(2)
+#define RIGHT	(3)
+#define UP		(8)
+#define DOWN	(12)
 //==============================================================================
 extern uint8	serviceMode;
 extern int cntr;

@@ -177,7 +177,7 @@ void ICACHE_FLASH_ATTR indicator_loop(os_event_t *events)
 //==============================================================================
 void ICACHE_FLASH_ATTR move(uint8 a)
 {
-	PCF8574_writeByte(0x3f, (a << 4) | 0x0f);
+	PCF8574_writeByte(0x3f, ((~a) << 4) | 0x0f);
 	switch(a)
 	{
 	case LEFT:

@@ -4,7 +4,6 @@
 #include "os_type.h"
 #include "user_config.h"
 #include "user_interface.h"
-#include "driver/uart.h"
 #include "espconn.h"
 #include "at_custom.h"
 #include "mem.h"
@@ -12,7 +11,8 @@
 #include "driver/services.h"
 #include "driver/configs.h"
 #include "driver/LSM303.h"
-#include "driver\Calculations.h"
+#include "driver/Calculations.h"
+#include "driver/uart.h"
 //=========================================================================================
 //extern u_CONFIG configs;
 struct espconn *UDP_PC;
