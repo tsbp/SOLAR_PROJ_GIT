@@ -24,7 +24,11 @@
 #define CMD_WIFI			(0xC1)
 
 #define DATA_PRS_AMNT		(250)
-
+//================================================================================
+#define GET_COMPASS_RAW		(0)
+#define SET_COMPASS_CALIBS	(1)
+#define GET_ACCEL_RAW		(2)
+#define SET_ACCEL_CALIBS	(3)
 
 void ICACHE_FLASH_ATTR UDP_Init();
 void ICACHE_FLASH_ATTR UDP_Init_client();

@@ -6,6 +6,12 @@
 //==============================================================================
 sint16 _roll, _pitch, _heading;
 sint16 rollArray[FILTER_LENGHT], pitchArray[FILTER_LENGHT], yawArray[FILTER_LENGHT];
+
+sint16 cx[FILTER_LENGHT], cy[FILTER_LENGHT], cz[FILTER_LENGHT];
+u3AXIS_DATA cc;
+
+sint16 ax[FILTER_LENGHT], ay[FILTER_LENGHT], az[FILTER_LENGHT];
+u3AXIS_DATA aa;
 //==============================================================================
 void ICACHE_FLASH_ATTR addValueToArray(sint16 aVal, sint16 * aArr)
 {
@@ -20,8 +26,16 @@ void ICACHE_FLASH_ATTR addValueToArray(sint16 aVal, sint16 * aArr)
 #define Y_SCALE	(1)
 #define Z_SCALE	(2)
 //==============================================================================
-#define MEAS_90	( 1.43117f)
-#define MEAS_0	(-0.0558505f)
+
+sint16 uncalPitch;
+
+#define MEAS_90	( 1.91986f)
+#define MEAS_0	(-0.349066f)
+
+
+
+//#define MEAS_90	( 1.43117f)
+//#define MEAS_0	(-0.0558505f)
 //#define MEAS_90	( 1.79769f)
 //#define MEAS_0	(-0.010472f)
 //==============================================================================
@@ -62,9 +76,11 @@ void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sin
 	double accznorm =  c / cdf;
 
 	double tP = asin(-accxnorm);
-	double tR = asin(accynorm/cos(tP));
+	double tR = 0;//asin(accynorm/cos(tP));
 
 	if(c < 0) tP = (M_PI - tP);
+
+	uncalPitch = (sint16)(10000 * tP);
 	tP = getScaled(tP);
 
 
@@ -93,6 +109,7 @@ void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sin
 
 	// arctangent of y/x
 	*aHead = (sint16)(atan2f(magycomp, magxcomp) * 10000);
+	//*aHead += 1745;
 	//ets_uart_printf("atan_fx = %d \r\n", *aHead);
 }
 //==============================================================================

@@ -22,5 +22,13 @@ float ICACHE_FLASH_ATTR scale(int aAxis, sint16 aVal);
 //==============================================================================
 extern sint16 _roll, _pitch, _heading;
 extern sint16 rollArray[FILTER_LENGHT], pitchArray[FILTER_LENGHT], yawArray[FILTER_LENGHT];
+
+extern sint16 cx[FILTER_LENGHT], cy[FILTER_LENGHT], cz[FILTER_LENGHT];
+extern u3AXIS_DATA cc;
+
+extern sint16 ax[FILTER_LENGHT], ay[FILTER_LENGHT], az[FILTER_LENGHT];
+extern u3AXIS_DATA aa;
+
+extern sint16 uncalPitch;
 //==============================================================================
 #endif

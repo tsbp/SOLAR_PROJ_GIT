@@ -3,6 +3,8 @@
 #include "driver/i2c.h"
 //==============================================================================
 u3AXIS_DATA accel, compass;
+
+
 //==============================================================================
 void lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned char *aBuf, unsigned int aLng)
 {

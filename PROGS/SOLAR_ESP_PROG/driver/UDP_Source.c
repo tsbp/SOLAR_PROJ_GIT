@@ -86,29 +86,54 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 		{
 
 		 case CMD_CALIB:
-			 if(pusrdata[3] == 0) // get
 			 {
-				 ets_uart_printf("CMD_CALIB_GET\r\n");
-				 dataLng = 6;
-				 needAnswer = 1;
-				 memcpy(ansBuffer + 3, compass.byte, 6);
-			 }
-			 else
-			 {
-				 memcpy(configs.calibs.byte, pusrdata + 3, 12);
+				 switch(pusrdata[3])
+				 {
+					 case GET_COMPASS_RAW://if(pusrdata[3] == 0) // get
+					 {
+						 ets_uart_printf("GET COMPASS\r\n");
+						 dataLng = 7;
+						 needAnswer = 1;
+						 ansBuffer[3] = pusrdata[3];
+						 memcpy(ansBuffer + 4, compass.byte, 7);
+					 }break;
+					 case SET_COMPASS_CALIBS:
+					 {
+						 memcpy(configs.calibs.byte, pusrdata + 4, 12);
 
-				 ets_uart_printf("CMD_CALIB_SET: %d, %d, %d, %d, %d, %d,  \r\n",
-						 configs.calibs.Max.x,
-						 configs.calibs.Max.y,
-						 configs.calibs.Max.z,
-						 configs.calibs.Min.x,
-						 configs.calibs.Min.y,
-						 configs.calibs.Min.z);
+						 ets_uart_printf("CMD_CALIB_SET: %d, %d, %d, %d, %d, %d,  \r\n",
+								 configs.calibs.Max.x,
+								 configs.calibs.Max.y,
+								 configs.calibs.Max.z,
+								 configs.calibs.Min.x,
+								 configs.calibs.Min.y,
+								 configs.calibs.Min.z);
 
-				 flashWriteBit = 1;
-				 needAnswer = 1;
-				 ansBuffer[3] = OK;
-				 dataLng = 1;
+						 flashWriteBit = 1;
+						 needAnswer = 1;
+						 ansBuffer[3] = OK;
+						 dataLng = 1;
+					 }break;
+
+					 case GET_ACCEL_RAW:
+					 {
+						 ets_uart_printf("GET ACCEL\r\n");
+						 dataLng = 3;
+						 needAnswer = 1;
+						 ansBuffer[3] = pusrdata[3];
+						 ansBuffer[4] = uncalPitch;
+						 ansBuffer[5] = uncalPitch >> 8;
+					 }break;
+
+					 case GET_ACCEL_RAW:
+					 {
+						 ets_uart_printf("SET ACCEL\r\n");
+						 flashWriteBit = 1;
+						 needAnswer = 1;
+						 ansBuffer[3] = OK;
+						 dataLng = 1;
+					 }break;
+				 }
 			 }
 			 break;
 

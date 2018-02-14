@@ -38,11 +38,7 @@ sint16 Pitch, Roll, Yaw;
 int manualDuration = PROC_DURATION;
 int vertMove = 10;
 
-sint16 cx[FILTER_LENGHT], cy[FILTER_LENGHT], cz[FILTER_LENGHT];
-u3AXIS_DATA cc;
 
-sint16 ax[FILTER_LENGHT], ay[FILTER_LENGHT], az[FILTER_LENGHT];
-u3AXIS_DATA aa;
 
 uint16 mTout = 1000;
 
@@ -81,7 +77,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	compass.z = ((tmp[2] << 8) | tmp[3]) ;
 	compass.y = ((tmp[4] << 8) | tmp[5]) ;
 
-	//ets_uart_printf("%d\t%d\t%d\n", compass.x, compass.y, compass.z);
+	//ets_uart_printf("%d\t%d\t%d\n", cc.x, cc.y, cc.z);
 
 
 	addValueToArray(compass.x,  cx); addValueToArray(compass.y,  cy); addValueToArray(compass.z,  cz);
@@ -177,14 +173,14 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 
 	//=====================================================================
-		static c = 50;
-		if(c) c--;
-		else
-		{
-			c = 50;
-			ets_uart_printf("elevation = %d, head = %d, angle = %d\r\n", elevation, head, angle);
-
-		}
+//		static c = 50;
+//		if(c) c--;
+//		else
+//		{
+//			c = 50;
+//			ets_uart_printf("elevation = %d, head = %d, angle = %d\r\n", elevation, head, angle);
+//
+//		}
 }
 //==============================================================================
 void ICACHE_FLASH_ATTR setup(void)
