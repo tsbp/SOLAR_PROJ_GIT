@@ -181,17 +181,22 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 	switch(a)
 	{
 	case LEFT:
+		ets_uart_printf("LEFT\r\n");
 		blink = BLINK_BACKWARD;
 		break;
 	case RIGHT:
+		ets_uart_printf("RIGHT\r\n");
 		blink = BLINK_FORWARD;
 		break;
 	case UP:
 		blink = BLINK_UP;
+		ets_uart_printf("UP\r\n");
 		 break;
 	case DOWN:
+		ets_uart_printf("DOWN\r\n");
 		blink = BLINK_DOWN;
 		break;
+	default: ets_uart_printf("stop\r\n");
 	}
 }
 //==============================================================================

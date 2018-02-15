@@ -48,7 +48,7 @@ extern uint16 dataPresent;
 extern unsigned int blink;
 extern sint16 azimuth, elevation;
 //==============================================================================
-#define PROC_DURATION	(80)
+#define PROC_DURATION	(120)
 extern uint8 terminators, inProcess;
 uint16 light;
 //==============================================================================

@@ -30,11 +30,13 @@ typedef union __packed
 //==============================================================================
 typedef union
 {
-	uint8 byte[12];
+	uint8 byte[16];
 	struct
 	{
 		u3AXIS_DATA Max;
 		u3AXIS_DATA Min;
+		sint16 acc0deg;
+		sint16 acc90deg;
 	};
 }u_CALIBS;
 //==============================================================================

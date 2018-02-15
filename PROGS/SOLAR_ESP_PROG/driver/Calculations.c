@@ -41,7 +41,8 @@ sint16 uncalPitch;
 //==============================================================================
 double ICACHE_FLASH_ATTR getScaled(double aVal)
 {
-	return ((aVal - MEAS_0)/(MEAS_90 - MEAS_0)) * M_PI/2;
+	//return ((aVal - MEAS_0)/(MEAS_90 - MEAS_0)) * M_PI/2;
+	return ((aVal - (double)configs.calibs.acc0deg/10000)/((double)configs.calibs.acc90deg/10000 - (double)configs.calibs.acc0deg/10000)) * M_PI/2;
 }
 //==============================================================================
 float ICACHE_FLASH_ATTR scale(int aAxis, sint16 aVal)

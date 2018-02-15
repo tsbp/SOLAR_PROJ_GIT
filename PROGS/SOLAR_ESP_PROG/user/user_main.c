@@ -38,7 +38,7 @@ sint16 Pitch, Roll, Yaw;
 int manualDuration = PROC_DURATION;
 int vertMove = 10;
 
-
+uint8 moving = 0;
 
 uint16 mTout = 1000;
 
@@ -120,55 +120,48 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	else {
 
 		if(elevation > ELEVATION_MAX) elevation = ELEVATION_MAX;
+		switch(moving)
+		{
+			case RIGHT:
+			case LEFT:
+			{
+				if (azimuth <= ((uint16) head + HORIZONTAL_OFFSET) &&
+					azimuth >= ((uint16) head - HORIZONTAL_OFFSET))
+				{
+					moving = 0;
+					move(moving);
+					//sysState.newPosition = 0;
+				}
+			}break;
+
+			case UP:
+			case DOWN:
+			{
+				if (elevation <= (angle + HORIZONTAL_OFFSET) &&
+					elevation >= (angle - HORIZONTAL_OFFSET))
+				{
+					moving = 0;
+					move(moving);
+					//sysState.newPosition = 0;
+				}
+			}break;
+		}
 		if(sysState.newPosition)
 		{
-			static uint8 moving = 0;
-
+			sysState.newPosition = 0;
 			if(!moving)
 			{
+				if      (elevation > ( angle + 6 * HORIZONTAL_OFFSET)) moving = DOWN;
+				else if (elevation < ( angle - 6 * HORIZONTAL_OFFSET)) moving = UP;
+				else if (azimuth   > ( headF + 6 * HORIZONTAL_OFFSET)) moving = RIGHT;
+				else if (azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) moving = LEFT;
 
-				if      (elevation > ((uint16) angle + 6 * HORIZONTAL_OFFSET)) moving = UP;
-				else if (elevation < ((uint16) angle - 6 * HORIZONTAL_OFFSET)) moving = DOWN;
-				else if (azimuth   > ((uint16) headF + 6 * HORIZONTAL_OFFSET)) moving = RIGHT;
-				else if (azimuth   < ((uint16) headF - 6 * HORIZONTAL_OFFSET)) moving = LEFT;
-
-				if(!moving) sysState.newPosition = 0;
-
-				mTout = 500;
+				if(moving)move(moving);
+				mTout = 1000;
 			}
-
-			switch(moving)
-			{
-					case RIGHT:
-					case LEFT:
-					{
-						if (azimuth <= ((uint16) head + HORIZONTAL_OFFSET) &&
-							azimuth >= ((uint16) head - HORIZONTAL_OFFSET))
-						{
-							moving = 0;
-							sysState.newPosition = 0;
-						}
-					}break;
-
-					case UP:
-					case DOWN:
-					{
-						if (elevation <= (angle + HORIZONTAL_OFFSET) &&
-							elevation >= (angle - HORIZONTAL_OFFSET))
-						{
-							moving = 0;
-							sysState.newPosition = 0;
-						}
-					}break;
-			}
-			//ets_uart_printf("head = %d, headF = %d\r\n", head, headF);
-			//if(!moving) ets_uart_printf("sysState = %d, head = %d, angle = %d\r\n", sysState, head, angle);
-			//ets_uart_printf("sS = %d, m = %d, h = %d, az = %d\r\n", sysState, moving, head, azimuth);
-			move(moving);
-
-			if(mTout) mTout--;
-			else moving = 0;
 		}
+		if(mTout) mTout--;
+		else moving = 0;
 	}
 
 

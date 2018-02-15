@@ -125,9 +125,10 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 						 ansBuffer[5] = uncalPitch >> 8;
 					 }break;
 
-					 case GET_ACCEL_RAW:
+					 case SET_ACCEL_CALIBS:
 					 {
-						 ets_uart_printf("SET ACCEL\r\n");
+						 memcpy(configs.calibs.byte + 12, pusrdata + 4, 4);
+						 ets_uart_printf("SET ACCEL a0 = %d, a90 = %d\r\n", configs.calibs.acc0deg, configs.calibs.acc90deg);
 						 flashWriteBit = 1;
 						 needAnswer = 1;
 						 ansBuffer[3] = OK;
@@ -164,42 +165,22 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				break;
 
 			case CMD_LEFT:
-				dataLng = 1;
-				ansBuffer[3] = OK;
-				sysState.byte = 0;
-				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				move(LEFT);
-				ets_uart_printf("cmd LEFT\r\n");
-				break;
-
+				goto ans;
 			case CMD_RIGHT:
-				dataLng = 1;
-				needAnswer = 1;
-				ansBuffer[3] = OK;
-				sysState.byte = 0;
-				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				move(RIGHT);
-				ets_uart_printf("cmd RIGHT\r\n");
-				break;
-
+				goto ans;
 			case CMD_UP:
-				dataLng = 1;
-				needAnswer = 1;
-				ansBuffer[3] = OK;
-				sysState.byte = 0;
-				sysState.manualMove = 1; //inProcess = PROC_DURATION;
 				move(UP);
-				ets_uart_printf("cmd UP\r\n");
-				break;
-
+				goto ans;
 			case CMD_DOWN:
-				dataLng = 1;
+				move(DOWN);
+ans:			dataLng = 1;
 				needAnswer = 1;
 				ansBuffer[3] = OK;
 				sysState.byte = 0;
 				sysState.manualMove = 1; //inProcess = PROC_DURATION;
-				move(DOWN);
-				ets_uart_printf("cmd DOWN\r\n");
+
 				break;
 
 			case CMD_STATE:
@@ -223,12 +204,6 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 			case CMD_WIFI:
 				{
-
-				    ets_uart_printf("recv udp data: ");
-				    for (a = 0; a < length; a++)
-				    	ets_uart_printf("%02x ", pusrdata[a]);
-				    ets_uart_printf("\r\n");
-
 					int i, j;
 
 					os_memset(configs.wifi.SSID,      0, sizeof(configs.wifi.SSID));
