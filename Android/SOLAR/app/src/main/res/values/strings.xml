@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SOLAR</string>
+    <string name="SSID">SSID</string>
+    <string name="SSIDPAS">SSIDPAS</string>
+    <string name="WIFI_MODE">Wifi mode</string>
+    <string name="security">Защита</string>
+
+    <string name="acc_calib_vert">Ветик.</string>
+    <string name="acc_calib_horiz">Гориз.</string>
+</resources>
