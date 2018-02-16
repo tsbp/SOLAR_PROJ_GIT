@@ -47,6 +47,7 @@ void ICACHE_FLASH_ATTR move(uint8 a);
 extern uint16 dataPresent;
 extern unsigned int blink;
 extern sint16 azimuth, elevation;
+extern uint8 direction;
 //==============================================================================
 #define PROC_DURATION	(120)
 extern uint8 terminators, inProcess;

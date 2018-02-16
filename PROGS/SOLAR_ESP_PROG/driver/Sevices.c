@@ -24,7 +24,7 @@ uint8 terminators; //inProcess = 0;
 sSYSTEM_STATE sysState;
 
 sint16 azimuth, elevation;
-
+uint8 direction = 0;
 //==============================================================================
 void ICACHE_FLASH_ATTR service_timer_start (void)
 {

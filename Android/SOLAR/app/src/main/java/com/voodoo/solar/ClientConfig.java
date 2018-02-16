@@ -358,12 +358,8 @@ public class ClientConfig extends Activity {
             public void onReceive(Context context, Intent intent) {
 
                 vals[1][1] = intent.getStringExtra("acc_raw");
-
                 int ang =  Integer.parseInt(intent.getStringExtra("acc_raw"));
-
                 tvAcc.setText("" + String.format("%.3f", Math.toDegrees((double)ang/10000)));
-
-
             }
         };
         IntentFilter intFilt = new IntentFilter(CALIB_DATA);
@@ -399,11 +395,8 @@ public class ClientConfig extends Activity {
                         byte [] b = new byte[5];
                         b[0] = UDPCommands.SET_ACCEL_CALIBS;
 
-//                        double a0  = Math.toRadians(Double.parseDouble(t0.getText().toString().replace(',','.')));
-//                        double a90 = Math.toRadians(Double.parseDouble(t90.getText().toString().replace(',','.')));
-
-                        double a0  = Math.toRadians(45.0);
-                        double a90 = Math.toRadians(30.5);
+                        double a0  = Math.toRadians(Double.parseDouble(t0.getText().toString().replace(',','.')));
+                        double a90 = Math.toRadians(Double.parseDouble(t90.getText().toString().replace(',','.')));
 
                         b[1] = (byte)((int)(a0 * 10000) & 0xff);
                         b[2] = (byte)(((int)(a0 * 10000) >> 8) & 0xff);

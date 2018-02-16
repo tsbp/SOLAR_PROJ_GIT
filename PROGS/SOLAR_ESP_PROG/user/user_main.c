@@ -38,11 +38,18 @@ sint16 Pitch, Roll, Yaw;
 int manualDuration = PROC_DURATION;
 int vertMove = 10;
 
-uint8 moving = 0;
+
 
 uint16 mTout = 1000;
 
 sint16 headF, headFarr[FILTER_LENGHT];
+//===================================================================================
+void ICACHE_FLASH_ATTR stopMoving(void)
+{
+	direction = 0;
+	move(direction);
+	sysState.newPosition = 0;
+}
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
 {
@@ -120,48 +127,43 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	else {
 
 		if(elevation > ELEVATION_MAX) elevation = ELEVATION_MAX;
-		switch(moving)
-		{
-			case RIGHT:
-			case LEFT:
-			{
-				if (azimuth <= ((uint16) head + HORIZONTAL_OFFSET) &&
-					azimuth >= ((uint16) head - HORIZONTAL_OFFSET))
-				{
-					moving = 0;
-					move(moving);
-					//sysState.newPosition = 0;
-				}
-			}break;
 
-			case UP:
-			case DOWN:
-			{
-				if (elevation <= (angle + HORIZONTAL_OFFSET) &&
-					elevation >= (angle - HORIZONTAL_OFFSET))
-				{
-					moving = 0;
-					move(moving);
-					//sysState.newPosition = 0;
-				}
-			}break;
-		}
 		if(sysState.newPosition)
 		{
-			sysState.newPosition = 0;
-			if(!moving)
+			//sysState.newPosition = 0;
+			if(!direction)
 			{
-				if      (elevation > ( angle + 6 * HORIZONTAL_OFFSET)) moving = DOWN;
-				else if (elevation < ( angle - 6 * HORIZONTAL_OFFSET)) moving = UP;
-				else if (azimuth   > ( headF + 6 * HORIZONTAL_OFFSET)) moving = RIGHT;
-				else if (azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) moving = LEFT;
+				if      (elevation > ( angle + 6 * HORIZONTAL_OFFSET)) direction = DOWN;
+				else if (elevation < ( angle - 6 * HORIZONTAL_OFFSET)) direction = UP;
+				else if (azimuth   > ( headF + 6 * HORIZONTAL_OFFSET)) direction = RIGHT;
+				else if (azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) direction = LEFT;
 
-				if(moving)move(moving);
+				if(direction)move(direction);
 				mTout = 1000;
 			}
+			if(mTout) mTout--;
+			else  stopMoving();
 		}
-		if(mTout) mTout--;
-		else moving = 0;
+		switch(direction)
+				{
+					case RIGHT:
+					case LEFT:
+					{
+						if (azimuth <= ((uint16) head + HORIZONTAL_OFFSET) &&
+							azimuth >= ((uint16) head - HORIZONTAL_OFFSET))
+							stopMoving();
+					}break;
+
+					case UP:
+					case DOWN:
+					{
+						if (elevation <= (angle + HORIZONTAL_OFFSET) &&
+							elevation >= (angle - HORIZONTAL_OFFSET))
+							stopMoving();
+					}break;
+				}
+
+
 	}
 
 

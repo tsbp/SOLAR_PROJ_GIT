@@ -35,7 +35,7 @@
              android:layout_weight="1"
              android:layout_width="0dp"
              android:layout_height="match_parent"
-             android:text="@string/acc_calib_vert"
+             android:text="@string/acc_calib_horiz"
              android:layout_gravity="center_horizontal"
              android:id="@+id/btn0deg"/>
          <TextView
@@ -57,7 +57,7 @@
              android:layout_weight="1"
              android:layout_width="0dp"
              android:layout_height="match_parent"
-             android:text="@string/acc_calib_horiz"
+             android:text="@string/acc_calib_vert"
              android:layout_gravity="center_horizontal"
              android:id="@+id/btn90deg"/>
          <TextView
