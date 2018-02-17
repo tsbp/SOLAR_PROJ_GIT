@@ -10,6 +10,7 @@
 #include "driver/wifi.h"
 #include "driver/gpio16.h"
 #include "driver/services.h"
+#include "driver/httpclient.h"
 //==============================================================================
 
 static volatile os_timer_t service_timer;
@@ -174,6 +175,28 @@ void ICACHE_FLASH_ATTR indicator_loop(os_event_t *events)
 	blinking(blink);
 	leds(ledStt);
 }
+//===================================================================================
+LOCAL void ICACHE_FLASH_ATTR thingspeak_http_callback(char * response, int http_status, char * full_response)
+{
+	ets_uart_printf("Answers: \r\n");
+	if (http_status == 200)
+	{
+		//DHT22_DEBUG("strlen(response)=%d\r\n", strlen(response));
+		//DHT22_DEBUG("strlen(full_response)=%d\r\n", strlen(full_response));
+		ets_uart_printf("response=%s<EOF>\n", response);
+		//DHT22_DEBUG("full_response=%s\r\n", full_response);
+		ets_uart_printf("---------------------------\r\n");
+	}
+//	else
+//	{
+//		ets_uart_printf("http_status=%d\r\n", http_status);
+//		DHT22_DEBUG("strlen(response)=%d\r\n", strlen(response));
+//		DHT22_DEBUG("strlen(full_response)=%d\r\n", strlen(full_response));
+//		DHT22_DEBUG("response=%s<EOF>\n", response);
+//		DHT22_DEBUG("---------------------------\r\n");
+//	}
+	ets_uart_printf("Free heap size = %d\r\n", system_get_free_heap_size());
+}
 //==============================================================================
 void ICACHE_FLASH_ATTR move(uint8 a)
 {
@@ -196,7 +219,22 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 		ets_uart_printf("DOWN\r\n");
 		blink = BLINK_DOWN;
 		break;
-	default: ets_uart_printf("stop\r\n");
+	default:
+	{
+		ets_uart_printf("stop\r\n");
+		//==================================
+			static char data[256];
+			static char az[10], el[10];
+
+			os_sprintf(az, "%d.%d", azimuth/100, azimuth%100);
+			os_sprintf(el, "%d.%d", elevation/100, elevation%100);
+
+			ets_uart_printf("az %s, el %s\r\n", az, el);
+
+			os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s", THINGSPEAK_SERVER, THINGSPEAK_API_KEY, az, el);
+			ets_uart_printf("Request: %s\r\n", data);
+			http_get(data, "", thingspeak_http_callback);
+	}
 	}
 }
 //==============================================================================

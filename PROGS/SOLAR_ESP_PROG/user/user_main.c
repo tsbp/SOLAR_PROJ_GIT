@@ -43,12 +43,14 @@ int vertMove = 10;
 uint16 mTout = 1000;
 
 sint16 headF, headFarr[FILTER_LENGHT];
+
 //===================================================================================
 void ICACHE_FLASH_ATTR stopMoving(void)
 {
 	direction = 0;
 	move(direction);
 	sysState.newPosition = 0;
+
 }
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
