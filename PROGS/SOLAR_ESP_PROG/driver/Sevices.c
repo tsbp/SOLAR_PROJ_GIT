@@ -3,6 +3,7 @@
 #include "osapi.h"
 #include "os_type.h"
 #include "user_interface.h"
+#include "user_config.h"
 #include "gpio.h"
 #include "driver/uart.h"
 #include "driver/Configs.h"
@@ -24,8 +25,9 @@ uint16 light;
 uint8 terminators; //inProcess = 0;
 sSYSTEM_STATE sysState;
 
-sint16 azimuth, elevation;
+//sint16 azimuth, elevation;
 uint8 direction = 0;
+uORIENTATION orientation;
 //==============================================================================
 void ICACHE_FLASH_ATTR service_timer_start (void)
 {
@@ -224,15 +226,19 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 		ets_uart_printf("stop\r\n");
 		//==================================
 			static char data[256];
-			static char az[10], el[10];
+			static char azi[10], eli[10], azr[10], elr[10], li[10];
 
-			os_sprintf(az, "%d.%d", azimuth/100, azimuth%100);
-			os_sprintf(el, "%d.%d", elevation/100, elevation%100);
+			os_sprintf(azi, "%d.%d", orientation.income.azimuth/100,   orientation.income.azimuth%100);
+			os_sprintf(eli, "%d.%d", orientation.income.elevation/100, orientation.income.elevation%100);
+			os_sprintf(azr, "%d.%d", orientation.real.azimuth/100,     orientation.real.azimuth%100);
+			os_sprintf(elr, "%d.%d", orientation.real.elevation/100,   orientation.real.elevation%100);
+			os_sprintf(li,  "%d   ", light);
 
-			ets_uart_printf("az %s, el %s\r\n", az, el);
+			//ets_uart_printf("az %s, el %s\r\n", az, el);
 
-			os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s", THINGSPEAK_SERVER, THINGSPEAK_API_KEY, az, el);
-			ets_uart_printf("Request: %s\r\n", data);
+			os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s&field3=%s&field4=%s&field5=%s",
+					THINGSPEAK_SERVER, THINGSPEAK_API_KEY, azi, eli, azr, elr, li);
+			//ets_uart_printf("Request: %s\r\n", data);
 			http_get(data, "", thingspeak_http_callback);
 	}
 	}

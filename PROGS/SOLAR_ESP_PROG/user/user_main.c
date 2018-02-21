@@ -102,12 +102,16 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	_heading = Yaw;
 	//_heading = ;
 
-	long angle = (_pitch  * 18000 / 31416);
+//	long angle = (_pitch  * 18000 / 31416);
+//
+//	long head = ( _heading  * 18000 / 31416);
+//	if(head < 0) head += 36000;
 
-	long head = ( _heading  * 18000 / 31416);
-	if(head < 0) head += 36000;
+	orientation.real.elevation = ((long)_pitch   * 18000 / 31416);
+	orientation.real.azimuth   = ((long)_heading * 18000 / 31416);
+	if(orientation.real.azimuth < 0) orientation.real.azimuth += 36000;
 
-	addValueToArray(head,  headFarr);
+	addValueToArray(orientation.real.azimuth,  headFarr);
 	headF =  mFilter(headFarr,  FILTER_LENGHT);
 	//ets_uart_printf("_heading = %d, head = %d, angle = %d, cx= %d, cy = %d, cz = %d\r\n", _heading, head, angle,  cc.x, cc.y, cc.z);
 
@@ -119,8 +123,8 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		{
 			sysState.byte = 0;
 			manualDuration = PROC_DURATION;
-			azimuth   = (uint16) head;
-			elevation = (uint16) angle;
+			orientation.income.azimuth   = (uint16) orientation.real.azimuth;
+			orientation.income.elevation = (uint16) orientation.real.elevation;
 			move(0);
 		}
 	}
@@ -128,17 +132,17 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	//=== sun tracking ====================================================
 	else {
 
-		if(elevation > ELEVATION_MAX) elevation = ELEVATION_MAX;
+		if(orientation.income.elevation > ELEVATION_MAX) orientation.income.elevation = ELEVATION_MAX;
 
 		if(sysState.newPosition)
 		{
 			//sysState.newPosition = 0;
 			if(!direction)
 			{
-				if      (elevation > ( angle + 6 * HORIZONTAL_OFFSET)) direction = DOWN;
-				else if (elevation < ( angle - 6 * HORIZONTAL_OFFSET)) direction = UP;
-				else if (azimuth   > ( headF + 6 * HORIZONTAL_OFFSET)) direction = RIGHT;
-				else if (azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) direction = LEFT;
+				if      (orientation.income.elevation > ( orientation.real.elevation + 6 * HORIZONTAL_OFFSET)) direction = DOWN;
+				else if (orientation.income.elevation < ( orientation.real.elevation - 6 * HORIZONTAL_OFFSET)) direction = UP;
+				else if (orientation.income.azimuth   > ( headF + 6 * HORIZONTAL_OFFSET)) direction = RIGHT;
+				else if (orientation.income.azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) direction = LEFT;
 
 				if(direction)move(direction);
 				mTout = 1000;
@@ -151,16 +155,16 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 					case RIGHT:
 					case LEFT:
 					{
-						if (azimuth <= ((uint16) head + HORIZONTAL_OFFSET) &&
-							azimuth >= ((uint16) head - HORIZONTAL_OFFSET))
+						if (orientation.income.azimuth <= (orientation.real.azimuth + HORIZONTAL_OFFSET) &&
+							orientation.income.azimuth >= (orientation.real.azimuth - HORIZONTAL_OFFSET))
 							stopMoving();
 					}break;
 
 					case UP:
 					case DOWN:
 					{
-						if (elevation <= (angle + HORIZONTAL_OFFSET) &&
-							elevation >= (angle - HORIZONTAL_OFFSET))
+						if (orientation.income.elevation <= (orientation.real.elevation + HORIZONTAL_OFFSET) &&
+							orientation.income.elevation >= (orientation.real.elevation - HORIZONTAL_OFFSET))
 							stopMoving();
 					}break;
 				}

@@ -46,7 +46,7 @@ void ICACHE_FLASH_ATTR move(uint8 a);
 
 extern uint16 dataPresent;
 extern unsigned int blink;
-extern sint16 azimuth, elevation;
+//extern sint16 azimuth, elevation;
 extern uint8 direction;
 //==============================================================================
 #define PROC_DURATION	(120)
@@ -66,5 +66,26 @@ typedef union
 	};
 }sSYSTEM_STATE;
 extern sSYSTEM_STATE sysState;
+//==============================================================================
+typedef union
+{
+	sint16 byte[4];
+	struct
+	{
+		sint16 azimuth;
+		sint16 elevation;
+	};
+}uORIENT;
+//==============================================================================
+typedef union
+{
+	sint16 byte[8];
+	struct
+	{
+		uORIENT income;
+		uORIENT real;
+	};
+}uORIENTATION;
+extern uORIENTATION orientation;
 //==============================================================================
 #endif /* INCLUDE_DRIVER_SERVICES_H_ */

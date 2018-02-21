@@ -5,7 +5,7 @@
 #include "LSM303.h"
 #include "c_types.h"
 //==============================================================================
-#define FILTER_LENGHT   (95)
+#define FILTER_LENGHT   (35)
 
 #define X_SCALE	(0)
 #define Y_SCALE	(1)
