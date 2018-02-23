@@ -69,14 +69,14 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 
 	switch (serviceMode)
 	{
-	    case MODE_REMOTE_CONTROL:
+	    case MODE_REMOTE_SEND:
 	    	resetCntr++;
 	    	if (resetCntr > 5)
 	    	{
+	    		sendToTingspeak();
 	    		service_timer_stop();
 	    		resetCntr = 0;
 	    		serviceMode = MODE_NORMAL;
-	    		channelFree = 1;
 	    	}
 	    	break;
 
@@ -178,7 +178,7 @@ void ICACHE_FLASH_ATTR indicator_loop(os_event_t *events)
 	leds(ledStt);
 }
 //===================================================================================
-LOCAL void ICACHE_FLASH_ATTR thingspeak_http_callback(char * response, int http_status, char * full_response)
+void ICACHE_FLASH_ATTR thingspeak_http_callback(char * response, int http_status, char * full_response)
 {
 	ets_uart_printf("Answers: \r\n");
 	if (http_status == 200)
@@ -198,6 +198,24 @@ LOCAL void ICACHE_FLASH_ATTR thingspeak_http_callback(char * response, int http_
 //		DHT22_DEBUG("---------------------------\r\n");
 //	}
 	ets_uart_printf("Free heap size = %d\r\n", system_get_free_heap_size());
+}
+//==============================================================================
+void ICACHE_FLASH_ATTR sendToTingspeak(void)
+{
+	static char data[256];
+	static char azi[10], eli[10], azr[10], elr[10], li[10];
+
+	os_sprintf(azi, "%d.%d", orientation.income.azimuth/100,   orientation.income.azimuth%100);
+	os_sprintf(eli, "%d.%d", orientation.income.elevation/100, orientation.income.elevation%100);
+	os_sprintf(azr, "%d.%d", orientation.real.azimuth/100,     orientation.real.azimuth%100);
+	os_sprintf(elr, "%d.%d", orientation.real.elevation/100,   orientation.real.elevation%100);
+	os_sprintf(li,  "%d   ", light);
+				//ets_uart_printf("az %s, el %s\r\n", az, el);
+
+	os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s&field3=%s&field4=%s&field5=%s",
+			THINGSPEAK_SERVER, THINGSPEAK_API_KEY, azi, eli, azr, elr, li);
+	ets_uart_printf("Request: %s\r\n", data);
+	http_get(data, "", thingspeak_http_callback);
 }
 //==============================================================================
 void ICACHE_FLASH_ATTR move(uint8 a)
@@ -225,21 +243,9 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 	{
 		ets_uart_printf("stop\r\n");
 		//==================================
-			static char data[256];
-			static char azi[10], eli[10], azr[10], elr[10], li[10];
-
-			os_sprintf(azi, "%d.%d", orientation.income.azimuth/100,   orientation.income.azimuth%100);
-			os_sprintf(eli, "%d.%d", orientation.income.elevation/100, orientation.income.elevation%100);
-			os_sprintf(azr, "%d.%d", orientation.real.azimuth/100,     orientation.real.azimuth%100);
-			os_sprintf(elr, "%d.%d", orientation.real.elevation/100,   orientation.real.elevation%100);
-			os_sprintf(li,  "%d   ", light);
-
-			//ets_uart_printf("az %s, el %s\r\n", az, el);
-
-			os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s&field3=%s&field4=%s&field5=%s",
-					THINGSPEAK_SERVER, THINGSPEAK_API_KEY, azi, eli, azr, elr, li);
-			//ets_uart_printf("Request: %s\r\n", data);
-			http_get(data, "", thingspeak_http_callback);
+		serviceMode = MODE_REMOTE_SEND;
+		resetCntr = 0;
+		service_timer_start();
 	}
 	}
 }

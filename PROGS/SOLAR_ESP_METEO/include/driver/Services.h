@@ -11,6 +11,7 @@ void ICACHE_FLASH_ATTR button_intr_callback(unsigned pin, unsigned level);
 void ICACHE_FLASH_ATTR button_init(void);
 void ICACHE_FLASH_ATTR timeincrement(void);
 void ICACHE_FLASH_ATTR meteoProcessing(void);
+void ICACHE_FLASH_ATTR thingspeak_http_callback(char * response, int http_status, char * full_response);
 //==============================================================================
 #define MODE_NORMAL		(0)
 #define MODE_SW_RESET	(1)

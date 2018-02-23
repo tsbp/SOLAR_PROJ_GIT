@@ -39,5 +39,5 @@ void ICACHE_FLASH_ATTR sendUDPbroadcast(uint8* abuf, uint16 aLen);
 
 
 
-extern uint8 channelFree;
+
 

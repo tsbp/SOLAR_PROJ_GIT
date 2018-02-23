@@ -13,12 +13,12 @@ void ICACHE_FLASH_ATTR service_timer_start (void);
 void ICACHE_FLASH_ATTR service_timer_stop (void);
 void ICACHE_FLASH_ATTR button_intr_callback(unsigned pin, unsigned level);
 void ICACHE_FLASH_ATTR button_init(void);
-
+void ICACHE_FLASH_ATTR sendToTingspeak(void);
 //==============================================================================
 #define MODE_NORMAL		(0)
 #define MODE_SW_RESET	(1)
 #define MODE_BTN_RESET	(2)
-#define MODE_REMOTE_CONTROL	(3)
+#define MODE_REMOTE_SEND	(3)
 #define MODE_FLASH_WRITE	(4)
 //==============================================================================
 #define LEFT	(2)
