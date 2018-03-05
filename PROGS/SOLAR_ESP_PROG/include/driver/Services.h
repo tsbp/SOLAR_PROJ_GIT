@@ -36,6 +36,7 @@ extern int cntr;
 #define BLINK_WAIT      (0x9000)
 #define BLINK_WAIT_NODATA      (0x9090)
 #define BLINK_WAIT_UNCONNECTED      (0x0090)
+#define BLINK_MANUAL      (0xf00f)
 
 #define BLNK_MAX 		(15)
 
@@ -43,6 +44,7 @@ void ICACHE_FLASH_ATTR indicationInit(void);
 void ICACHE_FLASH_ATTR blinking(unsigned int blnk);
 void ICACHE_FLASH_ATTR leds(unsigned char aStt);
 void ICACHE_FLASH_ATTR move(uint8 a);
+void ICACHE_FLASH_ATTR keyProcessing(void);
 
 extern uint16 dataPresent;
 extern unsigned int blink;
@@ -58,10 +60,11 @@ typedef union
 	uint16 byte;
 	struct
 	{
-		uint16 manualMove	    :1;
-		uint16 moving       	:1;
-		uint16 automaticMoveV	:1;
-		uint16 newPosition  	:1;
+		uint16 manualMoveRemote	    :1;
+		uint16 manualMove		    :1;
+		uint16 moving       		:1;
+		uint16 automaticMoveV		:1;
+		uint16 newPosition  		:1;
 		//uint16 goHome		    :1;
 	};
 }sSYSTEM_STATE;

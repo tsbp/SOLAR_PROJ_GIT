@@ -178,7 +178,7 @@ ans:			dataLng = 1;
 				needAnswer = 1;
 				ansBuffer[3] = OK;
 				sysState.byte = 0;
-				sysState.manualMove = 1; //inProcess = PROC_DURATION;
+				sysState.manualMoveRemote = 1; //inProcess = PROC_DURATION;
 
 				break;
 

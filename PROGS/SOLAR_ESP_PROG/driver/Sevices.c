@@ -27,7 +27,10 @@ sSYSTEM_STATE sysState;
 
 //sint16 azimuth, elevation;
 uint8 direction = 0;
-uORIENTATION orientation;
+uORIENTATION orientation = {.real.azimuth = 3000,
+		.real.elevation = 3000,
+		.income.azimuth = 3000,
+		.income.elevation = 3000};
 //==============================================================================
 void ICACHE_FLASH_ATTR service_timer_start (void)
 {
@@ -250,4 +253,68 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 	}
 }
 //==============================================================================
+void ICACHE_FLASH_ATTR keyProcessing(void)
+{
+	static uint8 ddOld;
+			uint8  dd = (~PCF8574_readByte(0x3B)) & (~0x70);
+
+			if (ddOld != dd)
+			{
+				//ets_uart_printf("%d, %d\r\n", dd, ddOld);
+				switch(dd)
+				{
+					case 0x1:
+						if(sysState.manualMove)
+						{
+							PCF8574_writeByte(0x3B, (0x03 << 4) | 0x8f);
+							move(UP);
+						}
+						break;
+					case 0x2:
+						if(sysState.manualMove)
+						{
+							PCF8574_writeByte(0x3B, (0x03 << 4) | 0x8f);
+							move(DOWN);
+						}
+						break;
+					case 0x4:
+						ets_uart_printf("MODE\r\n");
+						if(sysState.manualMove)
+						{
+							sysState.manualMove = 0;
+							PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
+						}
+						else
+						{
+							PCF8574_writeByte(0x3B, (0x01 << 4) | 0x8f);
+							sysState.manualMove = 1;
+							blink = BLINK_MANUAL;
+						}
+						break;
+					case 0x8:
+						if(sysState.manualMove)
+						{
+							PCF8574_writeByte(0x3B, (0x03 << 4) | 0x8f);
+							move(LEFT);
+						}
+						break;
+					case 0x80:
+						if(sysState.manualMove)
+						{
+							PCF8574_writeByte(0x3B, (0x03 << 4) | 0x8f);
+							move(RIGHT);
+						}
+						break;
+					default:
+						if(sysState.manualMove)
+						{
+							PCF8574_writeByte(0x3B, (0x01 << 4) | 0x8f);
+							stopMoving();
+							blink = BLINK_MANUAL;
+						}
+				}
+			}
+			ddOld = dd;
+}
+
 

@@ -73,6 +73,8 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 	//======== PCF8574 =====================
 		terminators = PCF8574_readByte(addr);
+		keyProcessing();
+
 		//======== BH1715  =====================
 		BH1715(I2C_READ, 0x23, 0x01, (unsigned char*)&light, 2);
 		light = ((unsigned char*)&light)[1] |
@@ -116,7 +118,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	//ets_uart_printf("_heading = %d, head = %d, angle = %d, cx= %d, cy = %d, cz = %d\r\n", _heading, head, angle,  cc.x, cc.y, cc.z);
 
 	//=====================================================================
-	if(sysState.manualMove)
+	if(sysState.manualMoveRemote)
 	{
 		if(manualDuration) manualDuration--;
 		else
@@ -130,7 +132,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	}
 
 	//=== sun tracking ====================================================
-	else {
+	else if (!sysState.manualMove){
 
 		if(orientation.income.elevation > ELEVATION_MAX) orientation.income.elevation = ELEVATION_MAX;
 
@@ -198,6 +200,10 @@ void ICACHE_FLASH_ATTR setup(void)
 	//==================================================
 	LSM303Init();
 
+	i2c_init();
+			PCF8574_writeByte(0x3f, 0 | 0x0f);
+			move(0);
+	PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
 
 	readConfigs();
 	wifi_station_disconnect();
@@ -223,22 +229,9 @@ void ICACHE_FLASH_ATTR setup(void)
 //
 void ICACHE_FLASH_ATTR user_init(void)
 {
-
-
-	i2c_init();
-		PCF8574_writeByte(0x3f, 0 | 0x0f);
-		move(0);
-
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(1000);
 	ets_uart_printf("System init...\r\n");
-
-//	//saveConfigs();
-
-//	checkConfigs();
-
-
-
 
 	// Start setup timer
 	os_timer_disarm(&loop_timer);
