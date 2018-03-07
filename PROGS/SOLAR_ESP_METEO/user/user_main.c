@@ -134,27 +134,13 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		if(mState.stt) UDP_Angles();
 	}
 
-	//======== to thingspeak =====================
-	static c = 100;
-	if(c) c--;
-	else
-	{
-		c = 100;
-		//==================================
-		static char data[256];
-		static char wi[10];
-		static uint16 wOld;
-
-		if(wOld != mState.wind)
-		{
-			os_sprintf(wi, "%d", mState.wind);
-			ets_uart_printf("wi %s\r\n", wi);
-			os_sprintf(data, "http://%s/update?api_key=%s&field1=%s", THINGSPEAK_SERVER, THINGSPEAK_API_KEY, wi);
-			ets_uart_printf("Request: %s\r\n", data);
-			http_get(data, "", thingspeak_http_callback);
-		}
-		wOld = mState.wind;
-	}
+//	static c = 10;
+//	if(c) c--;
+//	else
+//	{
+//		c = 10;
+//
+//	}
 
 
 }

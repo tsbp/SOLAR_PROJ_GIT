@@ -73,13 +73,12 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 	//======== PCF8574 =====================
 		terminators = PCF8574_readByte(addr);
-		keyProcessing();
-
 		//======== BH1715  =====================
 		BH1715(I2C_READ, 0x23, 0x01, (unsigned char*)&light, 2);
 		light = ((unsigned char*)&light)[1] |
 				((unsigned char*)&light)[0] << 8;
 
+		keyProcessing();
 
 	//======== LSM303  =====================
 	lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6);
@@ -115,7 +114,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 	addValueToArray(orientation.real.azimuth,  headFarr);
 	headF =  mFilter(headFarr,  FILTER_LENGHT);
-	//ets_uart_printf("_heading = %d, head = %d, angle = %d, cx= %d, cy = %d, cz = %d\r\n", _heading, head, angle,  cc.x, cc.y, cc.z);
+	//ets_uart_printf("sysState = %d\r\n", sysState);
 
 	//=====================================================================
 	if(sysState.manualMoveRemote)
@@ -132,7 +131,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	}
 
 	//=== sun tracking ====================================================
-	else if (!sysState.manualMove){
+	else {
 
 		if(orientation.income.elevation > ELEVATION_MAX) orientation.income.elevation = ELEVATION_MAX;
 
@@ -193,6 +192,10 @@ void ICACHE_FLASH_ATTR setup(void)
 	set_gpio_mode(2, GPIO_PULLUP, GPIO_OUTPUT);
 	set_gpio_mode(1, GPIO_PULLUP, GPIO_OUTPUT);
 
+	i2c_init();
+	PCF8574_writeByte(0x3f, 0 | 0x0f);
+	move(0);
+	PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
 
 	//======== light sensor init =======================
 	BH1715(I2C_WRITE, 0x23, 0x01, 0, 1);
@@ -200,10 +203,6 @@ void ICACHE_FLASH_ATTR setup(void)
 	//==================================================
 	LSM303Init();
 
-	i2c_init();
-			PCF8574_writeByte(0x3f, 0 | 0x0f);
-			move(0);
-	PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
 
 	readConfigs();
 	wifi_station_disconnect();
@@ -229,9 +228,19 @@ void ICACHE_FLASH_ATTR setup(void)
 //
 void ICACHE_FLASH_ATTR user_init(void)
 {
+
+
+
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(1000);
 	ets_uart_printf("System init...\r\n");
+
+//	//saveConfigs();
+
+//	checkConfigs();
+
+
+
 
 	// Start setup timer
 	os_timer_disarm(&loop_timer);

@@ -12,7 +12,7 @@ include	settings.mk
 
 # Basic project settings
 MODULES	= driver user
-LIBS	= c gcc hal phy pp net80211 lwip wpa main crypto mirom
+LIBS	= c gcc hal phy pp net80211 lwip wpa main crypto mirom ssl
 
 # Root includes
 include	common_nonos.mk

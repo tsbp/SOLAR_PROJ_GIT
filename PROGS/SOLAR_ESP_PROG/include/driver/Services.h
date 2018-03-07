@@ -14,6 +14,7 @@ void ICACHE_FLASH_ATTR service_timer_stop (void);
 void ICACHE_FLASH_ATTR button_intr_callback(unsigned pin, unsigned level);
 void ICACHE_FLASH_ATTR button_init(void);
 void ICACHE_FLASH_ATTR sendToTingspeak(void);
+void ICACHE_FLASH_ATTR keyProcessing(void);
 //==============================================================================
 #define MODE_NORMAL		(0)
 #define MODE_SW_RESET	(1)
@@ -44,7 +45,6 @@ void ICACHE_FLASH_ATTR indicationInit(void);
 void ICACHE_FLASH_ATTR blinking(unsigned int blnk);
 void ICACHE_FLASH_ATTR leds(unsigned char aStt);
 void ICACHE_FLASH_ATTR move(uint8 a);
-void ICACHE_FLASH_ATTR keyProcessing(void);
 
 extern uint16 dataPresent;
 extern unsigned int blink;
@@ -60,11 +60,11 @@ typedef union
 	uint16 byte;
 	struct
 	{
-		uint16 manualMoveRemote	    :1;
-		uint16 manualMove		    :1;
-		uint16 moving       		:1;
-		uint16 automaticMoveV		:1;
-		uint16 newPosition  		:1;
+		uint16 manualMoveRemote :1;
+		uint16 manualMove	    :1;
+		uint16 moving       	:1;
+		uint16 automaticMoveV	:1;
+		uint16 newPosition  	:1;
 		//uint16 goHome		    :1;
 	};
 }sSYSTEM_STATE;

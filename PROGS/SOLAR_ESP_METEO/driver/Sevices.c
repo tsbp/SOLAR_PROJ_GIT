@@ -223,28 +223,6 @@ void ICACHE_FLASH_ATTR timeincrement(void)
 		}
 	}
 }
-//===================================================================================
-void ICACHE_FLASH_ATTR thingspeak_http_callback(char * response, int http_status, char * full_response)
-{
-	ets_uart_printf("Answers: \r\n");
-	if (http_status == 200)
-	{
-		//DHT22_DEBUG("strlen(response)=%d\r\n", strlen(response));
-		//DHT22_DEBUG("strlen(full_response)=%d\r\n", strlen(full_response));
-		ets_uart_printf("response=%s<EOF>\n", response);
-		//DHT22_DEBUG("full_response=%s\r\n", full_response);
-		ets_uart_printf("---------------------------\r\n");
-	}
-//	else
-//	{
-//		ets_uart_printf("http_status=%d\r\n", http_status);
-//		DHT22_DEBUG("strlen(response)=%d\r\n", strlen(response));
-//		DHT22_DEBUG("strlen(full_response)=%d\r\n", strlen(full_response));
-//		DHT22_DEBUG("response=%s<EOF>\n", response);
-//		DHT22_DEBUG("---------------------------\r\n");
-//	}
-	ets_uart_printf("Free heap size = %d\r\n", system_get_free_heap_size());
-}
 //==============================================================================
 void ICACHE_FLASH_ATTR meteoProcessing(void)
 {
