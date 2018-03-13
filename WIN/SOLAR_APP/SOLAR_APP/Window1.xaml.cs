@@ -85,6 +85,8 @@ namespace SOLAR_APP
 			public byte terms;
 		};
 		static itemInfo []iInfo = new itemInfo[256];
+		static int azimuth, elevation;
+		int cX, cY;
 		//======================================================================
 		private void dispatcherTimer_Tick(object sender, EventArgs e)
 		{
@@ -100,6 +102,37 @@ namespace SOLAR_APP
 //				el.StrokeThickness = 5;				
 //				
 //				compass.Children.Add(el);
+				
+				//=====================================
+				cX = (int)compass.ActualWidth / 2;
+				cY = (int)compass.ActualHeight/ 2;
+				
+				
+//				 Point punto = e.GetPosition(compass);
+//        int mouseX = (int)punto.X;
+//        int mouseY = (int)punto.Y;
+        
+        
+        
+        int lineLength = (int)((elevation/100) * cX/(90));
+
+        double angle = /*Math.toDegrees*/(azimuth / 100);
+        angle = 180 - angle;
+        angle = angle * Math.PI / 180;
+
+        
+//        int endX   = (int)(AREA_WIDTH / 2 + lineLength * Math.sin(angle));
+//        int endY   = (int)(AREA_HEIGH / 2 + lineLength * Math.cos(angle));
+        
+        line.X1 = cX;
+        line.Y1 = cY;
+        line.X2 = cX + lineLength * Math.Sin(angle);
+        line.Y2 = cY + lineLength * Math.Cos(angle);
+        
+        bola.SetValue(Canvas.LeftProperty, (double)line.X2 - 10); //set x
+        bola.SetValue(Canvas.TopProperty, (double)line.Y2 - 10); //set y
+        
+ 
 				
 				
 				for(int i = 0; i < 256; i++)
@@ -164,12 +197,16 @@ namespace SOLAR_APP
 
                     // Преобразуем и отображаем данные
                     if(receiveBytes.Length > 15)
-                    returnData = receiveBytes[3] + "." + receiveBytes[4] + "." + receiveBytes[5] + ", " +
-                    		receiveBytes[6] + ":" + receiveBytes[7] + ":" + receiveBytes[8] + '\n' + 
-                    		"Azimuth: "   + ((short) receiveBytes[9]  | ((short) receiveBytes[10]) << 8)+ '\n' +
-                    		"Elevation: " + ((short) receiveBytes[11] | ((short) receiveBytes[12]) << 8)+ '\n' +
-                    		"Wind:      " + ((short) receiveBytes[13] | ((short) receiveBytes[14]) << 8)+ '\n' +
-                    		"Light: "     + ((short) receiveBytes[15] | ((short) receiveBytes[16]) << 8);
+                    {
+	                    returnData = receiveBytes[3] + "." + receiveBytes[4] + "." + receiveBytes[5] + ", " +
+	                    		receiveBytes[6] + ":" + receiveBytes[7] + ":" + receiveBytes[8] + '\n' + 
+	                    		"Azimuth: "   + ((short) receiveBytes[9]  | ((short) receiveBytes[10]) << 8)+ '\n' +
+	                    		"Elevation: " + ((short) receiveBytes[11] | ((short) receiveBytes[12]) << 8)+ '\n' +
+	                    		"Wind:      " + ((short) receiveBytes[13] | ((short) receiveBytes[14]) << 8)+ '\n' +
+	                    		"Light: "     + ((short) receiveBytes[15] | ((short) receiveBytes[16]) << 8);
+	                    azimuth = (int)((short) receiveBytes[9]  | ((short) receiveBytes[10]) << 8);
+	                    elevation = (int) ((short) receiveBytes[11] | ((short) receiveBytes[12]) << 8);
+                    }
                    
                    
                     if(receiveBytes[0] == (byte)0x3c)
@@ -201,5 +238,6 @@ namespace SOLAR_APP
                 public int terms { get; set; }
         }
 		//===========================================================================================
+		
 	}
 }

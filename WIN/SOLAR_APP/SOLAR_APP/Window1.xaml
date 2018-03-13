@@ -1,9 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Window
 	x:Class="SOLAR_APP.Window1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="SOLAR_APP"
 	Width="794"
-	Height="469">
+	Height="469"
+Background="AliceBlue">
 	<Grid
 		Height="419"
 		Width="770">
@@ -33,6 +34,9 @@
 				<ImageBrush
 					ImageSource="/SOLAR_APP;component/Images/dual_compass_rose.png" />
 			</Canvas.Background>
+		<Line     Name="line" X1="10" Y1="60"      X2="150" Y2="60"      Stroke="Red"      StrokeThickness="4"/>
+		 <Ellipse Name="bola" Canvas.Left="130" Canvas.Top="79" Width="20" Height="20" Fill="Orange"  />
+		
 		</Canvas>
 		<ListView
 			Name="lvSlave"
