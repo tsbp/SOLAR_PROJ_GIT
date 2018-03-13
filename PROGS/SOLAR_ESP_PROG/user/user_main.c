@@ -131,7 +131,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	}
 
 	//=== sun tracking ====================================================
-	else {
+	else if(!sysState.manualMove){
 
 		if(orientation.income.elevation > ELEVATION_MAX) orientation.income.elevation = ELEVATION_MAX;
 
