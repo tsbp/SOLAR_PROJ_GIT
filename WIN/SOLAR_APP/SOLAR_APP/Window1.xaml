@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="SOLAR_APP.Window1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Title="SOLAR_APP"
+	Width="794"
+	Height="469">
+	<Grid
+		Height="419"
+		Width="770">
+		<TextBox
+			x:Name="lbl"
+			Width="201"
+			Height="176"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Bottom"
+			Margin="471,0,0,230" />
+		<Canvas
+			Width="238"
+			Height="228"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Top"
+			Margin="8,8,0,0"
+			x:Name="compass">
+			<Canvas.ToolTip>
+				<TextBlock
+					Text="{Binding us.mState, Mode=OneWay}" />
+			</Canvas.ToolTip>
+			<Canvas.Background>
+				<ImageBrush
+					ImageSource="/SOLAR_APP;component/Images/dual_compass_rose.png" />
+			</Canvas.Background>
+		</Canvas>
+		<ListView
+			Name="lvSlave"
+			Width="763"
+			Height="175"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Bottom"
+			Margin="7,0,0,0">
+
+		      <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                        	<GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=ip}"></GridViewColumn>
+                            <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=pitch}"></GridViewColumn>
+                    	    <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=roll}"></GridViewColumn>
+							<GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=head}"></GridViewColumn>
+							<GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=light}"></GridViewColumn>
+							<GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=terms}"></GridViewColumn>                    	
+                        </GridView.Columns>
+                    </GridView>
+          </ListView.View>
+		
+		</ListView>
+	</Grid>
+</Window>
