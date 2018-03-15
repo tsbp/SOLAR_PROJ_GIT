@@ -79,6 +79,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Resource Include="Images\light.png" />
+    <Resource Include="Images\wind.png" />
+    <Resource Include="Images\angle.png" />
+    <Resource Include="Images\compass.png" />
     <Resource Include="Images\dual_compass_rose.png" />
   </ItemGroup>
   <ItemGroup>

@@ -84,56 +84,60 @@ namespace SOLAR_APP
 			public int light;
 			public byte terms;
 		};
-		static itemInfo []iInfo = new itemInfo[256];
-		static int azimuth, elevation;
+		
+		struct masterInfo
+		{
+			public string date;
+			public string time;
+			public int azim;
+			public int elev;
+			public int wind;
+			public int light;
+		};
+		static masterInfo mInfo;
+		
+		static itemInfo []iInfo = new itemInfo[256];		
 		int cX, cY;
 		//======================================================================
 		private void dispatcherTimer_Tick(object sender, EventArgs e)
 		{
 			if(returnData != null) 
 			{
-				lbl.Text = returnData;
-				us.mState = returnData;
+				lblDate.Content  = mInfo.date + ", " + mInfo.time;				 
+				lblAzim.Content  = String.Format("{0}°", (double)mInfo.azim / 100);
+				lblElev.Content  = String.Format("{0}°", (double)mInfo.elev / 100);
+				lblWind.Content  = mInfo.wind;
+				lblLight.Content = mInfo.light;
+				returnData = null;
 				
-//				Ellipse el = new Ellipse();
-//				el.Height = 50;
-//				el.Width = 50;				
-//				el.Stroke = Brushes.Black;
-//				el.StrokeThickness = 5;				
-//				
-//				compass.Children.Add(el);
 				
+				string str = mInfo.date + ", " + mInfo.time + '\n' +
+					"Azimith: "  + mInfo.azim + '\n' +
+					"Elevation: "  + mInfo.elev + '\n' +
+					"Wind: "  + mInfo.wind+ '\n' +
+					"Light: "  + mInfo.light + '\n'; 
+				returnData = null;				
+				us.mState = str;
+			}
+			//else
+			{
 				//=====================================
 				cX = (int)compass.ActualWidth / 2;
 				cY = (int)compass.ActualHeight/ 2;
-				
-				
-//				 Point punto = e.GetPosition(compass);
-//        int mouseX = (int)punto.X;
-//        int mouseY = (int)punto.Y;
-        
-        
-        
-        int lineLength = (int)((elevation/100) * cX/(90));
 
-        double angle = /*Math.toDegrees*/(azimuth / 100);
-        angle = 180 - angle;
-        angle = angle * Math.PI / 180;
+				int lineLength = (int)((mInfo.elev/100) * cX/(90));
 
-        
-//        int endX   = (int)(AREA_WIDTH / 2 + lineLength * Math.sin(angle));
-//        int endY   = (int)(AREA_HEIGH / 2 + lineLength * Math.cos(angle));
-        
-        line.X1 = cX;
-        line.Y1 = cY;
-        line.X2 = cX + lineLength * Math.Sin(angle);
-        line.Y2 = cY + lineLength * Math.Cos(angle);
-        
-        bola.SetValue(Canvas.LeftProperty, (double)line.X2 - 10); //set x
-        bola.SetValue(Canvas.TopProperty, (double)line.Y2 - 10); //set y
-        
- 
-				
+				double angle =(mInfo.azim / 100);
+				angle = 180 - angle;
+				angle = angle * Math.PI / 180;
+
+				line.X1 = cX;
+				line.Y1 = cY;
+				line.X2 = cX + lineLength * Math.Sin(angle);
+				line.Y2 = cY + lineLength * Math.Cos(angle);
+
+				bola.SetValue(Canvas.LeftProperty, (double)line.X2 - 10); //set x
+				bola.SetValue(Canvas.TopProperty, (double)line.Y2 - 10); //set y
 				
 				for(int i = 0; i < 256; i++)
 				{
@@ -169,11 +173,8 @@ namespace SOLAR_APP
 								          	terms = iInfo[i].terms});
 							}
 						}
-
 					}
-				}
-				
-					
+				}					
 			}
 		}
 		//======================================================================
@@ -198,14 +199,13 @@ namespace SOLAR_APP
                     // Преобразуем и отображаем данные
                     if(receiveBytes.Length > 15)
                     {
-	                    returnData = receiveBytes[3] + "." + receiveBytes[4] + "." + receiveBytes[5] + ", " +
-	                    		receiveBytes[6] + ":" + receiveBytes[7] + ":" + receiveBytes[8] + '\n' + 
-	                    		"Azimuth: "   + ((short) receiveBytes[9]  | ((short) receiveBytes[10]) << 8)+ '\n' +
-	                    		"Elevation: " + ((short) receiveBytes[11] | ((short) receiveBytes[12]) << 8)+ '\n' +
-	                    		"Wind:      " + ((short) receiveBytes[13] | ((short) receiveBytes[14]) << 8)+ '\n' +
-	                    		"Light: "     + ((short) receiveBytes[15] | ((short) receiveBytes[16]) << 8);
-	                    azimuth = (int)((short) receiveBytes[9]  | ((short) receiveBytes[10]) << 8);
-	                    elevation = (int) ((short) receiveBytes[11] | ((short) receiveBytes[12]) << 8);
+                    	mInfo.date  = receiveBytes[5] + "." + receiveBytes[4] + "." + receiveBytes[3] ;
+                    	mInfo.time  = receiveBytes[6] + ":" + receiveBytes[7] + ":" + receiveBytes[8];
+                    	mInfo.azim  = (int)( receiveBytes[9]  | (receiveBytes[10]) << 8);
+                    	mInfo.elev  = (int)( receiveBytes[11] | (receiveBytes[12]) << 8);
+                    	mInfo.wind  = (int)( receiveBytes[13] | (receiveBytes[14]) << 8);
+                    	mInfo.light = (int)( receiveBytes[15] | (receiveBytes[16]) << 8);	
+                    	returnData  = "123";
                     }
                    
                    
@@ -213,10 +213,10 @@ namespace SOLAR_APP
                     {
                     	addr = RemoteIpEndPoint.Address.GetAddressBytes();
                     	iInfo[(int)addr[3]].ip    = 1;
-                    	iInfo[(int)addr[3]].pitch = (int)((short) receiveBytes[3] | ((short) receiveBytes[4]) << 8);
-                    	iInfo[(int)addr[3]].roll  = (int)((short) receiveBytes[5] | ((short) receiveBytes[6]) << 8);
-                    	iInfo[(int)addr[3]].head  = (int)((short) receiveBytes[7] | ((short) receiveBytes[8]) << 8);
-                    	iInfo[(int)addr[3]].light = (int)((short) receiveBytes[9] | ((short) receiveBytes[10]) << 8);
+                    	iInfo[(int)addr[3]].pitch = (int)( receiveBytes[3] | ( receiveBytes[4])  << 8);
+                    	iInfo[(int)addr[3]].roll  = (int)( receiveBytes[5] | ( receiveBytes[6])  << 8);
+                    	iInfo[(int)addr[3]].head  = (int)( receiveBytes[7] | ( receiveBytes[8])  << 8);
+                    	iInfo[(int)addr[3]].light = (int)( receiveBytes[9] | ( receiveBytes[10]) << 8);
                     	iInfo[(int)addr[3]].terms = receiveBytes[11];
                     }
                 }
@@ -230,10 +230,10 @@ namespace SOLAR_APP
 		//===========================================================================================
 		public class SlaveState
         {
-			    public int ip { get; set; }
+			    public int ip    { get; set; }
                 public int pitch { get; set; }
-                public int roll { get; set; }
-                public int head { get; set; }
+                public int roll  { get; set; }
+                public int head  { get; set; }
                 public int light { get; set; }
                 public int terms { get; set; }
         }

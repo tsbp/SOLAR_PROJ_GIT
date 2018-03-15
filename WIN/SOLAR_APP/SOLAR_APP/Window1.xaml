@@ -2,65 +2,250 @@
 <Window
 	x:Class="SOLAR_APP.Window1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="SOLAR_APP"
-	Width="794"
-	Height="469"
-Background="AliceBlue">
-	<Grid
-		Height="419"
-		Width="770">
-		<TextBox
-			x:Name="lbl"
-			Width="201"
-			Height="176"
-			Grid.Column="0"
-			Grid.Row="0"
-			HorizontalAlignment="Left"
-			VerticalAlignment="Bottom"
-			Margin="471,0,0,230" />
-		<Canvas
-			Width="238"
-			Height="228"
-			Grid.Column="0"
-			Grid.Row="0"
-			HorizontalAlignment="Left"
-			VerticalAlignment="Top"
-			Margin="8,8,0,0"
-			x:Name="compass">
-			<Canvas.ToolTip>
-				<TextBlock
-					Text="{Binding us.mState, Mode=OneWay}" />
-			</Canvas.ToolTip>
-			<Canvas.Background>
-				<ImageBrush
-					ImageSource="/SOLAR_APP;component/Images/dual_compass_rose.png" />
-			</Canvas.Background>
-		<Line     Name="line" X1="10" Y1="60"      X2="150" Y2="60"      Stroke="Red"      StrokeThickness="4"/>
-		 <Ellipse Name="bola" Canvas.Left="130" Canvas.Top="79" Width="20" Height="20" Fill="Orange"  />
-		
-		</Canvas>
+	Background="AliceBlue"
+	Height="523"
+	Width="645">
+	<StackPanel
+		Height="Auto"
+		Orientation="Vertical"
+		Width="Auto">
+		<Grid
+			Height="auto"
+			Width="auto">
+			<Grid.RowDefinitions>
+				<RowDefinition
+					Height="320"></RowDefinition>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition
+					Width="*"></ColumnDefinition>
+				<ColumnDefinition
+					Width="*"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			<Canvas
+				x:Name="compass"
+				Margin="15,15,15,15"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch"
+				Grid.Row="0"
+				Grid.Column="0">
+				<Canvas.ToolTip>
+					<TextBlock
+						Text="{Binding us.mState, Mode=OneWay}" />
+				</Canvas.ToolTip>
+				<Canvas.Background>
+					<ImageBrush
+						ImageSource="/SOLAR_APP;component/Images/dual_compass_rose.png" />
+				</Canvas.Background>
+				<Line
+					Name="line"
+					X1="10"
+					Y1="60"
+					X2="150"
+					Y2="60"
+					Stroke="Red"
+					StrokeThickness="4" />
+				<Ellipse
+					Name="bola"
+					Canvas.Left="130"
+					Canvas.Top="79"
+					Width="20"
+					Height="20"
+					Fill="Orange" />
+			</Canvas>
+			<StackPanel
+				Grid.Column="1"
+				Grid.Row="0"
+				VerticalAlignment="Stretch"
+				HorizontalAlignment="Stretch"
+				Orientation="Vertical"
+				Margin="15,15,15,15">
+				<Border
+					BorderBrush="#FF00D0FF"
+					BorderThickness="5"
+					HorizontalAlignment="Stretch"
+					Margin="5,5,5,5"
+					CornerRadius="20">
+					<Label
+						Name="lblDate"
+						VerticalContentAlignment="Center"
+						HorizontalContentAlignment="Center"
+						FontSize="24"
+						Foreground="#FF3F00FF" />
+				</Border>
+				<Grid
+					HorizontalAlignment="Stretch"
+					Margin="0,0,0,0">
+					<Grid.RowDefinitions>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition
+							Width="*"></ColumnDefinition>
+						<ColumnDefinition
+							Width="4*" />
+					</Grid.ColumnDefinitions>
+					<Image
+						Grid.Column="0"
+						Grid.Row="0"
+						Source="/SOLAR_APP;component/Images/compass.png"
+						Margin="3,3,3,3" />
+					<Border
+						Grid.Column="1"
+						Grid.Row="0"
+						BorderBrush="#FF00D0FF"
+						BorderThickness="5"
+						HorizontalAlignment="Stretch"
+						Margin="5,5,5,5"
+						CornerRadius="20">
+						<Label
+							Name="lblAzim"
+							VerticalContentAlignment="Center"
+							HorizontalContentAlignment="Center"
+							FontSize="20"
+							Foreground="#FF3F00FF" />
+					</Border>
+				</Grid>
+				<Grid
+					HorizontalAlignment="Stretch"
+					Margin="0,0,0,0">
+					<Grid.RowDefinitions>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition
+							Width="*"></ColumnDefinition>
+						<ColumnDefinition
+							Width="4*"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<Image
+						Grid.Column="0"
+						Grid.Row="0"
+						Source="/SOLAR_APP;component/Images/angle.png"
+						Margin="5,5,5,5" />
+					<Border
+						Grid.Column="1"
+						Grid.Row="0"
+						BorderBrush="#FF00D0FF"
+						BorderThickness="5"
+						HorizontalAlignment="Stretch"
+						Margin="5,5,5,5"
+						CornerRadius="20">
+						<Label
+							Name="lblElev"
+							VerticalContentAlignment="Center"
+							HorizontalContentAlignment="Center"
+							FontSize="20"
+							Foreground="#FF3F00FF" />
+					</Border>
+				</Grid>
+				<Grid
+					HorizontalAlignment="Stretch"
+					Margin="0,0,0,0">
+					<Grid.RowDefinitions>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition
+							Width="*"></ColumnDefinition>
+						<ColumnDefinition
+							Width="4*"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<Image
+						Grid.Column="0"
+						Grid.Row="0"
+						Source="/SOLAR_APP;component/Images/wind.png"
+						Margin="5,5,5,5" />
+					<Border
+						Grid.Column="1"
+						Grid.Row="0"
+						BorderBrush="#FF00D0FF"
+						BorderThickness="5"
+						HorizontalAlignment="Stretch"
+						Margin="5,5,5,5"
+						CornerRadius="20">
+						<Label
+							Name="lblWind"
+							VerticalContentAlignment="Center"
+							HorizontalContentAlignment="Center"
+							FontSize="20"
+							Foreground="#FF3F00FF" />
+					</Border>
+				</Grid>
+				<Grid
+					HorizontalAlignment="Stretch"
+					Margin="0,0,0,0">
+					<Grid.RowDefinitions>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition
+							Width="*"></ColumnDefinition>
+						<ColumnDefinition
+							Width="4*"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<Image
+						Grid.Column="0"
+						Grid.Row="0"
+						Source="/SOLAR_APP;component/Images/light.png"
+						Margin="5,5,5,5" />
+					<Border
+						Grid.Column="1"
+						Grid.Row="0"
+						BorderBrush="#FF00D0FF"
+						BorderThickness="5"
+						HorizontalAlignment="Stretch"
+						Margin="5,5,5,5"
+						CornerRadius="20">
+						<Label
+							Name="lblLight"
+							VerticalContentAlignment="Center"
+							HorizontalContentAlignment="Center"
+							FontSize="20"
+							Foreground="#FF3F00FF" />
+					</Border>
+				</Grid>
+			</StackPanel>
+		</Grid>
 		<ListView
 			Name="lvSlave"
-			Width="763"
 			Height="175"
 			Grid.Column="0"
 			Grid.Row="0"
-			HorizontalAlignment="Left"
+			HorizontalAlignment="Stretch"
 			VerticalAlignment="Bottom"
 			Margin="7,0,0,0">
-
-		      <ListView.View>
-                    <GridView>
-                        <GridView.Columns>
-                        	<GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=ip}"></GridViewColumn>
-                            <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=pitch}"></GridViewColumn>
-                    	    <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=roll}"></GridViewColumn>
-							<GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=head}"></GridViewColumn>
-							<GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=light}"></GridViewColumn>
-							<GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Path=terms}"></GridViewColumn>                    	
-                        </GridView.Columns>
-                    </GridView>
-          </ListView.View>
-		
+			<ListView.View>
+				<GridView>
+					<GridView.Columns>
+						<GridViewColumn
+							Header="Имя"
+							DisplayMemberBinding="{Binding Path=ip}"></GridViewColumn>
+						<GridViewColumn
+							Header="Имя"
+							DisplayMemberBinding="{Binding Path=pitch}"></GridViewColumn>
+						<GridViewColumn
+							Header="Имя"
+							DisplayMemberBinding="{Binding Path=roll}"></GridViewColumn>
+						<GridViewColumn
+							Header="Имя"
+							DisplayMemberBinding="{Binding Path=head}"></GridViewColumn>
+						<GridViewColumn
+							Header="Имя"
+							DisplayMemberBinding="{Binding Path=light}"></GridViewColumn>
+						<GridViewColumn
+							Header="Имя"
+							DisplayMemberBinding="{Binding Path=terms}"></GridViewColumn>
+					</GridView.Columns>
+				</GridView>
+			</ListView.View>
 		</ListView>
-	</Grid>
+	</StackPanel>
+	<!-- -Grid
+		Height="419"
+		Width="479">
+		
+		
+		
+	</Grid-->
 </Window>
