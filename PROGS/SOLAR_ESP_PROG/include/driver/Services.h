@@ -46,6 +46,7 @@ void ICACHE_FLASH_ATTR indicationInit(void);
 void ICACHE_FLASH_ATTR blinking(unsigned int blnk);
 void ICACHE_FLASH_ATTR leds(unsigned char aStt);
 void ICACHE_FLASH_ATTR move(uint8 a);
+void ICACHE_FLASH_ATTR modeSwitch(void);
 
 extern uint16 dataPresent;
 extern unsigned int blink;

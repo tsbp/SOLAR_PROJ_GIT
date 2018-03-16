@@ -35,6 +35,7 @@ public class UDPCommands
     public final static byte CMD_CALIB	= (byte)0x30;
 
     public final static byte CMD_STATE	= (byte)0xA0;
+    public final static byte CMD_MODE	= (byte)0xA1;
 
     public final static byte CMD_CFG		= (byte)0xC0;
     public final static byte CMD_WIFI		= (byte)0xC1;
@@ -69,6 +70,7 @@ public class UDPCommands
             case CMD_SYNC:
             case CMD_CFG:
             case CMD_WIFI:
+            case CMD_MODE:
                 //dataLng = aData.length;
 //                buf = new byte[5 + aData.length];
                 for(int i = 0; i < dataLng; i++) buf[i+3] = aData[i];

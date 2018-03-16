@@ -134,9 +134,6 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			 }
 			 break;
 
-		 case CMD_GOHOME:
-				 break;
-
 		    case CMD_SET_POSITION:
 		    	orientation.income.azimuth   = (sint16)(pusrdata[5] | (pusrdata[6] << 8));
 		    	orientation.income.elevation = (sint16)(pusrdata[3] | (pusrdata[4] << 8));
@@ -147,21 +144,18 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				sysState.newPosition = 1;
 				break;
 
+		    case CMD_MODE:
+		    	sysState.byte = pusrdata[3];
+		    	modeSwitch();
 			case CMD_ANGLE:
-				dataLng = 1;
+			case CMD_AZIMUTH:
+			case CMD_GOHOME:
+			case CMD_CFG:
+ans1:			dataLng = 1;
 				needAnswer = 1;
-				ansBuffer[3] = OK;
-//				inProcess = 5;
-//				blink = BLINK_WAIT;
+				ansBuffer[3] = OK;;
 				break;
 
-			case CMD_AZIMUTH:
-				dataLng = 1;
-				needAnswer = 1;
-				ansBuffer[3] = OK;
-//				inProcess = 5;
-//				blink = BLINK_WAIT;
-				break;
 
 			case CMD_LEFT:
 				move(LEFT);
@@ -197,10 +191,7 @@ ans:			dataLng = 1;
 				ansBuffer[12] = sysState.byte;
 				break;
 
-			case CMD_CFG:
-				needAnswer = 1;
-				ansBuffer[3] = OK;
-				break;
+
 
 			case CMD_WIFI:
 				{

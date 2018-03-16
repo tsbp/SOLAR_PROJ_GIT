@@ -265,6 +265,23 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 		}
 	}
 }
+void ICACHE_FLASH_ATTR modeSwitch(void)
+{
+						if(sysState.manualMove)
+						{
+							sysState.byte = 0;
+							PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
+							direction = 0;
+							//stopMoving();
+						}
+						else
+						{
+							PCF8574_writeByte(0x3B, (0x01 << 4) | 0x8f);
+							sysState.manualMove = 1;
+							blink = BLINK_MANUAL;
+							//stopMoving();
+						}
+}
 //==============================================================================
 void ICACHE_FLASH_ATTR keyProcessing(void)
 {
@@ -307,17 +324,7 @@ void ICACHE_FLASH_ATTR keyProcessing(void)
 						break;
 					case 0x01:
 						ets_uart_printf("MODE\r\n");
-						if(sysState.manualMove)
-						{
-							sysState.manualMove = 0;
-							PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
-						}
-						else
-						{
-							PCF8574_writeByte(0x3B, (0x01 << 4) | 0x8f);
-							sysState.manualMove = 1;
-							blink = BLINK_MANUAL;
-						}
+						modeSwitch();
 						break;
 					default:
 						if(sysState.manualMove)

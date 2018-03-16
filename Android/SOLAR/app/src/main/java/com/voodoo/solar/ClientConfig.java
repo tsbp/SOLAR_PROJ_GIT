@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -45,6 +46,7 @@ public class ClientConfig extends Activity {
 
     short azimuth = 0;
     short angle = 0;
+    byte   sysState;
     byte angIncrement  = 10;
 
     @Override
@@ -72,6 +74,19 @@ public class ClientConfig extends Activity {
         sbAccel = (SeekBar) findViewById(R.id.sbAccel);
 
         //================================================
+        final Button btnManual = (Button) findViewById(R.id.btnManual);
+        btnManual.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                byte [] data = new byte[1];
+                if((sysState & (byte)0x02) == 0)
+                    data[0] = 0x00;
+                else
+                    data[0] = 0x02;
+                UDPCommands.sendCmd(UDPCommands.CMD_MODE,  data, ip);
+            }
+        });
+        //================================================
         br = new BroadcastReceiver() {
             // действия при получении сообщений
             public void onReceive(Context context, Intent intent) {
@@ -87,10 +102,17 @@ public class ClientConfig extends Activity {
                 tvTerm.setText(input);
                 input = intent.getStringExtra(MainActivity.PARAM_STT);
                 tvStt.setText(input);
+
+                sysState = Byte.parseByte(input);
+                if((sysState & (byte)0x02) != 0)
+                    btnManual.setBackgroundColor(Color.RED);
+                else
+                    btnManual.setBackgroundColor(Color.GREEN);
             }
         };
         IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
         registerReceiver(br, intFilt);
+
 
         //================================================
         Button btnUp = (Button) findViewById(R.id.btnUp);
