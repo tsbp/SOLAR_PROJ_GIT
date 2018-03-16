@@ -183,7 +183,7 @@ ans:			dataLng = 1;
 				break;
 
 			case CMD_STATE:
-				dataLng   = 9;
+				dataLng   = 10;
 				needAnswer = 1;
 				ansBuffer[3]  = _pitch;
 				ansBuffer[4]  = _pitch >> 8;
@@ -194,6 +194,7 @@ ans:			dataLng = 1;
 				ansBuffer[9]  = light;
 				ansBuffer[10] = light >> 8;
 				ansBuffer[11] = terminators;
+				ansBuffer[12] = sysState.byte;
 				break;
 
 			case CMD_CFG:

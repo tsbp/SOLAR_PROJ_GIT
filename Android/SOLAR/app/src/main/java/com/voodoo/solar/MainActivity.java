@@ -52,6 +52,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     public final static String PARAM_HEAD  = "head";
     public final static String PARAM_LIGTH = "ligth";
     public final static String PARAM_TERM  = "term";
+    public final static String PARAM_STT  = "dStt";
 
     public static double  pPitch, pRoll, pHead;
 
@@ -290,6 +291,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         intent.putExtra(PARAM_HEAD,  clientData[selectedClient][2]);
         intent.putExtra(PARAM_LIGTH, clientData[selectedClient][3]);
         intent.putExtra(PARAM_TERM,  clientData[selectedClient][4]);
+        intent.putExtra(PARAM_STT,   clientData[selectedClient][5]);
         sendBroadcast(intent);
     }
     //==============================================================================================
@@ -400,7 +402,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 {
                     clientsIp = new byte[1];
                     clientsIp[0] = (byte)((int)ip.getAddress()[3]);
-                    clientData = new String[1][5];
+                    clientData = new String[1][6];
                     clientData[0][0] = "";
                 }
                 else
@@ -418,7 +420,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         clientsIp[clientsIp.length - 1] = ip.getAddress()[3];
 
                         //String tmpd[][] = clientData;
-                        clientData = new String[clientData.length + 1][5];
+                        clientData = new String[clientData.length + 1][6];
 
 //                        for(int i = 0; i < clientsIp.length; i++)
 //                            for(int j = 0; j < 4; j++)
@@ -473,6 +475,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         else                           terms += "0"; //btnIn4.setBackgroundColor(Color.GREEN);
 
                         int light = (((in[10] << 8) & 0xff00) | in[9] & 0xff);
+                        int stt = (in[12] & 0xff);
 
                         ax = (short) (((in[4] << 8) & 0xff00) | in[3] & 0xff);
                         ay = (short) (((in[6] << 8) & 0xff00) | in[5] & 0xff);
@@ -492,6 +495,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                     clientData[i][3] = "" + light;
                                     clientData[i][2] = String.format("%.1f", tt);
                                     clientData[i][4] = terms;
+                                    clientData[i][5] = "" + stt;
                                 }
                                 else
                                 {

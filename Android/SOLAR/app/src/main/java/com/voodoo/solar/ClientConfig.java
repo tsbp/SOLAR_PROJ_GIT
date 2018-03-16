@@ -35,7 +35,7 @@ import static com.voodoo.solar.MainActivity.BROADCAST_ACTION;
 
 public class ClientConfig extends Activity {
 
-    TextView tvIp, tvPitch, tvRoll, tvHead, tvLigth, tvTerm, tAzimuth, tAngle;
+    TextView tvStt, tvIp, tvPitch, tvRoll, tvHead, tvLigth, tvTerm, tAzimuth, tAngle;
     SeekBar sbCompass, sbAccel;
 
     public final static String CALIB_DATA = "Calib data";
@@ -63,6 +63,7 @@ public class ClientConfig extends Activity {
         tvHead  = (TextView) findViewById(R.id.tvHead);
         tvLigth = (TextView) findViewById(R.id.tvLigth);
         tvTerm  = (TextView) findViewById(R.id.tvTerm);
+        tvStt  = (TextView) findViewById(R.id.tvState);
 
         tvIp = (TextView) findViewById(R.id.tvIP);
         tvIp.setText("" + ip.getHostAddress());
@@ -84,6 +85,8 @@ public class ClientConfig extends Activity {
                 tvLigth.setText(input);
                 input = intent.getStringExtra(MainActivity.PARAM_TERM);
                 tvTerm.setText(input);
+                input = intent.getStringExtra(MainActivity.PARAM_STT);
+                tvStt.setText(input);
             }
         };
         IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);

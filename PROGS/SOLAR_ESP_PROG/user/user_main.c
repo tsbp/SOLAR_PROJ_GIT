@@ -145,7 +145,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 				else if (orientation.income.azimuth   > ( headF + 6 * HORIZONTAL_OFFSET)) direction = RIGHT;
 				else if (orientation.income.azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) direction = LEFT;
 
-				if(direction)move(direction);
+				if(direction && !sysState.motorFault)move(direction);
 				mTout = 1000;
 			}
 			if(mTout) mTout--;
@@ -194,7 +194,7 @@ void ICACHE_FLASH_ATTR setup(void)
 
 	i2c_init();
 	PCF8574_writeByte(0x3f, 0 | 0x0f);
-	move(0);
+	PCF8574_writeByte(0x3f, ((0) << 4) | 0x0f);//move(0);
 	PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
 
 	//======== light sensor init =======================

@@ -38,6 +38,7 @@ extern int cntr;
 #define BLINK_WAIT_NODATA      (0x9090)
 #define BLINK_WAIT_UNCONNECTED      (0x0090)
 #define BLINK_MANUAL      (0xf00f)
+#define BLINK_MOTOR_FLT      (0x00aa)
 
 #define BLNK_MAX 		(15)
 
@@ -57,15 +58,15 @@ uint16 light;
 //==============================================================================
 typedef union
 {
-	uint16 byte;
+	uint8 byte;
 	struct
 	{
-		uint16 manualMoveRemote :1;
-		uint16 manualMove	    :1;
-		uint16 moving       	:1;
-		uint16 automaticMoveV	:1;
-		uint16 newPosition  	:1;
-		//uint16 goHome		    :1;
+		uint8 manualMoveRemote :1;
+		uint8 manualMove	    :1;
+		uint8 moving       	:1;
+		uint8 automaticMoveV	:1;
+		uint8 newPosition  	:1;
+		uint8 motorFault	    :1;
 	};
 }sSYSTEM_STATE;
 extern sSYSTEM_STATE sysState;
