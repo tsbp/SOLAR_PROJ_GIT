@@ -32,6 +32,31 @@ namespace SOLAR_APP
 	/// </summary>
 	public partial class Window1 : Window
 	{
+		public const byte  OK			=		(0xff);
+		public const byte BAD			=		(0x00);
+
+		public const byte ID_SLAVE		=	(byte)(0x3C);
+		public const byte ID_METEO		=	(0x3D);
+		public const byte ID_MASTER		=	(0x7E);
+
+		public const byte CMD_ANGLE   	=	(0x10);
+		public const byte CMD_AZIMUTH		=	(0x11);
+		public const byte CMD_SET_POSITION=	(0x12);
+
+		public const byte CMD_LEFT		=	(0x20);
+		public const byte CMD_RIGHT		=	(0x21);
+		public const byte CMD_UP	    	=	(0x22);
+		public const byte CMD_DOWN		=	(0x23);
+		public const byte CMD_GOHOME		=	(0x24);
+
+		public const byte CMD_STATE		=	(0xA0);
+
+		public const byte CMD_SYNC		=	(0xE0);
+		public const byte CMD_SERVICE		=	(0xE1);
+
+		public const byte CMD_CFG			=	(0xC0);
+		public const byte CMD_WIFI		=	(0xC1);
+
 		public class User: INotifyPropertyChanged
         {
 			private String _mstate;
@@ -61,20 +86,22 @@ namespace SOLAR_APP
 		{
 			InitializeComponent();
 			this.DataContext = this;
+			//AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(meteoCfg), true);
 			// Создаем поток для прослушивания
-                Thread tRec = new Thread(new ThreadStart(Receiver));
+			Thread tRec = new Thread(new ThreadStart(Receiver));
+			tRec.IsBackground = true;
                 tRec.Start();
                 
 			dispatcherTimer = new DispatcherTimer();
 			dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-			dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1000);//new TimeSpan(0, 0, 1);
+			dispatcherTimer.Interval = TimeSpan.FromMilliseconds(200);//new TimeSpan(0, 0, 1);
 			dispatcherTimer.Start();
 			
 			us= new User();
 			lvSlave.ItemsSource = items;
 		}
 		//======================================================================
-		static string returnData;
+		static string returnData, cfgIncome;
 		struct itemInfo
 		{
 			public int ip;
@@ -138,6 +165,12 @@ namespace SOLAR_APP
 
 				bola.SetValue(Canvas.LeftProperty, (double)line.X2 - 10); //set x
 				bola.SetValue(Canvas.TopProperty, (double)line.Y2 - 10); //set y
+				if(cfgIncome != null)
+				{
+					cfgIncome = null;
+					mCfgWin win2 = new mCfgWin();
+					win2.ShowDialog();
+				}
 				
 				for(int i = 0; i < 256; i++)
 				{
@@ -197,35 +230,72 @@ namespace SOLAR_APP
                        ref RemoteIpEndPoint);
 
                     // Преобразуем и отображаем данные
-                    if(receiveBytes.Length > 15)
-                    {
-                    	mInfo.date  = receiveBytes[5] + "." + receiveBytes[4] + "." + receiveBytes[3] ;
-                    	mInfo.time  = receiveBytes[6] + ":" + receiveBytes[7] + ":" + receiveBytes[8];
-                    	mInfo.azim  = (int)( receiveBytes[9]  | (receiveBytes[10]) << 8);
-                    	mInfo.elev  = (int)( receiveBytes[11] | (receiveBytes[12]) << 8);
-                    	mInfo.wind  = (int)( receiveBytes[13] | (receiveBytes[14]) << 8);
-                    	mInfo.light = (int)( receiveBytes[15] | (receiveBytes[16]) << 8);	
-                    	returnData  = "123";
-                    }
-                   
-                   
-                    if(receiveBytes[0] == (byte)0x3c)
-                    {
-                    	addr = RemoteIpEndPoint.Address.GetAddressBytes();
-                    	iInfo[(int)addr[3]].ip    = 1;
-                    	iInfo[(int)addr[3]].pitch = (int)( receiveBytes[3] | ( receiveBytes[4])  << 8);
-                    	iInfo[(int)addr[3]].roll  = (int)( receiveBytes[5] | ( receiveBytes[6])  << 8);
-                    	iInfo[(int)addr[3]].head  = (int)( receiveBytes[7] | ( receiveBytes[8])  << 8);
-                    	iInfo[(int)addr[3]].light = (int)( receiveBytes[9] | ( receiveBytes[10]) << 8);
-                    	iInfo[(int)addr[3]].terms = receiveBytes[11];
+                    switch(receiveBytes[0])
+                    {                    		
+                    	case ID_METEO:	                    
+	                    	switch(receiveBytes[1])
+	                    	{
+	                    		case CMD_STATE:
+	                    			if(receiveBytes[2] > 1)
+	                    			{
+	                    				mIp = RemoteIpEndPoint.Address;
+	                    				mInfo.date  = receiveBytes[5] + "." + receiveBytes[4] + "." + receiveBytes[3] ;
+	                    				mInfo.time  = receiveBytes[6] + ":" + receiveBytes[7] + ":" + receiveBytes[8];
+	                    				mInfo.azim  = (int)( receiveBytes[9]  | (receiveBytes[10]) << 8);
+	                    				mInfo.elev  = (int)( receiveBytes[11] | (receiveBytes[12]) << 8);
+	                    				mInfo.wind  = (int)( receiveBytes[13] | (receiveBytes[14]) << 8);
+	                    				mInfo.light = (int)( receiveBytes[15] | (receiveBytes[16]) << 8);
+	                    				returnData  = "123";
+	                    			}
+	                    			
+	                    			break;
+	                    			
+	                    		case (byte) CMD_CFG:
+	                    			cfgIncome = "123";
+	                    			mCfgWin.vals[0] = (double)( receiveBytes[3]  | (receiveBytes[4])  << 8) / 100;
+	                    			mCfgWin.vals[1] = (double)( receiveBytes[5]  | (receiveBytes[6])  << 8) / 100;
+	                    			mCfgWin.vals[2] = (double)( receiveBytes[7]  | (receiveBytes[8])  << 8) ;
+	                    			mCfgWin.vals[3] = (double)( receiveBytes[9]  | (receiveBytes[10]) << 8);
+	                    			mCfgWin.vals[4] = (double)( receiveBytes[11] | (receiveBytes[12]) << 8) ;
+	                    			break;
+	                    	}break;
+	                    	
+	                    	
+	                    case ID_SLAVE:	                    	
+	                    		switch(receiveBytes[1])
+	                    		{
+	                    			case CMD_STATE:
+	                    				mIp = RemoteIpEndPoint.Address;
+	                    				addr = mIp.GetAddressBytes();
+	                    				iInfo[(int)addr[3]].ip    = 1;
+	                    				iInfo[(int)addr[3]].pitch = (int)( receiveBytes[3] | ( receiveBytes[4])  << 8);
+	                    				iInfo[(int)addr[3]].roll  = (int)( receiveBytes[5] | ( receiveBytes[6])  << 8);
+	                    				iInfo[(int)addr[3]].head  = (int)( receiveBytes[7] | ( receiveBytes[8])  << 8);
+	                    				iInfo[(int)addr[3]].light = (int)( receiveBytes[9] | ( receiveBytes[10]) << 8);
+	                    				iInfo[(int)addr[3]].terms =        receiveBytes[11];
+	                    				break;
+	                    		}break;
                     }
                 }
-            }
+            }            
             catch (Exception ex)
             {
                returnData = "Возникло исключение: " + ex.ToString() + "\n  " + ex.Message;
             }
         }
+		
+		public static IPAddress mIp;
+		//===========================================================================================
+		void meteoCfg(object sender, MouseButtonEventArgs e)
+		{
+			Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+			                         ProtocolType.Udp);		
+			IPEndPoint endPoint = new IPEndPoint(mIp, 7171);
+			
+			byte[] send_buffer = {ID_MASTER, CMD_CFG, 1, 0, (byte) 0xcc, (byte) 0xcc};
+			sock.SendTo(send_buffer , endPoint);
+		}
+		
 		
 		//===========================================================================================
 		public class SlaveState

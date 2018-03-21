@@ -8,12 +8,13 @@
 	MaxHeight="540"
 	MinHeight="540"
 	Width="303"
-	Height="551">
+	Height="551"
+	WindowStartupLocation="CenterScreen">
 	<StackPanel
 		Orientation="Vertical"
 		Height="Auto"
 		Width="Auto"
-		VerticalAlignment="Top">
+		VerticalAlignment="Stretch">
 		<Grid
 			Width="auto"
 			Height="330">
@@ -35,7 +36,8 @@
 				Width="300"
 				Height="300"
 				Grid.Row="0"
-				Grid.Column="0">
+				Grid.Column="0"
+				MouseDown="meteoCfg">
 				<Canvas.ToolTip>
 					<TextBlock
 						Text="{Binding us.mState, Mode=OneWay}" />
@@ -88,7 +90,7 @@
 					BorderThickness="2"
 					CornerRadius="20"
 					Margin="5,0,5,0"
-					Background  ="LightSteelBlue" >
+					Background="LightSteelBlue">
 					<Grid
 						HorizontalAlignment="Stretch"
 						Height="60"
@@ -261,12 +263,100 @@
 			Name="lvSlave"
 			Grid.Column="0"
 			Grid.Row="0"
-			HorizontalContentAlignment="Left"
-			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Stretch"
 			VerticalAlignment="Center"
-			Margin="7,0,7,0"
-			Height="117">
-			<ListView.View>
+			Margin="5,0,5,0"
+			BorderThickness="0"
+			Background="#3300FF83"
+			Height="171">
+			<ListView.ItemTemplate>
+				<DataTemplate>
+					<Grid
+						Background="#60AA4030">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition
+								Width="*" />
+							<ColumnDefinition
+								Width="*" />
+							<ColumnDefinition
+								Width="*" />
+							<ColumnDefinition
+								Width="*" />
+							<ColumnDefinition
+								Width="*" />
+							<ColumnDefinition
+								Width="*" />
+						</Grid.ColumnDefinitions>
+						<Border
+							BorderBrush="White"
+							BorderThickness="2"
+							CornerRadius="20"
+							Grid.Column="0">
+							<Label
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								Content="{Binding ip}"
+								Foreground="Black" />
+						</Border>
+						<Border
+							BorderBrush="White"
+							BorderThickness="2"
+							CornerRadius="20"
+							Grid.Column="1">
+							<Label
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								Content="{Binding pitch}"
+								Foreground="Black" />
+						</Border>
+						<Border
+							BorderBrush="White"
+							BorderThickness="2"
+							CornerRadius="20"
+							Grid.Column="2">
+							<Label
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								Content="{Binding roll}"
+								Foreground="Black" />
+						</Border>
+						<Border
+							BorderBrush="White"
+							BorderThickness="2"
+							CornerRadius="20"
+							Grid.Column="3">
+							<Label
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								Content="{Binding head}"
+								Foreground="Black" />
+						</Border>
+						<Border
+							BorderBrush="White"
+							BorderThickness="2"
+							CornerRadius="20"
+							Grid.Column="4">
+							<Label
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								Content="{Binding light}"
+								Foreground="Black" />
+						</Border>
+						<Border
+							BorderBrush="White"
+							BorderThickness="2"
+							CornerRadius="20"
+							Grid.Column="5">
+							<Label
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								Content="{Binding terms}"
+								Foreground="Black" />
+						</Border>
+					</Grid>
+				</DataTemplate>
+			</ListView.ItemTemplate>
+			<!-- ListView.View>
 				<GridView>
 					<GridView.Columns>
 						<GridViewColumn
@@ -288,8 +378,7 @@
 							Header="Имя"
 							DisplayMemberBinding="{Binding Path=terms}"></GridViewColumn>
 					</GridView.Columns>
-				</GridView>
-			</ListView.View>
+				</GridView-->
 		</ListView>
 	</StackPanel>
 	<!-- -Grid

@@ -73,12 +73,18 @@
       <SubType>Code</SubType>
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MeteoCfg.xaml.cs">
+      <DependentUpon>MeteoCfg.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Window1.xaml" />
+    <Page Include="MeteoCfg.xaml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Resource Include="Images\settt.ico" />
     <Resource Include="Images\light.png" />
     <Resource Include="Images\wind.png" />
     <Resource Include="Images\angle.png" />

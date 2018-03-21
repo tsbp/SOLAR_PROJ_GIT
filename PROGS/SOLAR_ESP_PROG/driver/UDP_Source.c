@@ -151,7 +151,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			case CMD_AZIMUTH:
 			case CMD_GOHOME:
 			case CMD_CFG:
-ans1:			dataLng = 1;
+        		dataLng = 1;
 				needAnswer = 1;
 				ansBuffer[3] = OK;;
 				break;
