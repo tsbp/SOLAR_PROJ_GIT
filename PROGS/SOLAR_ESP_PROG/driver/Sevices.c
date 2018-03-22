@@ -255,13 +255,13 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 			service_timer_start();
 
 			// check if moving
-			if(orientation.real.azimuth    < (azOld + 200) | orientation.real.azimuth    > (azOld - 200) |
-			   orientation.real.elevation  < (elOld + 200) | orientation.real.elevation  > (elOld - 200) )
-			{
-				// not moving
-				sysState.motorFault = 1;
-				blink = BLINK_MOTOR_FLT;
-			}
+//			if(orientation.real.azimuth    < (azOld + 200) | orientation.real.azimuth    > (azOld - 200) |
+//			   orientation.real.elevation  < (elOld + 200) | orientation.real.elevation  > (elOld - 200) )
+//			{
+//				// not moving
+//				sysState.motorFault = 1;
+//				blink = BLINK_MOTOR_FLT;
+//			}
 		}
 	}
 }

@@ -194,7 +194,8 @@ void ICACHE_FLASH_ATTR setup(void)
 
 	i2c_init();
 	PCF8574_writeByte(0x3f, 0 | 0x0f);
-	PCF8574_writeByte(0x3f, ((0) << 4) | 0x0f);//move(0);
+	PCF8574_writeByte(0x3f, ((0x0f) << 4) | 0x0f);
+	//move(0);
 	PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
 
 	//======== light sensor init =======================

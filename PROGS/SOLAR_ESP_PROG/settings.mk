@@ -19,7 +19,7 @@ EXTRA_BASE	?= c:/Espressif/extra
 
 # esptool path and port
 ESPTOOL		?= $(SDK_TOOLS)/esptool.exe
-ESPPORT		?= COM6
+ESPPORT		?= COM3
 
 # Baud rate for programmer
 ESPBAUD		?= 576000
