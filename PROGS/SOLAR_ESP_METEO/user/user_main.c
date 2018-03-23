@@ -48,7 +48,7 @@ void ICACHE_FLASH_ATTR sntp_get_stamp(void)
 {
 	sint8 tz  = sntp_get_timezone();
 	uint32 ts = sntp_get_current_timestamp();
-	ets_uart_printf("sntp: %d, %s zone = %d\n",ts, sntp_get_real_time(ts), tz);
+	//ets_uart_printf("sntp: %d, %s zone = %d\n",ts, sntp_get_real_time(ts), tz);
 
 	uint8 t[24], i;
 	os_memset(t, 0, sizeof(t));

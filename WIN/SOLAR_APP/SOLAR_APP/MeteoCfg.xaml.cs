@@ -58,6 +58,9 @@ namespace SOLAR_APP
 			                         ProtocolType.Udp);		
 			IPEndPoint endPoint = new IPEndPoint(Window1.mIp, 7171);
 			
+			Window1.lat = ("" + vals[0]).Replace(',','.');
+			Window1.lon = ("" + vals[1]).Replace(',','.');
+			
 			byte[] buf = new byte[16]; //{(byte) 0x7e, (byte) 0xc0, (byte) 0x01, (byte) 0x00, (byte) 0xcc, (byte) 0xcc};
 			
 			buf[0]  = (byte) 0x7e;

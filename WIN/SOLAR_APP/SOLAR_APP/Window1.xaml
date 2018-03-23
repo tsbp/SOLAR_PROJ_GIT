@@ -44,23 +44,45 @@
 				</Canvas.ToolTip>
 				<Canvas.Background>
 					<ImageBrush
-						ImageSource="/SOLAR_APP;component/Images/dual_compass_rose.png" />
+						ImageSource="{Binding us.url, Mode=OneWay}"/>			    
 				</Canvas.Background>
 				<Line
 					Name="line"
-					X1="10"
-					Y1="60"
+					X1="150"
+					Y1="150"
 					X2="150"
-					Y2="60"
+					Y2="300"
 					Stroke="Red"
-					StrokeThickness="4" />
+					StrokeThickness="2" />
 				<Ellipse
-					Name="bola"
-					Canvas.Left="130"
-					Canvas.Top="79"
-					Width="20"
-					Height="20"
-					Fill="Orange" />
+					Name="bola"					
+					Width="30"
+					Height="30"
+					Fill="Orange"
+				Stroke="Yellow"
+				StrokeThickness="4"/>
+			<Ellipse
+					Width="300"
+					Height="300"
+				    Stroke="Black"				
+				    StrokeThickness="0.5"/>
+				<Line
+					
+					X1="0"
+					Y1="150"
+					X2="300"
+					Y2="150"
+					Stroke="Black"
+					StrokeDashArray="10,5"
+					StrokeThickness="0.5" />
+				<Line					
+					X1="150"
+					Y1="0"
+					X2="150"
+					Y2="300"
+					Stroke="Black"
+					StrokeDashArray="10,5"
+					StrokeThickness="0.5" />
 			</Canvas>
 			<StackPanel
 				Orientation="Vertical"

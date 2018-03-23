@@ -57,6 +57,7 @@ namespace SOLAR_APP
 		public const byte CMD_CFG			=	(0xC0);
 		public const byte CMD_WIFI		=	(0xC1);
 
+		//======================================================================
 		public class User: INotifyPropertyChanged
         {
 			private String _mstate;
@@ -71,14 +72,30 @@ namespace SOLAR_APP
 						PropertyChanged(this, new PropertyChangedEventArgs("mState"));
 				}
 			}
+			
+			private String _url;
+			public string url
+			{ 
+				get
+				{ return _url;}
+				set
+				{
+					_url = value;
+					if (PropertyChanged != null)
+						PropertyChanged(this, new PropertyChangedEventArgs("url"));
+				}
+			}
                 
                
 			public event PropertyChangedEventHandler PropertyChanged;
         }
 		
+		//======================================================================
 		DispatcherTimer dispatcherTimer;
 		public User us
 		{get; private set;}
+		
+		bool first = true, show = false;
 		
 		public ObservableCollection<SlaveState> items = new ObservableCollection<SlaveState>();
 		
@@ -99,6 +116,8 @@ namespace SOLAR_APP
 			
 			us= new User();
 			lvSlave.ItemsSource = items;
+			
+			
 		}
 		//======================================================================
 		static string returnData, cfgIncome;
@@ -125,9 +144,19 @@ namespace SOLAR_APP
 		
 		static itemInfo []iInfo = new itemInfo[256];		
 		int cX, cY;
+		
+		public static string lat = "48.5";
+		public static string lon = "32.24";
 		//======================================================================
 		private void dispatcherTimer_Tick(object sender, EventArgs e)
 		{
+			
+			us.url = "https://maps.googleapis.com/maps/api/staticmap?center=" +
+				lat +
+				"," +
+				lon +
+				"&zoom=10&size=400x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyD_D1xWxD7orZOlcgizFhepXfGFacQMXck";
+			
 			if(returnData != null) 
 			{
 				lblDate.Content  = mInfo.date + ", " + mInfo.time;				 
@@ -145,6 +174,8 @@ namespace SOLAR_APP
 					"Light: "  + mInfo.light + '\n'; 
 				returnData = null;				
 				us.mState = str;
+				
+				
 			}
 			//else
 			{
@@ -163,13 +194,25 @@ namespace SOLAR_APP
 				line.X2 = cX + lineLength * Math.Sin(angle);
 				line.Y2 = cY + lineLength * Math.Cos(angle);
 
-				bola.SetValue(Canvas.LeftProperty, (double)line.X2 - 10); //set x
-				bola.SetValue(Canvas.TopProperty, (double)line.Y2 - 10); //set y
+				bola.SetValue(Canvas.LeftProperty, (double)line.X2 - 15); //set x
+				bola.SetValue(Canvas.TopProperty, (double)line.Y2 - 15); //set y
+				
+				if(first) {getMeteoCfg(); first = false;};
 				if(cfgIncome != null)
 				{
 					cfgIncome = null;
-					mCfgWin win2 = new mCfgWin();
-					win2.ShowDialog();
+					if(show)
+					{
+						mCfgWin win2 = new mCfgWin();
+						win2.ShowDialog();
+					}
+					else
+					{
+						show = true;
+						lat = ("" + mCfgWin.vals[0]).Replace(',', '.');
+						lon = ("" + mCfgWin.vals[1]).Replace(',', '.');
+					}
+					
 				}
 				
 				for(int i = 0; i < 256; i++)
@@ -287,6 +330,12 @@ namespace SOLAR_APP
 		public static IPAddress mIp;
 		//===========================================================================================
 		void meteoCfg(object sender, MouseButtonEventArgs e)
+		{
+			getMeteoCfg();
+		}
+		
+		//===========================================================================================
+		void getMeteoCfg()
 		{
 			Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
 			                         ProtocolType.Udp);		
