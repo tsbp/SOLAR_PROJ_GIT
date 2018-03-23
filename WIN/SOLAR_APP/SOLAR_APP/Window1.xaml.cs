@@ -155,7 +155,8 @@ namespace SOLAR_APP
 				lat +
 				"," +
 				lon +
-				"&zoom=14&size=300x300&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyD_D1xWxD7orZOlcgizFhepXfGFacQMXck";
+				"&zoom=12&size=300x300&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R" +
+				"&key=AIzaSyD_D1xWxD7orZOlcgizFhepXfGFacQMXck";
 			
 			if(returnData != null) 
 			{
@@ -219,14 +220,15 @@ namespace SOLAR_APP
 				{
 					if(iInfo[i].ip != 0) 
 					{
-						double tt = ((double)iInfo[i].head/10000)  * (180.0 / Math.PI);
+						 //String.Format("{0,4:N1}", 19 + slTemp.Value);
+						double tt = Double.Parse(String.Format("{0,4:N1}", ((double)iInfo[i].head/10000) * (180.0 / Math.PI)));
 						if(tt < 0) tt += 360;
 						
 						if(items.Count == 0) 
 							items.Add(new SlaveState(){
 								          	ip    = i,
-								          	pitch = ((double)iInfo[i].pitch/10000) * (180.0 / Math.PI) ,
-								          	roll  = ((double)iInfo[i].roll/10000)  * (180.0 / Math.PI),
+								          	pitch = Double.Parse(String.Format("{0,4:N1}", ((double)iInfo[i].pitch/10000) * (180.0 / Math.PI))),
+								          	roll  = Double.Parse(String.Format("{0,4:N1}", ((double)iInfo[i].roll/10000) * (180.0 / Math.PI))),
 								          	head  = tt,
 								          	light = iInfo[i].light,
 								          	terms = iInfo[i].terms});
