@@ -124,10 +124,10 @@ namespace SOLAR_APP
 		struct itemInfo
 		{
 			public int ip;
-			public int pitch;
-			public int roll;
-			public int head;
-			public int light;
+			public short pitch;
+			public short roll;
+			public short head;
+			public short light;
 			public byte terms;
 		};
 		
@@ -155,7 +155,7 @@ namespace SOLAR_APP
 				lat +
 				"," +
 				lon +
-				"&zoom=10&size=400x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyD_D1xWxD7orZOlcgizFhepXfGFacQMXck";
+				"&zoom=14&size=300x300&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyD_D1xWxD7orZOlcgizFhepXfGFacQMXck";
 			
 			if(returnData != null) 
 			{
@@ -219,12 +219,15 @@ namespace SOLAR_APP
 				{
 					if(iInfo[i].ip != 0) 
 					{
+						double tt = ((double)iInfo[i].head/10000)  * (180.0 / Math.PI);
+						if(tt < 0) tt += 360;
+						
 						if(items.Count == 0) 
 							items.Add(new SlaveState(){
 								          	ip    = i,
-								          	pitch = iInfo[i].pitch,
-								          	roll  = iInfo[i].roll,
-								          	head  = iInfo[i].head,
+								          	pitch = ((double)iInfo[i].pitch/10000) * (180.0 / Math.PI) ,
+								          	roll  = ((double)iInfo[i].roll/10000)  * (180.0 / Math.PI),
+								          	head  = tt,
 								          	light = iInfo[i].light,
 								          	terms = iInfo[i].terms});
 						else
@@ -310,11 +313,11 @@ namespace SOLAR_APP
 	                    			case CMD_STATE:
 	                    				mIp = RemoteIpEndPoint.Address;
 	                    				addr = mIp.GetAddressBytes();
-	                    				iInfo[(int)addr[3]].ip    = 1;
-	                    				iInfo[(int)addr[3]].pitch = (int)( receiveBytes[3] | ( receiveBytes[4])  << 8);
-	                    				iInfo[(int)addr[3]].roll  = (int)( receiveBytes[5] | ( receiveBytes[6])  << 8);
-	                    				iInfo[(int)addr[3]].head  = (int)( receiveBytes[7] | ( receiveBytes[8])  << 8);
-	                    				iInfo[(int)addr[3]].light = (int)( receiveBytes[9] | ( receiveBytes[10]) << 8);
+	                    				iInfo[(int)addr[3]].ip    = 1;	                    					                    				
+	                    				iInfo[(int)addr[3]].pitch = BitConverter.ToInt16(new byte[] { receiveBytes[4], receiveBytes[3] }, 0);
+	                    				iInfo[(int)addr[3]].roll  = BitConverter.ToInt16(new byte[] { receiveBytes[6], receiveBytes[5] }, 0);
+	                    				iInfo[(int)addr[3]].head  = BitConverter.ToInt16(new byte[] { receiveBytes[8], receiveBytes[7] }, 0);
+	                    				iInfo[(int)addr[3]].light = BitConverter.ToInt16(new byte[] { receiveBytes[10], receiveBytes[9] }, 0);
 	                    				iInfo[(int)addr[3]].terms =        receiveBytes[11];
 	                    				break;
 	                    		}break;
@@ -350,9 +353,9 @@ namespace SOLAR_APP
 		public class SlaveState
         {
 			    public int ip    { get; set; }
-                public int pitch { get; set; }
-                public int roll  { get; set; }
-                public int head  { get; set; }
+                public double pitch { get; set; }
+                public double roll  { get; set; }
+                public double head  { get; set; }
                 public int light { get; set; }
                 public int terms { get; set; }
         }
