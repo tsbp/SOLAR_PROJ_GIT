@@ -223,27 +223,31 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 	static sint16 azOld = 0, elOld = 0;
 
 	PCF8574_writeByte(0x3f, ((~a) << 4) | 0x0f);
-	if(a)
-	{
-		azOld = orientation.real.azimuth;
-		elOld = orientation.real.elevation;
-	}
+//	if(a)
+//	{
+//		azOld = orientation.real.azimuth;
+//		elOld = orientation.real.elevation;
+//	}
 	switch(a)
 	{
 		case LEFT:
 			ets_uart_printf("LEFT\r\n");
+			azOld = orientation.real.azimuth;
 			blink = BLINK_BACKWARD;
 			break;
 		case RIGHT:
 			ets_uart_printf("RIGHT\r\n");
+			azOld = orientation.real.azimuth;
 			blink = BLINK_FORWARD;
 			break;
 		case UP:
 			blink = BLINK_UP;
+			elOld = orientation.real.elevation;
 			ets_uart_printf("UP\r\n");
 			 break;
 		case DOWN:
 			ets_uart_printf("DOWN\r\n");
+			elOld = orientation.real.elevation;
 			blink = BLINK_DOWN;
 			break;
 		default:
@@ -255,16 +259,17 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 			service_timer_start();
 
 			// check if moving
-//			if(orientation.real.azimuth    < (azOld + 200) | orientation.real.azimuth    > (azOld - 200) |
-//			   orientation.real.elevation  < (elOld + 200) | orientation.real.elevation  > (elOld - 200) )
-//			{
-//				// not moving
-//				sysState.motorFault = 1;
-//				blink = BLINK_MOTOR_FLT;
-//			}
+			if((orientation.real.azimuth    < (azOld + 200) && orientation.real.azimuth    > (azOld - 200)) &&
+			   (orientation.real.elevation  < (elOld + 200) && orientation.real.elevation  > (elOld - 200)) )
+			{
+				// not moving
+				sysState.motorFault = 1;
+				blink = BLINK_MOTOR_FLT;
+			}
 		}
 	}
 }
+//==============================================================================
 void ICACHE_FLASH_ATTR modeSwitch(void)
 {
 						if(sysState.manualMove)
