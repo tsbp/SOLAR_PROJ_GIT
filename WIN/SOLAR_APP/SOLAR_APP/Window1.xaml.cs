@@ -316,10 +316,10 @@ namespace SOLAR_APP
 	                    				mIp = RemoteIpEndPoint.Address;
 	                    				addr = mIp.GetAddressBytes();
 	                    				iInfo[(int)addr[3]].ip    = 1;	                    					                    				
-	                    				iInfo[(int)addr[3]].pitch = BitConverter.ToInt16(new byte[] { receiveBytes[4], receiveBytes[3] }, 0);
-	                    				iInfo[(int)addr[3]].roll  = BitConverter.ToInt16(new byte[] { receiveBytes[6], receiveBytes[5] }, 0);
-	                    				iInfo[(int)addr[3]].head  = BitConverter.ToInt16(new byte[] { receiveBytes[8], receiveBytes[7] }, 0);
-	                    				iInfo[(int)addr[3]].light = BitConverter.ToInt16(new byte[] { receiveBytes[10], receiveBytes[9] }, 0);
+	                    				iInfo[(int)addr[3]].pitch = BitConverter.ToInt16(new byte[] { receiveBytes[3], receiveBytes[4] }, 0);
+	                    				iInfo[(int)addr[3]].roll  = BitConverter.ToInt16(new byte[] { receiveBytes[5], receiveBytes[6] }, 0);
+	                    				iInfo[(int)addr[3]].head  = BitConverter.ToInt16(new byte[] { receiveBytes[7], receiveBytes[8] }, 0);
+	                    				iInfo[(int)addr[3]].light = BitConverter.ToInt16(new byte[] { receiveBytes[9], receiveBytes[10] }, 0);
 	                    				iInfo[(int)addr[3]].terms =        receiveBytes[11];
 	                    				break;
 	                    		}break;
