@@ -111,7 +111,7 @@ namespace SOLAR_APP
                 
 			dispatcherTimer = new DispatcherTimer();
 			dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-			dispatcherTimer.Interval = TimeSpan.FromMilliseconds(200);//new TimeSpan(0, 0, 1);
+			dispatcherTimer.Interval = TimeSpan.FromMilliseconds(100);//new TimeSpan(0, 0, 1);
 			dispatcherTimer.Start();
 			
 			us= new User();
@@ -124,11 +124,11 @@ namespace SOLAR_APP
 		struct itemInfo
 		{
 			public int ip;
-			public short pitch;
-			public short roll;
-			public short head;
-			public short light;
-			public byte terms;
+			public string pitch;
+			public string roll;
+			public string head;
+			public string light;
+			public string terms;
 		};
 		
 		struct masterInfo
@@ -220,38 +220,37 @@ namespace SOLAR_APP
 				{
 					if(iInfo[i].ip != 0) 
 					{
-						 //String.Format("{0,4:N1}", 19 + slTemp.Value);
-						double tt = Double.Parse(String.Format("{0,4:N1}", ((double)iInfo[i].head/10000) * (180.0 / Math.PI)));
-						if(tt < 0) tt += 360;
 						
 						if(items.Count == 0) 
-							items.Add(new SlaveState(){
-								          	ip    = i,
-								          	pitch = Double.Parse(String.Format("{0,4:N1}", ((double)iInfo[i].pitch/10000) * (180.0 / Math.PI))),
-								          	roll  = Double.Parse(String.Format("{0,4:N1}", ((double)iInfo[i].roll/10000) * (180.0 / Math.PI))),
-								          	head  = tt,
-								          	light = iInfo[i].light,
-								          	terms = iInfo[i].terms});
-						else
-						for(int a = 0; a < items.Count; a++)
 						{
-							if(items[a].ip == i)
-							{
-								items[a].pitch = iInfo[i].pitch;
-								items[a].roll  = iInfo[i].roll;
-								items[a].head  = iInfo[i].head;
-								items[a].light = iInfo[i].light;
-								items[a].terms = iInfo[i].terms;
-							}
-							else
-							{
-								items.Add(new SlaveState(){
+							items.Add(new SlaveState(){
 								          	ip    = i,
 								          	pitch = iInfo[i].pitch,
 								          	roll  = iInfo[i].roll,
 								          	head  = iInfo[i].head,
 								          	light = iInfo[i].light,
 								          	terms = iInfo[i].terms});
+						}
+						else
+						for(int a = 0; a < items.Count; a++)
+						{
+							if(items[a].ip == i)
+							{
+								items[a].pitch = "" + iInfo[i].pitch;
+								items[a].roll  = "" + iInfo[i].roll;
+								items[a].head  = "" + iInfo[i].head;
+								items[a].light = "" + iInfo[i].light;
+								items[a].terms = "" + iInfo[i].terms;
+							}
+							else
+							{
+								items.Add(new SlaveState(){
+								          	ip    = i,
+								          	pitch = "" + iInfo[i].pitch,
+								          	roll  = "" + iInfo[i].roll,
+								          	head  = "" + iInfo[i].head,
+								          	light = "" + iInfo[i].light,
+								          	terms = "" + iInfo[i].terms});
 							}
 						}
 					}
@@ -315,12 +314,17 @@ namespace SOLAR_APP
 	                    			case CMD_STATE:
 	                    				mIp = RemoteIpEndPoint.Address;
 	                    				addr = mIp.GetAddressBytes();
-	                    				iInfo[(int)addr[3]].ip    = 1;	                    					                    				
-	                    				iInfo[(int)addr[3]].pitch = BitConverter.ToInt16(new byte[] { receiveBytes[3], receiveBytes[4] }, 0);
-	                    				iInfo[(int)addr[3]].roll  = BitConverter.ToInt16(new byte[] { receiveBytes[5], receiveBytes[6] }, 0);
-	                    				iInfo[(int)addr[3]].head  = BitConverter.ToInt16(new byte[] { receiveBytes[7], receiveBytes[8] }, 0);
-	                    				iInfo[(int)addr[3]].light = BitConverter.ToInt16(new byte[] { receiveBytes[9], receiveBytes[10] }, 0);
-	                    				iInfo[(int)addr[3]].terms =        receiveBytes[11];
+	                    				iInfo[(int)addr[3]].ip    = 1;
+	                    				
+	                    				double tt = Double.Parse(String.Format("{0,4:N1}", 
+	                    				                           ((double)BitConverter.ToInt16(new byte[] { receiveBytes[7], receiveBytes[8] }, 0)/10000) * (180.0 / Math.PI)));
+	                    				if(tt < 0) tt += 360;   
+	                    				
+	                    				iInfo[(int)addr[3]].pitch = "" + Double.Parse(String.Format("{0,4:N1}", ((double)BitConverter.ToInt16(new byte[] { receiveBytes[3], receiveBytes[4] }, 0)/10000) * (180.0 / Math.PI)));
+	                    				iInfo[(int)addr[3]].roll  = "" + Double.Parse(String.Format("{0,4:N1}", ((double)BitConverter.ToInt16(new byte[] { receiveBytes[5], receiveBytes[6] }, 0)/10000) * (180.0 / Math.PI)));
+	                    				iInfo[(int)addr[3]].head  = "" + tt;
+	                    				iInfo[(int)addr[3]].light = "" + BitConverter.ToInt16(new byte[] { receiveBytes[9], receiveBytes[10] }, 0);
+	                    				iInfo[(int)addr[3]].terms = "" + receiveBytes[11];
 	                    				break;
 	                    		}break;
                     }
@@ -352,16 +356,68 @@ namespace SOLAR_APP
 		
 		
 		//===========================================================================================
-		public class SlaveState
+		public class SlaveState: INotifyPropertyChanged
         {
 			    public int ip    { get; set; }
-                public double pitch { get; set; }
-                public double roll  { get; set; }
-                public double head  { get; set; }
-                public int light { get; set; }
-                public int terms { get; set; }
+			    
+			    public string _pitch;
+                public string pitch
+                {
+                	get                	{ return _pitch;}
+                	set
+                	{
+                		_pitch = value;
+                		if (PropertyChanged != null)
+                			PropertyChanged(this, new PropertyChangedEventArgs("pitch"));
+                	}
+                }
+                
+                public string roll  { get; set; }
+                
+                public string _head;
+                public string head
+                {
+                	get                	{ return _head;}
+                	set
+                	{
+                		_head = value;
+                		if (PropertyChanged != null)
+                			PropertyChanged(this, new PropertyChangedEventArgs("head"));
+                	}
+                }
+                
+                public string _light;
+                public string light
+                {
+                	get				{ return _light;}
+                	set
+                	{
+                		_light = value;
+                		if (PropertyChanged != null)
+                			PropertyChanged(this, new PropertyChangedEventArgs("light"));
+                	}
+                }
+                public string terms { get; set; }
+                
+                
+                public event PropertyChangedEventHandler PropertyChanged;
         }
 		//===========================================================================================
 		
 	}
 }
+//private String _url;
+//			public string url
+//			{ 
+//				get
+//				{ return _url;}
+//				set
+//				{
+//					_url = value;
+//					if (PropertyChanged != null)
+//						PropertyChanged(this, new PropertyChangedEventArgs("url"));
+//				}
+//			}
+//                
+//               
+//			public event PropertyChangedEventHandler PropertyChanged;
