@@ -254,9 +254,9 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 		{
 			ets_uart_printf("stop\r\n");
 			//==================================
-			serviceMode = MODE_REMOTE_SEND;
-			resetCntr = 0;
-			service_timer_start();
+//			serviceMode = MODE_REMOTE_SEND;
+//			resetCntr = 0;
+//			service_timer_start();
 
 			// check if moving
 			if((orientation.real.azimuth    < (azOld + 200) && orientation.real.azimuth    > (azOld - 200)) &&

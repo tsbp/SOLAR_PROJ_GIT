@@ -110,7 +110,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 				mState.dateTime.year + 2000,
 				mState.dateTime.month,
 				mState.dateTime.day,
-				mState.dateTime.hour - 2, //- time zone
+				mState.dateTime.hour - configs.meteo.timeZone, //- time zone
 				mState.dateTime.min,
 				mState.dateTime.sec);
 

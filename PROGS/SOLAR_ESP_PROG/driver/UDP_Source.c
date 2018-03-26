@@ -147,13 +147,13 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 		    case CMD_MODE:
 		    	sysState.byte = pusrdata[3];
 		    	modeSwitch();
-			case CMD_ANGLE:
-			case CMD_AZIMUTH:
-			case CMD_GOHOME:
-			case CMD_CFG:
+//			case CMD_ANGLE:
+//			case CMD_AZIMUTH:
+//			case CMD_GOHOME:
+//			case CMD_CFG:
         		dataLng = 1;
 				needAnswer = 1;
-				ansBuffer[3] = OK;;
+				ansBuffer[3] = OK;
 				break;
 
 

@@ -99,7 +99,7 @@ void ICACHE_FLASH_ATTR UDP_cmdState()
 	uint8 dataLng = 0;
 	uint8 buf[30] = {ID_MASTER, CMD_STATE};
 
-	//ets_uart_printf("? %d\r\n", ip4_addr4(&currentIP));
+//	ets_uart_printf("? %d\r\n", ip4_addr4(&currentIP));
 
 	if(currentIPask == ip4_addr4(&currentIP))
 	{
@@ -155,7 +155,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 	uint8 crc = crcCalc(pusrdata, pusrdata[0] + 1);
 	//ets_uart_printf("crc = %02x, in_crc = %02x\r\n", crc, pusrdata[length - 1]);
-	if (espconn_get_connection_info(pesp_conn, &premot, 0) == ESPCONN_OK  && pusrdata[0] == ID_MASTER/*&&  premot->remote_ip[3] != ip4_addr4(&currentIP)*/)
+	if (espconn_get_connection_info(pesp_conn, &premot, 0) == ESPCONN_OK  /*&& pusrdata[0] == ID_MASTER/*&&  premot->remote_ip[3] != ip4_addr4(&currentIP)*/)
 			//&& 			crc == pusrdata[length - 1])
 	{
 		//ets_uart_printf("from ip: %d\r\n", premot->remote_ip[3]);

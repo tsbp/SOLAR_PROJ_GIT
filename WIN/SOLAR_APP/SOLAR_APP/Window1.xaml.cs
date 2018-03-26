@@ -56,7 +56,13 @@ namespace SOLAR_APP
 
 		public const byte CMD_CFG			=	(0xC0);
 		public const byte CMD_WIFI		=	(0xC1);
-
+		
+		//======================================================================
+		public const byte STOPPED   = (byte)0x0;
+		public const byte TRACKING  = (byte)0x1;
+		public const byte ALARM     = (byte)0x2;
+		public const byte MANUAL_ALARM     = (byte)0x3;
+		//byte meteoState = 0;
 		//======================================================================
 		public class User: INotifyPropertyChanged
         {
@@ -117,6 +123,7 @@ namespace SOLAR_APP
 			us= new User();
 			lvSlave.ItemsSource = items;
 			
+			us.url = "/SOLAR_APP;component/Images/dual_compass_rose.png";
 			
 		}
 		//======================================================================
@@ -129,6 +136,7 @@ namespace SOLAR_APP
 			public string head;
 			public string light;
 			public string terms;
+			public string stt;
 		};
 		
 		struct masterInfo
@@ -139,6 +147,7 @@ namespace SOLAR_APP
 			public int elev;
 			public int wind;
 			public int light;
+			public int stt;
 		};
 		static masterInfo mInfo;
 		
@@ -147,6 +156,8 @@ namespace SOLAR_APP
 		
 		public static string lat = "48.5";
 		public static string lon = "32.24";
+		//======================================================================
+		public static int currentSlave = 0, slavestt; 
 		//======================================================================
 		private void dispatcherTimer_Tick(object sender, EventArgs e)
 		{
@@ -175,6 +186,37 @@ namespace SOLAR_APP
 					"Light: "  + mInfo.light + '\n'; 
 				returnData = null;				
 				us.mState = str;
+				
+				//============== buttons ======================================
+				//meteoState = data[14];
+                switch(mInfo.stt)
+                {
+                    case TRACKING:
+                    {
+                        bServ.IsEnabled = (true);
+                        bServ.Background = Brushes.Green;
+                        bServ.Content = "TRACKING" + '\n' + "STARTED";
+                        bAlarm.Background = (Brushes.Green);
+                        bAlarm.Content = "ALARM" + '\n' + "INACTIVE";
+                    }break;
+
+                    case STOPPED:
+                    {
+                        bServ.IsEnabled = true;
+                        bServ.Background = (Brushes.Red);
+                        bServ.Content = "TRACKING" + '\n' + "STOPPED";
+                        bAlarm.Background = (Brushes.Green);
+                        bAlarm.Content = "ALARM" + '\n' + "INACTIVE";
+                    }break;
+
+                    case ALARM:
+                    case MANUAL_ALARM:
+                    {
+                        bServ.IsEnabled = (false);
+                        bAlarm.Content = "ALARM" + '\n' + "ACTIVATED";
+                        bAlarm.Background = (Brushes.Red);
+                    }break;
+                }
 				
 				
 			}
@@ -241,6 +283,8 @@ namespace SOLAR_APP
 								items[a].head  = "" + iInfo[i].head;
 								items[a].light = "" + iInfo[i].light;
 								items[a].terms = "" + iInfo[i].terms;
+								
+								slavestt = Int32.Parse(iInfo[items[currentSlave].ip].stt);
 							}
 							else
 							{
@@ -292,6 +336,8 @@ namespace SOLAR_APP
 	                    				mInfo.elev  = (int)( receiveBytes[11] | (receiveBytes[12]) << 8);
 	                    				mInfo.wind  = (int)( receiveBytes[13] | (receiveBytes[14]) << 8);
 	                    				mInfo.light = (int)( receiveBytes[15] | (receiveBytes[16]) << 8);
+	                    				mInfo.stt = (int) (receiveBytes[17]);
+	                    				
 	                    				returnData  = "123";
 	                    			}
 	                    			
@@ -325,6 +371,8 @@ namespace SOLAR_APP
 	                    				iInfo[(int)addr[3]].head  = "" + tt;
 	                    				iInfo[(int)addr[3]].light = "" + BitConverter.ToInt16(new byte[] { receiveBytes[9], receiveBytes[10] }, 0);
 	                    				iInfo[(int)addr[3]].terms = "" + receiveBytes[11];
+	                    				iInfo[(int)addr[3]].stt   = "" + receiveBytes[12];
+	                    				
 	                    				break;
 	                    		}break;
                     }
@@ -346,14 +394,63 @@ namespace SOLAR_APP
 		//===========================================================================================
 		void getMeteoCfg()
 		{
+			if(mIp != null)
+			{
+				Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+				                         ProtocolType.Udp);		
+				IPEndPoint endPoint = new IPEndPoint(mIp, 7171);
+				
+				byte[] send_buffer = {ID_MASTER, CMD_CFG, 1, 0, (byte) 0xcc, (byte) 0xcc};
+				sock.SendTo(send_buffer , endPoint);
+			}
+		}
+		//===========================================================================================
+		void bServClick(object sender, RoutedEventArgs e)
+		{				
 			Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
 			                         ProtocolType.Udp);		
 			IPEndPoint endPoint = new IPEndPoint(mIp, 7171);
 			
-			byte[] send_buffer = {ID_MASTER, CMD_CFG, 1, 0, (byte) 0xcc, (byte) 0xcc};
+			byte[] send_buffer = {ID_MASTER, CMD_SERVICE, 1, 0, (byte) 0xcc, (byte) 0xcc};
+			
+			if(mInfo.stt == TRACKING) send_buffer[3] = STOPPED;
+			else send_buffer[3] = TRACKING;
+			
 			sock.SendTo(send_buffer , endPoint);
+			
+			var scope = FocusManager.GetFocusScope(bServ); // elem is the UIElement to unfocus
+			FocusManager.SetFocusedElement(scope, null);
+			Keyboard.ClearFocus();
 		}
 		
+		//===========================================================================================
+		void bAlarmClick(object sender, RoutedEventArgs e)
+		{
+			Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+			                         ProtocolType.Udp);		
+			IPEndPoint endPoint = new IPEndPoint(mIp, 7171);
+			
+			byte[] send_buffer = {ID_MASTER, CMD_SERVICE, 1, 0, (byte) 0xcc, (byte) 0xcc};
+			
+			if(mInfo.stt != MANUAL_ALARM) send_buffer[3] = MANUAL_ALARM;
+                else send_buffer[3] = STOPPED;
+			
+			sock.SendTo(send_buffer , endPoint);
+			
+			var scope = FocusManager.GetFocusScope(bServ); // elem is the UIElement to unfocus
+			FocusManager.SetFocusedElement(scope, null);
+			Keyboard.ClearFocus();
+		}
+		
+		//===========================================================================================
+		void slaveCfgClick(object sender, MouseButtonEventArgs e)
+		{
+			ListView fe = (ListView)sender;
+			currentSlave = fe.SelectedIndex;
+			
+			SlaveCfg winS = new SlaveCfg();
+			winS.ShowDialog();
+		}	
 		
 		//===========================================================================================
 		public class SlaveState: INotifyPropertyChanged

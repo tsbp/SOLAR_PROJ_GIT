@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="SOLAR_APP.SlaveCfg" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Title="SOLAR_APP"
+	Height="300"
+	Width="300"
+	WindowStartupLocation="CenterScreen">
+	<Grid>
+		<Button
+			Name="bManual"
+			Content="Button"
+			Width="129"
+			Height="111"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Top"
+			Margin="74,65,0,0" />
+	</Grid>
+</Window>

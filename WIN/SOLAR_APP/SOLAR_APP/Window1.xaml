@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
 	x:Class="SOLAR_APP.Window1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="SOLAR_APP"
@@ -7,9 +7,9 @@
 	MinHeight="540"
 	WindowStartupLocation="CenterScreen"
 	MaxWidth="800"
-	MinWidth="800"
 	Height="536"
-	Width="781">
+	MinWidth="650"
+	Width="650">
 	<StackPanel
 		Orientation="Vertical"
 		Height="Auto"
@@ -18,16 +18,15 @@
 		<Grid
 			Width="auto"
 			Height="330">
-			
-			
 			<Grid.RowDefinitions>
-				<RowDefinition Height="320"/>
+				<RowDefinition
+					Height="320" />
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition
 					Width="3*" />
 				<ColumnDefinition
-					Width="3*" />
+					Width="2*" />
 				<ColumnDefinition
 					Width="*" />
 			</Grid.ColumnDefinitions>
@@ -119,14 +118,11 @@
 						HorizontalAlignment="Stretch"
 						Height="60"
 						Margin="0,0,0,0">
-						<Grid.RowDefinitions>
-							<RowDefinition></RowDefinition>
-						</Grid.RowDefinitions>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition
-								Width="*"></ColumnDefinition>
+								Width="*" />
 							<ColumnDefinition
-								Width="3*" />
+								Width="2*" />
 						</Grid.ColumnDefinitions>
 						<Image
 							Grid.Column="0"
@@ -162,14 +158,11 @@
 						HorizontalAlignment="Stretch"
 						Margin="0,0,0,0"
 						Height="60">
-						<Grid.RowDefinitions>
-							<RowDefinition></RowDefinition>
-						</Grid.RowDefinitions>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition
-								Width="*"></ColumnDefinition>
+								Width="*" />
 							<ColumnDefinition
-								Width="3*"></ColumnDefinition>
+								Width="2*" />
 						</Grid.ColumnDefinitions>
 						<Image
 							Grid.Column="0"
@@ -205,14 +198,11 @@
 						HorizontalAlignment="Stretch"
 						Margin="0,0,0,0"
 						Height="60">
-						<Grid.RowDefinitions>
-							<RowDefinition></RowDefinition>
-						</Grid.RowDefinitions>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition
-								Width="*"></ColumnDefinition>
+								Width="*" />
 							<ColumnDefinition
-								Width="3*"></ColumnDefinition>
+								Width="2*" />
 						</Grid.ColumnDefinitions>
 						<Image
 							Grid.Column="0"
@@ -248,14 +238,11 @@
 						HorizontalAlignment="Stretch"
 						Margin="0,0,0,0"
 						Height="60">
-						<Grid.RowDefinitions>
-							<RowDefinition></RowDefinition>
-						</Grid.RowDefinitions>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition
-								Width="*"></ColumnDefinition>
+								Width="*" />
 							<ColumnDefinition
-								Width="3*"></ColumnDefinition>
+								Width="2*" />
 						</Grid.ColumnDefinitions>
 						<Image
 							Grid.Column="0"
@@ -285,11 +272,29 @@
 			<Grid
 				Grid.Column="2">
 				<Grid.RowDefinitions>
-					<RowDefinition Height="*"/>
-					<RowDefinition Height="*"/>
+					<RowDefinition
+						Height="*" />
+					<RowDefinition
+						Height="*" />
 				</Grid.RowDefinitions>
-			    <Button Margin="5,5,5,5" Grid.Row="0">,kdmf</Button>
-				<Button Margin="5,5,5,5" Grid.Row="1">,,lkdj</Button>
+				<Button
+					Name="bServ"
+					Margin="5,5,5,5"
+					Grid.Row="0"
+					Click="bServClick"
+					Content="SRV"
+					FontWeight="ExtraBold"
+					FontSize="16"
+					Foreground="Yellow" />
+				<Button
+					Name="bAlarm"
+					Margin="5,5,5,5"
+					Grid.Row="1"
+					Click="bAlarmClick"
+					Content="ALRM"
+					FontWeight="ExtraBold"
+					FontSize="16"
+					Foreground="Yellow" />
 			</Grid>
 		</Grid>
 		<ListView
@@ -301,7 +306,8 @@
 			Margin="5,0,5,0"
 			BorderThickness="0"
 			Background="#3300FF83"
-			Height="171">
+			Height="171"
+			MouseDoubleClick="slaveCfgClick">
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<Grid
@@ -391,11 +397,4 @@
 			</ListView.ItemTemplate>
 		</ListView>
 	</StackPanel>
-	<!-- -Grid
-		Height="419"
-		Width="479">
-		
-		
-		
-	</Grid-->
 </Window>
