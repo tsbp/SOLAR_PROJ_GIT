@@ -340,7 +340,7 @@
 								Width="*" />
 						</Grid.ColumnDefinitions>
 						<Border
-							BorderBrush="White"
+							BorderBrush="Brown"
 							BorderThickness="2"
 							CornerRadius="20"
 							Grid.Column="0">
@@ -351,7 +351,7 @@
 								Foreground="Black" />
 						</Border>
 						<Border
-							BorderBrush="White"
+							BorderBrush="BlueViolet"
 							BorderThickness="2"
 							CornerRadius="20"
 							Grid.Column="1">
@@ -362,7 +362,7 @@
 								Foreground="Black" />
 						</Border>
 						<Border
-							BorderBrush="White"
+							BorderBrush="MediumTurquoise"
 							BorderThickness="2"
 							CornerRadius="20"
 							Grid.Column="2">
@@ -373,7 +373,7 @@
 								Foreground="Black" />
 						</Border>
 						<Border
-							BorderBrush="White"
+							BorderBrush="DarkCyan"
 							BorderThickness="2"
 							CornerRadius="20"
 							Grid.Column="3">
@@ -384,7 +384,7 @@
 								Foreground="Black" />
 						</Border>
 						<Border
-							BorderBrush="White"
+							BorderBrush="ForestGreen"
 							BorderThickness="2"
 							CornerRadius="20"
 							Grid.Column="4">
@@ -395,7 +395,7 @@
 								Foreground="Black" />
 						</Border>
 						<Border
-							BorderBrush="White"
+							BorderBrush="Gold"
 							BorderThickness="2"
 							CornerRadius="20"
 							Grid.Column="5">
@@ -418,7 +418,7 @@
 					EndPoint="0.5,1">
 					<LinearGradientBrush.GradientStops>
 						<GradientStop
-							Color="#60AA4030"
+							Color="Gray"
 							Offset="0" />
 						<GradientStop
 							Color="#3300FF83"

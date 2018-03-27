@@ -40,21 +40,21 @@ namespace SOLAR_APP
 		public const byte ID_MASTER		=	(0x7E);
 
 		public const byte CMD_ANGLE   	=	(0x10);
-		public const byte CMD_AZIMUTH		=	(0x11);
+		public const byte CMD_AZIMUTH	=	(0x11);
 		public const byte CMD_SET_POSITION=	(0x12);
 
 		public const byte CMD_LEFT		=	(0x20);
 		public const byte CMD_RIGHT		=	(0x21);
-		public const byte CMD_UP	    	=	(0x22);
+		public const byte CMD_UP	    =	(0x22);
 		public const byte CMD_DOWN		=	(0x23);
-		public const byte CMD_GOHOME		=	(0x24);
+		public const byte CMD_GOHOME	=	(0x24);
 
 		public const byte CMD_STATE		=	(0xA0);
 
 		public const byte CMD_SYNC		=	(0xE0);
-		public const byte CMD_SERVICE		=	(0xE1);
+		public const byte CMD_SERVICE	=	(0xE1);
 
-		public const byte CMD_CFG			=	(0xC0);
+		public const byte CMD_CFG		=	(0xC0);
 		public const byte CMD_WIFI		=	(0xC1);
 		
 		//======================================================================
@@ -358,8 +358,8 @@ namespace SOLAR_APP
 	                    		switch(receiveBytes[1])
 	                    		{
 	                    			case CMD_STATE:
-	                    				mIp = RemoteIpEndPoint.Address;
-	                    				addr = mIp.GetAddressBytes();
+	                    				sIp = RemoteIpEndPoint.Address;
+	                    				addr = sIp.GetAddressBytes();
 	                    				iInfo[(int)addr[3]].ip    = 1;
 	                    				
 	                    				double tt = Double.Parse(String.Format("{0,4:N1}", 
@@ -384,7 +384,7 @@ namespace SOLAR_APP
             }
         }
 		
-		public static IPAddress mIp;
+		public static IPAddress mIp, sIp;
 		//===========================================================================================
 		void meteoCfg(object sender, MouseButtonEventArgs e)
 		{

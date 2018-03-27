@@ -3,33 +3,69 @@
 	x:Class="SOLAR_APP.SlaveCfg" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="SOLAR_APP"
 	Height="300"
-	Width="300"
-	WindowStartupLocation="CenterScreen">
-	<Grid>
+	WindowStartupLocation="CenterScreen"
+	Width="518">
+	<Grid
+		Background="LightSkyBlue">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="*"/>
+			<ColumnDefinition
+				Width="*" />
+			<ColumnDefinition
+				Width="*" />
 		</Grid.ColumnDefinitions>
-		<Button
+		<Label
+			Width="200"
+			Height="200"
 			Name="bManual"
-			Content="Button"			
-			Grid.Column="1"			
-			VerticalContentAlignment="Center"
-			HorizontalContentAlignment="Center"
-			Click="bManual_Click" />
-		
+			Grid.Column="1"
+			Content="123"
+			Foreground="White"
+			FontSize="16"
+			FontWeight="Heavy"
+			HorizontalContentAlignment = "Center"
+		    VerticalContentAlignment   = "Center"
+			MouseLeftButtonDown="bManual_Click">
+			<Label.Background>
+				<ImageBrush
+					ImageSource="{Binding slMode.sMode, Mode=OneWay}"></ImageBrush>
+			</Label.Background>
+		</Label>
 		<Grid
 			Grid.Column="0">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="*"/>
+				<RowDefinition
+					Height="*" />
+				<RowDefinition
+					Height="*" />
+				<RowDefinition
+					Height="*" />
+				<RowDefinition
+					Height="*" />
 			</Grid.RowDefinitions>
-			<Label Grid.Row="0" Name="lPitch" Content="123" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-		    <Label Grid.Row="1" Name="lRoll"  Content="123" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-			<Label Grid.Row="2" Name="lHead"  Content="123" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-			<Label Grid.Row="3" Name="lLight" Content="123" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			<Label
+				Grid.Row="0"
+				Name="lPitch"
+				Content="123"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center" />
+			<Label
+				Grid.Row="1"
+				Name="lRoll"
+				Content="123"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center" />
+			<Label
+				Grid.Row="2"
+				Name="lHead"
+				Content="123"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center" />
+			<Label
+				Grid.Row="3"
+				Name="lLight"
+				Content="123"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center" />
 		</Grid>
 	</Grid>
 </Window>

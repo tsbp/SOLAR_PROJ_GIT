@@ -89,6 +89,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Resource Include="Images\auto.gif" />
+    <Resource Include="Images\control.png" />
+    <Resource Include="Images\control.ico" />
     <Resource Include="Images\settt.ico" />
     <Resource Include="Images\light.png" />
     <Resource Include="Images\wind.png" />
