@@ -103,7 +103,7 @@ namespace SOLAR_APP
 		
 		bool first = true, show = false;
 		
-		public ObservableCollection<SlaveState> items = new ObservableCollection<SlaveState>();
+		public static ObservableCollection<SlaveState> items = new ObservableCollection<SlaveState>();
 		
 		public Window1()
 		{
@@ -450,7 +450,7 @@ namespace SOLAR_APP
 			
 			SlaveCfg winS = new SlaveCfg();
 			winS.ShowDialog();
-		}	
+		}		
 		
 		//===========================================================================================
 		public class SlaveState: INotifyPropertyChanged
