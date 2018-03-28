@@ -65,13 +65,14 @@ namespace SOLAR_APP
 			
 			slMode = new slaveMode();
 			//slMode.sMode = "/SOLAR_APP;component/Images/light.png";
+			winSlave.Title = "IP: " + Window1.sIp.ToString();
 
 		}
 		
 		//======================================================================
 		private void dispatcherTimer_Tick(object sender, EventArgs e)
 		{
-			bManual.Content = "" + Window1.slavestt;
+			//bManual.Content = "" + Window1.slavestt;
 			lPitch.Content  = Window1.items[Window1.currentSlave]._pitch;			
 			lHead.Content   = Window1.items[Window1.currentSlave]._head;
 			lLight.Content  = Window1.items[Window1.currentSlave]._light;
@@ -80,7 +81,7 @@ namespace SOLAR_APP
 			if(((byte)(Window1.slavestt & (byte)0xff) & 0x02) != 0)
 				slMode.sMode = "/SOLAR_APP;component/Images/control.ico";
 			else
-				slMode.sMode = "/SOLAR_APP;component/Images/auto.gif";
+				slMode.sMode = "/SOLAR_APP;component/Images/auto.png";
 			
 			
 			
