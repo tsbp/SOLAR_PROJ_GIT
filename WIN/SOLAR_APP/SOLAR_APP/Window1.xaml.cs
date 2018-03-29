@@ -499,22 +499,11 @@ namespace SOLAR_APP
                 
                 public event PropertyChangedEventHandler PropertyChanged;
         }
-		//===========================================================================================
 		
+		//===========================================================================================
+		public void OnWindowClosing(object sender, CancelEventArgs e) 
+		{
+			dispatcherTimer.Stop();			
+		}		
 	}
 }
-//private String _url;
-//			public string url
-//			{ 
-//				get
-//				{ return _url;}
-//				set
-//				{
-//					_url = value;
-//					if (PropertyChanged != null)
-//						PropertyChanged(this, new PropertyChangedEventArgs("url"));
-//				}
-//			}
-//                
-//               
-//			public event PropertyChangedEventHandler PropertyChanged;

@@ -79,12 +79,9 @@ namespace SOLAR_APP
 			
 
 			if(((byte)(Window1.slavestt & (byte)0xff) & 0x02) != 0)
-				slMode.sMode = "/SOLAR_APP;component/Images/control.ico";
+				slMode.sMode = "/SOLAR_APP;component/Images/control.png";
 			else
 				slMode.sMode = "/SOLAR_APP;component/Images/auto.png";
-			
-			
-			
 				
 		}
 		
@@ -113,5 +110,11 @@ namespace SOLAR_APP
 			
 			sock.SendTo(buf , endPoint);
 		}
-	}
+		
+		//===========================================================================================
+		public void OnSlaveCfgwClosing(object sender, CancelEventArgs e) 
+		{
+			dispatcherTimer.Stop();			
+		}	
+	}		
 }

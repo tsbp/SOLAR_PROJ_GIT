@@ -6,7 +6,9 @@
 	Width="303"
 	Height="318"
 	Name="winSlave"
-	Background="DeepSkyBlue">
+	Background="DeepSkyBlue"
+	Closing="OnSlaveCfgwClosing"
+	>
 	<Grid
 		Margin="10,10,10,10">
 		<Grid.ColumnDefinitions>
@@ -59,7 +61,7 @@
 					<Image
 						Grid.Column="0"
 						Grid.Row="0"
-						Source="/SOLAR_APP;component/Images/tilt.png"
+						Source="/SOLAR_APP;component/Images/angle.png"
 						Margin="6,3,3,3"></Image>
 					<Border
 						Grid.Column="1"
@@ -100,7 +102,7 @@
 					<Image
 						Grid.Column="0"
 						Grid.Row="0"
-						Source="/SOLAR_APP;component/Images/360.png"
+						Source="/SOLAR_APP;component/Images/tilt.png"
 						Margin="6,3,3,3" />
 					<Border
 						Grid.Column="1"
@@ -141,7 +143,7 @@
 					<Image
 						Grid.Column="0"
 						Grid.Row="0"
-						Source="/SOLAR_APP;component/Images/360.png"
+						Source="/SOLAR_APP;component/Images/compass.png"
 						Margin="6,3,3,3" />
 					<Border
 						Grid.Column="1"
@@ -182,7 +184,7 @@
 					<Image
 						Grid.Column="0"
 						Grid.Row="0"
-						Source="/SOLAR_APP;component/Images/360.png"
+						Source="/SOLAR_APP;component/Images/light.png"
 						Margin="6,3,3,3" />
 					<Border
 						Grid.Column="1"
