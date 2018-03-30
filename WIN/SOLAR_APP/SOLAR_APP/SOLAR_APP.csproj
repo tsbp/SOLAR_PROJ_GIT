@@ -89,6 +89,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Resource Include="Images\dwn.png" />
+    <Resource Include="Images\lft.png" />
+    <Resource Include="Images\rght.png" />
+    <Resource Include="Images\up.png" />
     <Resource Include="Images\auto.png" />
     <Resource Include="Images\360.png" />
     <Resource Include="Images\tilt.png" />

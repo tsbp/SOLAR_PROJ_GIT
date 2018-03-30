@@ -14,7 +14,7 @@ void ICACHE_FLASH_ATTR service_timer_stop (void);
 void ICACHE_FLASH_ATTR button_intr_callback(unsigned pin, unsigned level);
 void ICACHE_FLASH_ATTR button_init(void);
 void ICACHE_FLASH_ATTR sendToTingspeak(void);
-void ICACHE_FLASH_ATTR keyProcessing(void);
+void ICACHE_FLASH_ATTR keyProcessing(uint8 dd);
 //==============================================================================
 #define MODE_NORMAL		(0)
 #define MODE_SW_RESET	(1)

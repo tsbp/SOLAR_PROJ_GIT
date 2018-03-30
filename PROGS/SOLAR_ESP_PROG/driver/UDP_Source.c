@@ -81,6 +81,13 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 		switch(pusrdata[1])
 		{
 
+		case CMD_MANUAL_MOVE:
+			//ets_uart_printf("CMD_MANUAL_MOVE (%02x)\r\n", pusrdata[3]);
+			if(pusrdata[3]) sysState.manualMoveRemote = 1;
+			else 			sysState.manualMoveRemote = 0;
+			if(sysState.manualMove) keyProcessing(pusrdata[3]);
+			break;
+
 		 case CMD_CALIB:
 			 {
 				 switch(pusrdata[3])
@@ -157,24 +164,24 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				break;
 
 
-			case CMD_LEFT:
-				move(LEFT);
-				goto ans;
-			case CMD_RIGHT:
-				move(RIGHT);
-				goto ans;
-			case CMD_UP:
-				move(UP);
-				goto ans;
-			case CMD_DOWN:
-				move(DOWN);
-ans:			dataLng = 1;
-				needAnswer = 1;
-				ansBuffer[3] = OK;
-				sysState.byte = 0;
-				sysState.manualMoveRemote = 1; //inProcess = PROC_DURATION;
-
-				break;
+//			case CMD_LEFT:
+//				move(LEFT);
+//				goto ans;
+//			case CMD_RIGHT:
+//				move(RIGHT);
+//				goto ans;
+//			case CMD_UP:
+//				move(UP);
+//				goto ans;
+//			case CMD_DOWN:
+//				move(DOWN);
+//ans:			dataLng = 1;
+//				needAnswer = 1;
+//				ansBuffer[3] = OK;
+//				sysState.byte = 0;
+//				sysState.manualMoveRemote = 1; //inProcess = PROC_DURATION;
+//
+//				break;
 
 			case CMD_STATE:
 				dataLng   = 10;

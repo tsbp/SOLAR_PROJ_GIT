@@ -15,6 +15,7 @@
 #define CMD_UP	    		(0x22)
 #define CMD_DOWN			(0x23)
 #define CMD_GOHOME			(0x24)
+#define CMD_MANUAL_MOVE		(0x25)
 
 #define CMD_CALIB			(0x30)
 

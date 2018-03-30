@@ -46,7 +46,7 @@
 								<DropShadowEffect
 									ShadowDepth="5" />
 							</Border.Effect>
-							<Label
+							<Label								
 								HorizontalAlignment="Center"
 								VerticalAlignment="Center"
 								Content="{Binding name}"
@@ -64,6 +64,8 @@
 									ShadowDepth="5" />
 							</Border.Effect>
 							<TextBox
+								HorizontalContentAlignment="Stretch"
+								VerticalContentAlignment="Stretch"
 								BorderThickness="0"
 								Background="Transparent"
 								Foreground="White"

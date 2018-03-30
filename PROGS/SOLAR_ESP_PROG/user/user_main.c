@@ -78,7 +78,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		light = ((unsigned char*)&light)[1] |
 				((unsigned char*)&light)[0] << 8;
 
-		keyProcessing();
+		if(!sysState.manualMoveRemote) keyProcessing((~PCF8574_readByte(0x3B)) & (~0x70));
 
 	//======== LSM303  =====================
 	lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6);
@@ -117,21 +117,22 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	//ets_uart_printf("sysState = %d\r\n", sysState);
 
 	//=====================================================================
-	if(sysState.manualMoveRemote)
-	{
-		if(manualDuration) manualDuration--;
-		else
-		{
-			sysState.byte = 0;
-			manualDuration = PROC_DURATION;
-			orientation.income.azimuth   = (uint16) orientation.real.azimuth;
-			orientation.income.elevation = (uint16) orientation.real.elevation;
-			move(0);
-		}
-	}
-
-	//=== sun tracking ====================================================
-	else if(!sysState.manualMove){
+//	if(sysState.manualMoveRemote)
+//	{
+//		if(manualDuration) manualDuration--;
+//		else
+//		{
+//			sysState.byte = 0;
+//			manualDuration = PROC_DURATION;
+//			orientation.income.azimuth   = (uint16) orientation.real.azimuth;
+//			orientation.income.elevation = (uint16) orientation.real.elevation;
+//			move(0);
+//		}
+//	}
+//
+//	//=== sun tracking ====================================================
+//	else
+		if(!sysState.manualMove){
 
 		if(orientation.income.elevation > ELEVATION_MAX) orientation.income.elevation = ELEVATION_MAX;
 

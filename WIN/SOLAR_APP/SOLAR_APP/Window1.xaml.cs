@@ -48,6 +48,7 @@ namespace SOLAR_APP
 		public const byte CMD_UP	    =	(0x22);
 		public const byte CMD_DOWN		=	(0x23);
 		public const byte CMD_GOHOME	=	(0x24);
+		public const byte CMD_MANUAL_MOVE	=	(0x25);
 
 		public const byte CMD_STATE		=	(0xA0);
 

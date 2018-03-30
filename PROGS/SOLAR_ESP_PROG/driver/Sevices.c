@@ -277,7 +277,7 @@ void ICACHE_FLASH_ATTR modeSwitch(void)
 							sysState.byte = 0;
 							PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
 							direction = 0;
-							//stopMoving();
+							stopMoving();
 						}
 						else
 						{
@@ -288,10 +288,10 @@ void ICACHE_FLASH_ATTR modeSwitch(void)
 						}
 }
 //==============================================================================
-void ICACHE_FLASH_ATTR keyProcessing(void)
+void ICACHE_FLASH_ATTR keyProcessing(uint8 dd)
 {
 	static uint8 ddOld;
-			uint8  dd = (~PCF8574_readByte(0x3B)) & (~0x70);
+			//uint8  dd = (~PCF8574_readByte(0x3B)) & (~0x70);
 
 			if (ddOld != dd)
 			{

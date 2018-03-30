@@ -63,6 +63,15 @@ namespace SOLAR_APP
 			dispatcherTimer.Interval = TimeSpan.FromMilliseconds(100);//new TimeSpan(0, 0, 1);
 			dispatcherTimer.Start();
 			
+			sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+			                         ProtocolType.Udp);		
+			endPoint = new IPEndPoint(Window1.sIp, 7171);
+			
+			buf[0]  = (byte) Window1.ID_MASTER;
+			buf[2]  = (byte) 0x01;
+			buf[4] = (byte) 0xcc;
+			buf[5] = (byte) 0xcc;	
+			
 			slMode = new slaveMode();
 			//slMode.sMode = "/SOLAR_APP;component/Images/light.png";
 			winSlave.Title = "IP: " + Window1.sIp.ToString();
@@ -79,42 +88,122 @@ namespace SOLAR_APP
 			
 
 			if(((byte)(Window1.slavestt & (byte)0xff) & 0x02) != 0)
+			{
 				slMode.sMode = "/SOLAR_APP;component/Images/control.png";
+				btnUp.IsEnabled = true;
+				btnDwn.IsEnabled = true;
+				btnLeft.IsEnabled = true;
+				btnRight.IsEnabled = true;	
+			}
 			else
+			{
 				slMode.sMode = "/SOLAR_APP;component/Images/auto.png";
+				btnUp.IsEnabled = false;
+				btnDwn.IsEnabled = false;
+				btnLeft.IsEnabled = false;
+				btnRight.IsEnabled = false;				
+			}
 				
 		}
 		
 		//======================================================================
+		Socket sock;
+		IPEndPoint endPoint;
+		byte[] buf = new byte[6];
+		//======================================================================
 		void bManual_Click(object sender, RoutedEventArgs e)
-		{
-			Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
-			                         ProtocolType.Udp);		
-			IPEndPoint endPoint = new IPEndPoint(Window1.sIp, 7171);			
-			
-			byte[] buf = new byte[6]; //{(byte) 0x7e, (byte) 0xc0, (byte) 0x01, (byte) 0x00, (byte) 0xcc, (byte) 0xcc};
-			
-			buf[0]  = (byte) 0x7e;
-			buf[1]  = (byte) 0xA1;
-			buf[2]  = (byte) 0x01;
-//			buf[3]  = (byte) 0x01; //set
-			
-			buf[4] = (byte) 0xcc;
-			buf[5] = (byte) 0xcc;
-			
+		{		
+			buf[1]  = (byte) 0xA1;	
 			
 			if(((byte)(Window1.slavestt & (byte)0xff) & 0x02) != 0)
 				buf[3] = 2;
 			else
 				buf[3] = 0;
 			
-			sock.SendTo(buf , endPoint);
+			sock.SendTo(buf , endPoint);			
 		}
 		
 		//===========================================================================================
 		public void OnSlaveCfgwClosing(object sender, CancelEventArgs e) 
 		{
-			dispatcherTimer.Stop();			
+			dispatcherTimer.Stop();	
+			sock.Close();
+		}
+		
+		//===========================================================================================
+		void bUPkeyDwn(object sender, MouseButtonEventArgs e)
+		{			
+			buf[1]  = (byte) Window1.CMD_MANUAL_MOVE;			
+			buf[3]  = (byte) 0x80; //set
+			
+			sock.SendTo(buf , endPoint);			
+		}
+		
+		//===========================================================================================
+		void bUPkeyUp(object sender, MouseButtonEventArgs e)
+		{
+			
+			buf[1]  = (byte) Window1.CMD_MANUAL_MOVE;			
+			buf[3]  = (byte) 0x00; //set
+			
+			sock.SendTo(buf , endPoint);
+		}	
+		
+		//===========================================================================================
+		void bDWNkeyDwn(object sender, MouseButtonEventArgs e)
+		{			
+			buf[1]  = (byte) Window1.CMD_MANUAL_MOVE;			
+			buf[3]  = (byte) 0x08; //set
+			
+			sock.SendTo(buf , endPoint);			
+		}
+		
+		//===========================================================================================
+		void bDWNkeyUp(object sender, MouseButtonEventArgs e)
+		{
+			
+			buf[1]  = (byte) Window1.CMD_MANUAL_MOVE;			
+			buf[3]  = (byte) 0x00; //set
+			
+			sock.SendTo(buf , endPoint);
+		}	
+		
+		//===========================================================================================
+		void bLFTkeyDwn(object sender, MouseButtonEventArgs e)
+		{			
+			buf[1]  = (byte) Window1.CMD_MANUAL_MOVE;			
+			buf[3]  = (byte) 0x04; //set
+			
+			sock.SendTo(buf , endPoint);			
+		}
+		
+		//===========================================================================================
+		void bLFTkeyUp(object sender, MouseButtonEventArgs e)
+		{
+			
+			buf[1]  = (byte) Window1.CMD_MANUAL_MOVE;			
+			buf[3]  = (byte) 0x00; //set
+			
+			sock.SendTo(buf , endPoint);
+		}	
+		
+		//===========================================================================================
+		void bRIGkeyDwn(object sender, MouseButtonEventArgs e)
+		{			
+			buf[1]  = (byte) Window1.CMD_MANUAL_MOVE;			
+			buf[3]  = (byte) 0x02; //set
+			
+			sock.SendTo(buf , endPoint);			
+		}
+		
+		//===========================================================================================
+		void bRIGkeyUp(object sender, MouseButtonEventArgs e)
+		{
+			
+			buf[1]  = (byte) Window1.CMD_MANUAL_MOVE;			
+			buf[3]  = (byte) 0x00; //set
+			
+			sock.SendTo(buf , endPoint);
 		}	
 	}		
 }
