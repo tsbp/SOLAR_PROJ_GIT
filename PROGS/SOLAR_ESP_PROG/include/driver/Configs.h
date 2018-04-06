@@ -1,6 +1,6 @@
 #include "driver/LSM303.h"
 //==============================================================================
-#define PRIV_PARAM_START_SEC		0xBC
+#define PRIV_PARAM_START_SEC		0x7e
 #define PRIV_PARAM_SAVE     0
 #define SPI_FLASH_SEC_SIZE      4096
 //==============================================================================

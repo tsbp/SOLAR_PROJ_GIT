@@ -100,6 +100,13 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 						system_restart();					
 					}
 				} else {
+					if(resetCntr >= 4)
+					{
+						ets_uart_printf("OTA start\r\n");
+						blink = BLINK_MOTOR_FLT;
+						sysState.motorFault = 1;
+						ota_start();
+					}
 					service_timer_stop();
 					resetCntr = 0;
 					serviceMode = MODE_NORMAL;

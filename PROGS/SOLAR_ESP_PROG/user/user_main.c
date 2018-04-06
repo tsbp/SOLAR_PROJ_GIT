@@ -235,7 +235,7 @@ void ICACHE_FLASH_ATTR user_init(void)
 
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(1000);
-	ets_uart_printf("System init...\r\n");
+	ets_uart_printf("\r\n\r\n*** Solar slave\r\n*** Firmware compiled: %s\r\n\r\n", VERSION);
 
 //	//saveConfigs();
 
