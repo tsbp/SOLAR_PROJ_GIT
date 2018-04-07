@@ -81,6 +81,10 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 		switch(pusrdata[1])
 		{
 
+		case CMD_VERSION:
+			ets_uart_printf("CMD_VERSION\r\n");
+			break;
+
 		case CMD_MANUAL_MOVE:
 			//ets_uart_printf("CMD_MANUAL_MOVE (%02x)\r\n", pusrdata[3]);
 			if(pusrdata[3]) sysState.manualMoveRemote = 1;

@@ -21,64 +21,82 @@
 			<ColumnDefinition
 				Width="*" />
 		</Grid.ColumnDefinitions>
-		<DockPanel
-			Height="170"
-			Width="170"
-			Margin="0,0,0,0"
-			VerticalAlignment="Center"
-			Grid.Column="1">
-			<Button
-				Name="btnUp"
-				IsEnabled="False"
-				Width="50"
-				Height="50"
-				DockPanel.Dock="Top"
-				VerticalAlignment="Top"
-				PreviewMouseLeftButtonDown="bUPkeyDwn"
-				PreviewMouseLeftButtonUp="bUPkeyUp"
-				Background="LightGreen">
-				<Image
-					Source="/SOLAR_APP;component/Images/up.png"></Image>
-			</Button>
-			<Button
-				Name="btnDwn"
-				Width="50"
-				Height="50"
-				IsEnabled="False"
-				DockPanel.Dock="Bottom"
-				Background="LightBlue"
-				VerticalAlignment="Bottom"
-				PreviewMouseLeftButtonDown="bDWNkeyDwn"
-				PreviewMouseLeftButtonUp="bDWNkeyUp">
-				<Image
-					Source="/SOLAR_APP;component/Images/dwn.png"></Image>
-			</Button>
-			<Button
-				Name="btnLeft"
-				IsEnabled="False"
-				Width="50"
-				Height="50"
-				DockPanel.Dock="Left"
-				Background="Aqua"
-				PreviewMouseLeftButtonDown="bLFTkeyDwn"
-				PreviewMouseLeftButtonUp="bLFTkeyUp">
-				<Image
-					Source="/SOLAR_APP;component/Images/lft.png"></Image>
-			</Button>
-			<Button
-				Name="btnRight"
-				IsEnabled="False"
-				Width="50"
-				Height="50"
-				DockPanel.Dock="Right"
-				Background="Gold"
-				VerticalAlignment="Stretch"
-				HorizontalAlignment="Right"
-				PreviewMouseLeftButtonDown="bRIGkeyDwn"
-				PreviewMouseLeftButtonUp="bRIGkeyUp">
-				<Image
-					Source="/SOLAR_APP;component/Images/rght.png"></Image>
-			</Button>
+		
+		<Grid
+		Grid.Column="1">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="5*"/>
+			</Grid.RowDefinitions>
+			<Label
+				Name="lblVersion"
+				Content="VER: Apr  6 2018, 15:02:42"
+				HorizontalContentAlignment="Center"
+				VerticalAlignment="Center"
+				FontSize="14"
+				Background="#550000ff"
+				Foreground="White"	
+				Margin="10,0,10,0"
+			>
+			</Label>
+			<DockPanel
+				Height="170"
+				Width="170"
+				Margin="0,0,0,0"
+				VerticalAlignment="Center"
+				Grid.Row="1">
+				<Button
+					Name="btnUp"
+					IsEnabled="False"
+					Width="50"
+					Height="50"
+					DockPanel.Dock="Top"
+					VerticalAlignment="Top"
+					PreviewMouseLeftButtonDown="bUPkeyDwn"
+					PreviewMouseLeftButtonUp="bUPkeyUp"
+					Background="LightGreen">
+					<Image
+						Source="/SOLAR_APP;component/Images/up.png"></Image>
+				</Button>
+				<Button
+					Name="btnDwn"
+					Width="50"
+					Height="50"
+					IsEnabled="False"
+					DockPanel.Dock="Bottom"
+					Background="LightBlue"
+					VerticalAlignment="Bottom"
+					PreviewMouseLeftButtonDown="bDWNkeyDwn"
+					PreviewMouseLeftButtonUp="bDWNkeyUp">
+					<Image
+						Source="/SOLAR_APP;component/Images/dwn.png"></Image>
+				</Button>
+				<Button
+					Name="btnLeft"
+					IsEnabled="False"
+					Width="50"
+					Height="50"
+					DockPanel.Dock="Left"
+					Background="Aqua"
+					PreviewMouseLeftButtonDown="bLFTkeyDwn"
+					PreviewMouseLeftButtonUp="bLFTkeyUp">
+					<Image
+						Source="/SOLAR_APP;component/Images/lft.png"></Image>
+				</Button>
+				<Button
+					Name="btnRight"
+					IsEnabled="False"
+					Width="50"
+					Height="50"
+					DockPanel.Dock="Right"
+					Background="Gold"
+					VerticalAlignment="Stretch"
+					HorizontalAlignment="Right"
+					PreviewMouseLeftButtonDown="bRIGkeyDwn"
+					PreviewMouseLeftButtonUp="bRIGkeyUp">
+					<Image
+						Source="/SOLAR_APP;component/Images/rght.png"></Image>
+				</Button>
 			<Label
 				Name="bManual"
 				MouseLeftButtonDown="bManual_Click"
@@ -90,6 +108,9 @@
 				</Label.Background>
 			</Label>
 		</DockPanel>
+		</Grid>
+		
+		
 		<Grid
 			Grid.Column="0">
 			<Grid.RowDefinitions>

@@ -21,6 +21,7 @@
 
 #define CMD_STATE			(0xA0)
 #define CMD_MODE			(0xA1)
+#define CMD_VERSION			(0xA2)
 
 #define CMD_CFG				(0xC0)
 #define CMD_WIFI			(0xC1)

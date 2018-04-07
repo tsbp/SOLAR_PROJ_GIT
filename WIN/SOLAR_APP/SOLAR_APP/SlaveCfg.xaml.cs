@@ -75,6 +75,10 @@ namespace SOLAR_APP
 			slMode = new slaveMode();
 			//slMode.sMode = "/SOLAR_APP;component/Images/light.png";
 			winSlave.Title = "IP: " + Window1.sIp.ToString();
+			
+			//========== get version =======================
+			buf[1]  = (byte) Window1.CMD_VERSION;	
+			sock.SendTo(buf , endPoint);
 
 		}
 		
@@ -113,7 +117,7 @@ namespace SOLAR_APP
 		//======================================================================
 		void bManual_Click(object sender, RoutedEventArgs e)
 		{		
-			buf[1]  = (byte) 0xA1;	
+			buf[1]  = (byte) Window1.CMD_MODE;	
 			
 			if(((byte)(Window1.slavestt & (byte)0xff) & 0x02) != 0)
 				buf[3] = 2;
