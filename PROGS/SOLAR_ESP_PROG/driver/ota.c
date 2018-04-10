@@ -6,6 +6,8 @@
 #include "upgrade.h"
 #include "user_config.h"
 
+//#define PLATFORM_DEBUG
+
 #define pheadbuffer "Connection: keep-alive\r\n\
 Cache-Control: no-cache\r\n\
 User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36 \r\n\
@@ -41,14 +43,14 @@ LOCAL void ICACHE_FLASH_ATTR ota_rsp(void *arg)
 	if(server->upgrade_flag == true)
 	{
 		#ifdef PLATFORM_DEBUG
-		UARTSendStr("ota_rsp: device_upgrade_success.\r\n");
+		ets_uart_printf("ota_rsp: device_upgrade_success.\r\n");
 		#endif
 		system_upgrade_reboot();
 	}
 	else
 	{
 		#ifdef PLATFORM_DEBUG
-		UARTSendStr("ota_rsp: device_upgrade_failed.\r\n");
+		ets_uart_printf("ota_rsp: device_upgrade_failed.\r\n");
 		#endif
 	}
 	os_free(server->url);
@@ -76,19 +78,19 @@ static void ICACHE_FLASH_ATTR ota_discon_cb(void *arg)
 	}
 
 	#ifdef PLATFORM_DEBUG
-	UARTSendStr("ota_discon_cb: disconnect\r\n\r\n");
+	ets_uart_printf("ota_discon_cb: disconnect\r\n\r\n");
 	#endif
 
 	if(system_upgrade_start(upServer) == false)
 	{
 		#ifdef PLATFORM_DEBUG
-		UARTSendStr("ota_discon_cb: FW upgrade failed to start.\r\n");
+		ets_uart_printf("ota_discon_cb: FW upgrade failed to start.\r\n");
 		#endif
 	}
 	else
 	{
 		#ifdef PLATFORM_DEBUG
-		UARTSendStr("ota_discon_cb: FW upgrade started.\r\n");
+		ets_uart_printf("ota_discon_cb: FW upgrade started.\r\n");
 		#endif
 	}
 }
@@ -107,7 +109,7 @@ LOCAL void ICACHE_FLASH_ATTR ota_recv(void *arg, char *pusrdata, unsigned short 
 
 	os_timer_disarm(&ota_delay_check);
 	#ifdef PLATFORM_DEBUG
-	UARTSendStr("ota_recv: FW upgrade ready.\r\n");
+	ets_uart_printf("ota_recv: FW upgrade ready.\r\n");
 	#endif
 
 	upServer = (struct upgrade_server_info *)os_zalloc(sizeof(struct upgrade_server_info));
@@ -153,7 +155,7 @@ LOCAL void ICACHE_FLASH_ATTR ota_wait(void *arg)
 	else
 	{
 		#ifdef PLATFORM_DEBUG
-		UARTSendStr("ota_recv: upgrade error\r\n");
+		ets_uart_printf("ota_recv: upgrade error\r\n");
 		#endif
 	}
 }
@@ -171,7 +173,7 @@ LOCAL void ICACHE_FLASH_ATTR ota_sent_cb(void *arg)
 	os_timer_setfn(&ota_delay_check, (os_timer_func_t *)ota_wait, pespconn);
 	os_timer_arm(&ota_delay_check, 5000, 0);
 	#ifdef PLATFORM_DEBUG
-	UARTSendStr("ota_sent_cb\r\n");
+	ets_uart_printf("ota_sent_cb\r\n");
 	#endif
 }
 
@@ -187,7 +189,7 @@ static void ICACHE_FLASH_ATTR ota_connect_cb(void *arg)
 	char *temp = NULL;
 
 	#ifdef PLATFORM_DEBUG
-	UARTSendStr("OTA: 2\r\n");
+	ets_uart_printf("OTA: 2\r\n");
 	#endif
 
 	espconn_regist_disconcb(pespconn, ota_discon_cb);
@@ -217,7 +219,7 @@ static void ICACHE_FLASH_ATTR ota_recon_cb(void *arg, sint8 errType)
 	}
 	os_free(pespconn);
 	#ifdef PLATFORM_DEBUG
-	UARTSendStr("ota_recon_cb\r\n");
+	ets_uart_printf("ota_recon_cb\r\n");
 	#endif
 	if(upServer != NULL)
 	{
@@ -238,7 +240,7 @@ void ICACHE_FLASH_ATTR ota_start()
 	os_sprintf(otaserverip, "%s", OTASERVERIP);
 	host_ip.addr = ipaddr_addr(otaserverip);
 	#ifdef PLATFORM_DEBUG
-	UARTSendStr("OTA: 1\r\n");
+	ets_uart_printf("OTA: 1\r\n");
 	#endif
 	os_memcpy(pespconn->proto.tcp->remote_ip, &host_ip.addr, 4);
 	espconn_regist_connectcb(pespconn, ota_connect_cb);

@@ -67,6 +67,9 @@ namespace SOLAR_APP
 		public const byte MANUAL_ALARM     = (byte)0x3;
 		//byte meteoState = 0;
 		//======================================================================
+		
+		public static string version = "";
+		
 		public class User: INotifyPropertyChanged
         {
 			private String _mstate;
@@ -164,6 +167,21 @@ namespace SOLAR_APP
 		//======================================================================
 		private void dispatcherTimer_Tick(object sender, EventArgs e)
 		{
+			
+			if(appModeMaster) 	
+			{				
+				bMaster.Content = "ON";
+				Socket sockA = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+			                         ProtocolType.Udp);		
+				IPEndPoint endPointA = new IPEndPoint(IPAddress.Parse("192.168.43.255"), 7171);
+				
+				byte[] send_buffer = {ID_MASTER, CMD_STATE, 0, (byte) 0xcc, (byte) 0xcc};
+				
+				sockA.SendTo(send_buffer , endPointA);
+				sockA.Close();
+			}
+			else				bMaster.Content = "OFF";
+			
 			
 			us.url = "https://maps.googleapis.com/maps/api/staticmap?center=" +
 				lat +
@@ -377,6 +395,13 @@ namespace SOLAR_APP
 	                    				iInfo[(int)addr[3]].stt   = "" + receiveBytes[12];
 	                    				
 	                    				break;
+	                    			case CMD_VERSION:
+	                    				
+	                    				byte [] tmp = new byte[21];
+	                    				for(int t = 0; t<21; t++) tmp[t] = receiveBytes[t + 3];
+	                    				version =  Encoding.UTF8.GetString(tmp);
+	                    				
+	                    				break;
 	                    		}break;
                     }
                 }
@@ -451,8 +476,18 @@ namespace SOLAR_APP
 			ListView fe = (ListView)sender;
 			currentSlave = fe.SelectedIndex;
 			
+			
+			Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+			                         ProtocolType.Udp);		
+			IPEndPoint endPoint = new IPEndPoint(sIp, 7171);
+			
+			byte[] send_buffer = {ID_MASTER, CMD_VERSION, 0, (byte) 0xcc, (byte) 0xcc};
+			
+			sock.SendTo(send_buffer , endPoint);
+			
 			SlaveCfg winS = new SlaveCfg();
 			winS.ShowDialog();
+			
 		}		
 		
 		//===========================================================================================
@@ -507,6 +542,14 @@ namespace SOLAR_APP
 		public void OnWindowClosing(object sender, CancelEventArgs e) 
 		{
 			dispatcherTimer.Stop();			
+		}
+		//===========================================================================================
+		bool appModeMaster = false;
+		//===========================================================================================
+		void masterEnableClick(object sender, RoutedEventArgs e)
+		{
+			if(appModeMaster) 	appModeMaster = false;
+			else				appModeMaster = true;
 		}		
 	}
 }

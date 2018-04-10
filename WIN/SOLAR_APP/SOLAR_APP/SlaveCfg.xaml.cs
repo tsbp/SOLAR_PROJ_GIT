@@ -76,15 +76,16 @@ namespace SOLAR_APP
 			//slMode.sMode = "/SOLAR_APP;component/Images/light.png";
 			winSlave.Title = "IP: " + Window1.sIp.ToString();
 			
-			//========== get version =======================
-			buf[1]  = (byte) Window1.CMD_VERSION;	
-			sock.SendTo(buf , endPoint);
+//			//========== get version =======================
+//			buf[1]  = (byte) Window1.CMD_VERSION;	
+//			sock.SendTo(buf , endPoint);
 
 		}
 		
 		//======================================================================
 		private void dispatcherTimer_Tick(object sender, EventArgs e)
 		{
+			lblVersion.Content = "ver: " + Window1.version;
 			//bManual.Content = "" + Window1.slavestt;
 			lPitch.Content  = Window1.items[Window1.currentSlave]._pitch;			
 			lHead.Content   = Window1.items[Window1.currentSlave]._head;

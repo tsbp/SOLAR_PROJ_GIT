@@ -30,7 +30,6 @@
 			</Grid.RowDefinitions>
 			<Label
 				Name="lblVersion"
-				Content="VER: Apr  6 2018, 15:02:42"
 				HorizontalContentAlignment="Center"
 				VerticalAlignment="Center"
 				FontSize="14"

@@ -83,6 +83,9 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 		case CMD_VERSION:
 			ets_uart_printf("CMD_VERSION\r\n");
+			needAnswer = 1;
+			dataLng = 21;
+			memcpy(ansBuffer + 3, VERSION, dataLng);
 			break;
 
 		case CMD_MANUAL_MOVE:
