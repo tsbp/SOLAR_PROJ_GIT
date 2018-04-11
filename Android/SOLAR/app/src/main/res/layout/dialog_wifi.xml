@@ -70,6 +70,18 @@
                 android:ems="10"
                 android:id="@+id/etSSIDPASS"/>
 
+            <TextView
+                android:text="@string/OTASERV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:ems="10"
+                android:id="@+id/etOTAIP"/>
+
 
         </LinearLayout>
     </ScrollView>

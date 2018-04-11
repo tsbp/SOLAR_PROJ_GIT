@@ -25,6 +25,7 @@ typedef union __packed
 		uint8 auth;
 		uint8 SSID[32];
 		uint8 SSID_PASS[64];
+		uint8 OTAIP[24];
 	};
 }s_WIFI_CFG;
 //==============================================================================

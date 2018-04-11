@@ -39,6 +39,7 @@ public class UDPCommands
 
     public final static byte CMD_CFG		= (byte)0xC0;
     public final static byte CMD_WIFI		= (byte)0xC1;
+    public final static byte CMD_FWUPDATE	= (byte)0xC2;
 
     public final static byte CMD_SYNC		= (byte)0xE0;
     public final static byte CMD_SERVICE	= (byte)0xE1;

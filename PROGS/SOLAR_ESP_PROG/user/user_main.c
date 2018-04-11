@@ -210,8 +210,9 @@ void ICACHE_FLASH_ATTR setup(void)
 	wifi_station_disconnect();
 	wifi_station_set_auto_connect(0);
 
-	ets_uart_printf("configs.wifi.SSID %s\r\n", configs.wifi.SSID);
-	ets_uart_printf("configs.wifi.SSID_PASS %s\r\n", configs.wifi.SSID_PASS);
+	ets_uart_printf("configs.wifi.SSID %s\r\n", 		configs.wifi.SSID);
+	ets_uart_printf("configs.wifi.SSID_PASS %s\r\n", 	configs.wifi.SSID_PASS);
+	ets_uart_printf("configs.wifi.OTAIP %s\r\n", 		configs.wifi.OTAIP);
 
 	if(configs.wifi.mode == STATION_MODE)
 		setup_wifi_st_mode();

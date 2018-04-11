@@ -191,12 +191,10 @@ void ICACHE_FLASH_ATTR user_init(void)
 
 	ets_uart_printf("configs.wifi.SSID %s\r\n", configs.wifi.SSID);
 	ets_uart_printf("configs.wifi.SSID_PASS %s\r\n", configs.wifi.SSID_PASS);
+	ets_uart_printf("configs.wifi.OTAIP %s\r\n", configs.wifi.OTAIP);
 
 	ets_uart_printf("configs.meteo.light %d\r\n", configs.meteo.light);
 	ets_uart_printf("configs.meteo.wind  %d\r\n", configs.meteo.wind);
-
-	configs.wifi.mode = STATION_MODE;
-	ets_uart_printf("configs.wifi.mode  %d\r\n", configs.wifi.mode);
 
 	if(configs.wifi.mode == STATION_MODE)
 		setup_wifi_st_mode();

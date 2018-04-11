@@ -266,6 +266,8 @@ public class ClientConfigMeteo extends Activity {
         ssid.clearFocus();
         final EditText ssidPass = (EditText) Viewlayout.findViewById(R.id.etSSIDPASS);
         ssidPass.clearFocus();
+        final EditText otaIp = (EditText) Viewlayout.findViewById(R.id.etOTAIP);
+        otaIp.clearFocus();
 
         ArrayAdapter<String> adapterW = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, wifiMode);
         ArrayAdapter<String> adapterS = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, wifiSecurityMode);
@@ -284,7 +286,15 @@ public class ClientConfigMeteo extends Activity {
             spinnerW.setSelection((int)cfg[0]);
             String str = new String(cfg);
             ssid.setText(str.substring(2,str.indexOf('$')));
-            ssidPass.setText(str.substring(str.indexOf('$') + 1, str.length()));
+            //ssidPass.setText(str.substring(str.indexOf('$') + 1, str.length()));
+            try {
+                ssidPass.setText(str.substring(str.indexOf('$') + 1, str.indexOf('#')));
+                otaIp.setText(str.substring(str.indexOf('#') + 1, str.length()));
+            }
+            catch (Exception e)
+            {
+
+            }
         }
 
         spinnerS.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -312,7 +322,7 @@ public class ClientConfigMeteo extends Activity {
         popDialog.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        String wCfgStr = (char)wMode + "" + (char)wSecur + ssid.getText().toString() + "$" + ssidPass.getText().toString();
+                        String wCfgStr = (char)wMode + "" + (char)wSecur + ssid.getText().toString() + "$" + ssidPass.getText().toString() + "#" + otaIp.getText().toString();
                         saveConfig(wCfgStr);
                         UDPCommands.sendCmd(UDPCommands.CMD_WIFI, wCfgStr.getBytes(), ip);
                         dialog.dismiss();

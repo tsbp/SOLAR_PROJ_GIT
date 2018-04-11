@@ -5,6 +5,7 @@
 #include "osapi.h"
 #include "upgrade.h"
 #include "user_config.h"
+#include "driver/configs.h"
 
 //#define PLATFORM_DEBUG
 
@@ -237,7 +238,7 @@ void ICACHE_FLASH_ATTR ota_start()
 	pespconn->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
 	pespconn->proto.tcp->local_port = espconn_port();
 	pespconn->proto.tcp->remote_port = 8000;
-	os_sprintf(otaserverip, "%s", OTASERVERIP);
+	os_sprintf(otaserverip, "%s", configs.wifi.OTAIP);//OTASERVERIP);
 	host_ip.addr = ipaddr_addr(otaserverip);
 	#ifdef PLATFORM_DEBUG
 	ets_uart_printf("OTA: 1\r\n");

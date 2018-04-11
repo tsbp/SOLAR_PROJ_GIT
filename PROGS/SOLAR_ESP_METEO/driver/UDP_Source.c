@@ -275,6 +275,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 					os_memset(configs.wifi.SSID,      0, sizeof(configs.wifi.SSID));
 					os_memset(configs.wifi.SSID_PASS, 0, sizeof(configs.wifi.SSID_PASS));
+					os_memset(configs.wifi.OTAIP,     0, sizeof(configs.wifi.OTAIP));
 
 					for (i = 0; i < length; i++)
 					{
@@ -283,15 +284,23 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 					}
 
 					j = i + 4;
-					for (i = 0; i < length - j - 2; i++) configs.wifi.SSID_PASS[i] = pusrdata[i + j];
+					for (i = 0; i < length - j - 2; i++)
+					{
+						if (pusrdata[i+j] == '#')	break;
+						configs.wifi.SSID_PASS[i] = pusrdata[i + j];
+					}
+
+					j = j + i +1;
+					for (i = 0; i < length - j - 2; i++)configs.wifi.OTAIP[i] = pusrdata[i + j];
+
 
 					ets_uart_printf("configs.wifi.SSID %s\r\n", configs.wifi.SSID);
 					ets_uart_printf("configs.wifi.SSID_PASS %s\r\n", configs.wifi.SSID_PASS);
+					ets_uart_printf("configs.wifi.OTAIP %s\r\n", configs.wifi.OTAIP);
 
 					serviceMode = MODE_SW_RESET;
 					service_timer_start();
 					flashWriteBit = 1;
-					ansBuffer[3] = OK;
 				}
 				break;
 		}

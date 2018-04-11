@@ -209,6 +209,19 @@ namespace SOLAR_APP
 			buf[3]  = (byte) 0x00; //set
 			
 			sock.SendTo(buf , endPoint);
+		}
+		//===========================================================================================
+		void firmwareCheckClick(object sender, MouseButtonEventArgs e)
+		{
+			if(MessageBox.Show(
+				"Update device firmware?", 
+				"Firmware update",
+				MessageBoxButton.OKCancel,
+				MessageBoxImage.Question) == MessageBoxResult.OK)
+			{
+				buf[1]  = (byte) Window1.CMD_FWUPDATE;
+				sock.SendTo(buf , endPoint);
+			}
 		}	
 	}		
 }

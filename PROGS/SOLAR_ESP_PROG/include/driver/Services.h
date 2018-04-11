@@ -39,6 +39,7 @@ extern int cntr;
 #define BLINK_WAIT_UNCONNECTED      (0x0090)
 #define BLINK_MANUAL      (0xf00f)
 #define BLINK_MOTOR_FLT      (0x00aa)
+#define BLINK_FW_UPDATE      (0xaaaa)
 
 #define BLNK_MAX 		(15)
 

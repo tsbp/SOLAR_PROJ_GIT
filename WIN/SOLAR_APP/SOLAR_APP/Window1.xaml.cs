@@ -59,6 +59,7 @@ namespace SOLAR_APP
 
 		public const byte CMD_CFG		=	(0xC0);
 		public const byte CMD_WIFI		=	(0xC1);
+		public const byte CMD_FWUPDATE	=	(0xC2);
 		
 		//======================================================================
 		public const byte STOPPED   = (byte)0x0;

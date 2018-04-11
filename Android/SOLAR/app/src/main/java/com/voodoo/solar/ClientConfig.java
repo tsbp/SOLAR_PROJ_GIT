@@ -184,7 +184,16 @@ public class ClientConfig extends Activity {
                 tmp[1] = (byte)((angle >> 8) & 0xff);
                 tmp[2] = (byte) (azimuth & 0xff);
                 tmp[3] = (byte)((azimuth >> 8) & 0xff);
-                UDPCommands.sendCmd(UDPCommands.CMD_SET_POSITION, tmp, ip);
+                UDPCommands.sendCmd(UDPCommands.CMD_SET_POSITION, null, ip);
+            }
+        });
+
+        Button bUpdate = (Button) findViewById(R.id.btnUpdate);
+        //================================================
+        bUpdate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                dialog_update();
             }
         });
 
@@ -240,6 +249,29 @@ public class ClientConfig extends Activity {
         });
 
 
+    }
+    //==============================================================================================
+    void dialog_update()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update");
+        builder.setMessage("Firmware update?");
+        builder.setCancelable(true);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // Кнопка ОК
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                UDPCommands.sendCmd(UDPCommands.CMD_FWUPDATE, null, ip);
+                dialog.dismiss(); // Отпускает диалоговое окно
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { // Кнопка ОК
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss(); // Отпускает диалоговое окно
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
     //==============================================================================================
     private final String ATTRIBUTE_T = "attr_t";
@@ -457,6 +489,9 @@ public class ClientConfig extends Activity {
         ssid.clearFocus();
         final EditText ssidPass = (EditText) Viewlayout.findViewById(R.id.etSSIDPASS);
         ssidPass.clearFocus();
+        final EditText otaIp = (EditText) Viewlayout.findViewById(R.id.etOTAIP);
+        otaIp.clearFocus();
+
 
         ArrayAdapter<String> adapterW = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, wifiMode);
         ArrayAdapter<String> adapterS = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, wifiSecurityMode);
@@ -475,7 +510,8 @@ public class ClientConfig extends Activity {
             spinnerW.setSelection((int)cfg[0]);
             String str = new String(cfg);
             ssid.setText(str.substring(2,str.indexOf('$')));
-            ssidPass.setText(str.substring(str.indexOf('$') + 1, str.length()));
+            ssidPass.setText(str.substring(str.indexOf('$') + 1, str.indexOf('#')));
+            otaIp.setText(str.substring(str.indexOf('#') + 1, str.length()));
         }
 
         spinnerS.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -503,7 +539,7 @@ public class ClientConfig extends Activity {
         popDialog.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        String wCfgStr = (char)wMode + "" + (char)wSecur + ssid.getText().toString() + "$" + ssidPass.getText().toString();
+                        String wCfgStr = (char)wMode + "" + (char)wSecur + ssid.getText().toString() + "$" + ssidPass.getText().toString() + "#" + otaIp.getText().toString();
                         saveConfig(wCfgStr);
 //                        sendCmdmd(CMD_SET_WIFI, deviceIP);
 //                        UDPCommands.wifiSettings = wCfgStr;
