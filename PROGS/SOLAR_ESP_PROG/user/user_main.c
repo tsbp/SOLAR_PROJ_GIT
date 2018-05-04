@@ -32,7 +32,7 @@ sint16 Pitch, Roll, Yaw;
 
 #define VERTICAL_OFFSET	    (600)
 #define HORIZONTAL_OFFSET	(100)
-#define ELEVATION_MAX		(7500)
+#define ELEVATION_MAX		(5400)
 
 
 int manualDuration = PROC_DURATION;
@@ -135,6 +135,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		if(!sysState.manualMove){
 
 		if(orientation.income.elevation > ELEVATION_MAX) orientation.income.elevation = ELEVATION_MAX;
+		if(orientation.income.azimuth > 4000) orientation.income.azimuth = 4000;//zatychka koncevik 36 deg
 
 		if(sysState.newPosition)
 		{
