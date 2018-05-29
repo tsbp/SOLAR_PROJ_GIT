@@ -104,6 +104,12 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 						os_memset(configs.wifi.SSID_PASS, 0, sizeof(configs.wifi.SSID_PASS));
 						os_sprintf(configs.wifi.SSID_PASS, "%s", "123454321");
 
+						configs.meteo.latit=4850;
+						configs.meteo.longit=3223;
+						configs.meteo.timeZone = 3;
+						configs.meteo.wind = 6;
+
+
 						configs.wifi.mode = STATION_MODE;
 						configs.wifi.auth = AUTH_WPA_WPA2_PSK;
 						saveConfigs();
@@ -224,6 +230,9 @@ void ICACHE_FLASH_ATTR timeincrement(void)
 	}
 }
 //==============================================================================
+#define WIND_TIMEOUT	(300)//seconds
+uint16 windTimeoutCntr = WIND_TIMEOUT;
+//==============================================================================
 void ICACHE_FLASH_ATTR meteoProcessing(void)
 {
 	//========= wind ==========
@@ -235,8 +244,18 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 
 	if(mState.stt != MANUAL_ALARM )
 	{
-		if     (mState.wind >= configs.meteo.wind)                             mState.stt = ALARM;
-		else if(mState.stt != STOPPED && mState.wind < configs.meteo.wind - 2) mState.stt = TRACKING;
+		if     (mState.wind >= configs.meteo.wind)
+		{
+			mState.stt = ALARM;
+			windTimeoutCntr = WIND_TIMEOUT;
+		}
+		else if((mState.stt != STOPPED) &&
+				(mState.wind <= configs.meteo.wind - 2) &&
+				(windTimeoutCntr == 0))
+		{
+			mState.stt = TRACKING;
+		}
+		windTimeoutCntr--;
 	}
 
 	if(mState.stt == ALARM || mState.stt == MANUAL_ALARM) mState.elev = HOME_ELEVATION; // wind to fast

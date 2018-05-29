@@ -184,12 +184,12 @@ namespace SOLAR_APP
 			else				bMaster.Content = "OFF";
 			
 			
-			us.url = "https://maps.googleapis.com/maps/api/staticmap?center=" +
-				lat +
-				"," +
-				lon +
-				"&zoom=12&size=300x300&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R" +
-				"&key=AIzaSyD_D1xWxD7orZOlcgizFhepXfGFacQMXck";
+//			us.url = "https://maps.googleapis.com/maps/api/staticmap?center=" +
+//				lat +
+//				"," +
+//				lon +
+//				"&zoom=12&size=300x300&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R" +
+//				"&key=AIzaSyD_D1xWxD7orZOlcgizFhepXfGFacQMXck";
 			
 			if(returnData != null) 
 			{
