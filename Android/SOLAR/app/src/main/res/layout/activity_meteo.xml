@@ -31,14 +31,20 @@
 
             <TextView
                 android:text="IP"
-                android:layout_weight="3"
+                android:layout_weight="4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvIPMeteo"
                 android:textAlignment="center"
-                android:textSize="25sp" />
+                android:textSize="20sp" />
             <Button
-                android:layout_weight="1"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnMeteoFWup"
+                android:text="FWUP"/>
+            <Button
+                android:layout_weight="2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnCfgMeteo"

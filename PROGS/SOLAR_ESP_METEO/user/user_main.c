@@ -90,8 +90,12 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			else                                 wifi_get_ip_info(STATION_IF, &ipconfig);
 			currentIP = ipconfig.ip.addr;
 			//ets_uart_printf(IPSTR, IP2STR(&currentIP));
-			if(mState.stt)	blink = BLINK_WAIT;
-			else   blink = BLINK_WAIT_NODATA;
+			if(otaStarted) blink = BLINK_FW_UPDATE;
+			else
+			{
+				if(mState.stt)	blink = BLINK_WAIT;
+				else   blink = BLINK_WAIT_NODATA;
+			}
 			if(cntr_b == 1 && !rtc_get_current_time()) sntp_get_stamp();
 			UDP_cmdState();
 		}
@@ -123,10 +127,16 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		mState.elev = (int)(9000 - 100 * elev * 57.2958);
 		if(mState.elev > MAX_ELEVATION)
 		{
-			mState.azim = HOME_AZIMUTH;
-			mState.elev = HOME_ELEVATION;
+			mState.azim = 100 * configs.angles.horiz_min;//HOME_AZIMUTH;
+			mState.elev = 100 * configs.angles.vert_min; //HOME_ELEVATION;
 		}
-		//else if(mState.elev > MAX_ELEVATION_SET) mState.elev = MAX_ELEVATION_SET;
+		else // angle restrictions
+		{
+			if(mState.azim < 100 * configs.angles.horiz_min) mState.azim = 100 * configs.angles.horiz_min;
+			if(mState.azim > 100 * configs.angles.horiz_max) mState.azim = 100 * configs.angles.horiz_max;
+			if(mState.elev < 100 * configs.angles.vert_min)  mState.elev = 100 * configs.angles.vert_min;
+			if(mState.elev > 100 * configs.angles.vert_max)  mState.elev = 100 * configs.angles.vert_max;
+		}
 		//==============================================================
 		meteoProcessing();
 

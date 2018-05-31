@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:id="@+id/meteo">
@@ -16,12 +16,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:layout_marginLeft="2dp"/>
+
         <EditText
             android:inputType="numberDecimal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:gravity="center"
             android:id="@+id/tvMeteoLatit" />
     </LinearLayout>
 
@@ -36,12 +39,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:layout_marginLeft="2dp"/>
         <EditText
             android:inputType="numberDecimal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:gravity="center"
             android:id="@+id/tvMeteoLongit" />
     </LinearLayout>
 
@@ -56,12 +61,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:layout_marginLeft="2dp"/>
         <EditText
             android:inputType="number"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:gravity="center"
             android:id="@+id/tvMeteoZone" />
     </LinearLayout>
 
@@ -76,12 +83,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:layout_marginLeft="2dp"/>
         <EditText
             android:inputType="number"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:gravity="center"
             android:id="@+id/tvMeteoWindCFG" />
     </LinearLayout>
 
@@ -96,15 +105,103 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:layout_marginLeft="2dp"/>
         <EditText
             android:inputType="number"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:gravity="center"
             android:id="@+id/tvMeteoLightCFG" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#eea2ff">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@drawable/border_m"
+                android:text="Angles"
+                android:gravity="center"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="HORIZ"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="VERT"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="MIN"/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@drawable/border"
+                android:inputType="number"
+                android:id="@+id/angH_min"/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:inputType="number"
+                android:id="@+id/angV_min"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="MAX"/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:inputType="number"
+                android:id="@+id/angH_max"/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:inputType="number"
+                android:id="@+id/angV_max"/>
+        </LinearLayout>
+
+    </LinearLayout>
 
 
 </LinearLayout>

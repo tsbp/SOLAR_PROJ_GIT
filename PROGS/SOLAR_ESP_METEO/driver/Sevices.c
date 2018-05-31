@@ -27,6 +27,7 @@ uint16 freq, pulseCntr = 0;
 sint16 windArr[FILTER_LENGHT];
 
 sLanItem items[256];
+uint8 otaStarted = 0;
 //==============================================================================
 void ICACHE_FLASH_ATTR service_timer_start (void)
 {
@@ -116,6 +117,13 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 						system_restart();					
 					}
 				} else {
+					if(resetCntr >= 4)
+										{
+											ets_uart_printf("OTA start\r\n");
+											blink = BLINK_FW_UPDATE;
+											otaStarted = 1;
+											ota_start();
+										}
 					service_timer_stop();
 					resetCntr = 0;
 					serviceMode = MODE_NORMAL;
@@ -258,7 +266,7 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 		windTimeoutCntr--;
 	}
 
-	if(mState.stt == ALARM || mState.stt == MANUAL_ALARM) mState.elev = HOME_ELEVATION; // wind to fast
+	if(mState.stt == ALARM || mState.stt == MANUAL_ALARM) mState.elev = 100 * configs.angles.vert_min;//HOME_ELEVATION; // wind to fast
 	//========= Light ==========
 	int i, cntr_a = 0;
 	long light = 0;

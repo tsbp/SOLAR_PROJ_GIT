@@ -186,9 +186,38 @@ public class ClientConfigMeteo extends Activity {
             }
         });
 
+        Button bUpdate = (Button) findViewById(R.id.btnMeteoFWup);
+        //================================================
+        bUpdate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
 
+                dialog_update();
+            }
+        });
     }
-
+    //==============================================================================================
+    void dialog_update()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update");
+        builder.setMessage("Firmware update?");
+        builder.setCancelable(true);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // Кнопка ОК
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                UDPCommands.sendCmd(UDPCommands.CMD_FWUPDATE, null, ip);
+                dialog.dismiss(); // Отпускает диалоговое окно
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { // Кнопка ОК
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss(); // Отпускает диалоговое окно
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
     //==============================================================================================
     void dialog_set() {
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
@@ -210,6 +239,15 @@ public class ClientConfigMeteo extends Activity {
         final EditText light = (EditText) Viewlayout.findViewById(R.id.tvMeteoLightCFG);
         light.clearFocus();
 
+        final EditText angH_max = (EditText) Viewlayout.findViewById(R.id.angH_max);
+        angH_max.clearFocus();
+        final EditText angH_min = (EditText) Viewlayout.findViewById(R.id.angH_min);
+        angH_min.clearFocus();
+        final EditText angV_max = (EditText) Viewlayout.findViewById(R.id.angV_max);
+        angV_max.clearFocus();
+        final EditText angV_min = (EditText) Viewlayout.findViewById(R.id.angV_min);
+        angV_min.clearFocus();
+
 
         double l = 0.01 * ((cfgData[0] & 0xff) | (cfgData[1] << 8));
         lat.setText  (String.format("%.2f", l).replace(',', '.'));
@@ -220,11 +258,16 @@ public class ClientConfigMeteo extends Activity {
         wind.setText ("" + ((cfgData[6] & 0xff) | ((cfgData[7] << 8))));
         light.setText("" + ((cfgData[8] & 0xff) | ((cfgData[9] << 8))));
 
+        angH_max.setText("" + ((cfgData[10] & 0xff) | ((cfgData[11] << 8))));
+        angH_min.setText("" + ((cfgData[12] & 0xff) | ((cfgData[13] << 8))));
+        angV_max.setText("" + ((cfgData[14] & 0xff) | ((cfgData[15] << 8))));
+        angV_min.setText("" + ((cfgData[16] & 0xff) | ((cfgData[17] << 8))));
+
         popDialog.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
-                        byte[] tmp = new byte[11];
+                        byte[] tmp = new byte[19];
                         tmp[0] = UDPCommands.SET;
                         tmp[1] = (byte) (getInt(lat.getText().toString()) & 0xff);
                         tmp[2] = (byte) ((getInt(lat.getText().toString()) >> 8) & 0xff);
@@ -236,6 +279,16 @@ public class ClientConfigMeteo extends Activity {
                         tmp[8] = (byte) ((Integer.parseInt(wind.getText().toString()) >> 8) & 0xff);
                         tmp[9] = (byte) (Integer.parseInt(light.getText().toString()) & 0xff);
                         tmp[10] =(byte) ((Integer.parseInt(light.getText().toString()) >> 8) & 0xff);
+
+                        tmp[11] = (byte) (Integer.parseInt(angH_max.getText().toString()) & 0xff);
+                        tmp[12] =(byte) ((Integer.parseInt(angH_max.getText().toString()) >> 8) & 0xff);
+                        tmp[13] = (byte) (Integer.parseInt(angH_min.getText().toString()) & 0xff);
+                        tmp[14] =(byte) ((Integer.parseInt(angH_min.getText().toString()) >> 8) & 0xff);
+                        tmp[15] = (byte) (Integer.parseInt(angV_max.getText().toString()) & 0xff);
+                        tmp[16] =(byte) ((Integer.parseInt(angV_max.getText().toString()) >> 8) & 0xff);
+                        tmp[17] = (byte) (Integer.parseInt(angV_min.getText().toString()) & 0xff);
+                        tmp[18] =(byte) ((Integer.parseInt(angV_min.getText().toString()) >> 8) & 0xff);
+
                         UDPCommands.sendCmd(UDPCommands.CMD_CFG, tmp, ip);
                         dialog.dismiss();
                     }

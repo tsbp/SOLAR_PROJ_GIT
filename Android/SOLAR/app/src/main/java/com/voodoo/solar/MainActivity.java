@@ -535,8 +535,8 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         break;
 
                     case UDPCommands.CMD_CFG:
-                        ClientConfigMeteo.cfgData = new byte[10];
-                        for(int a = 0; a < 10; a++) ClientConfigMeteo.cfgData[a] = in[a + 3];
+                        ClientConfigMeteo.cfgData = new byte[18];
+                        for(int a = 0; a < 18; a++) ClientConfigMeteo.cfgData[a] = in[a + 3];
                         intent = new Intent(ClientConfigMeteo.BC_CFG_DATA);
                         sendBroadcast(intent);
                         break;

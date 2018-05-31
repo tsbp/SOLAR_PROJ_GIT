@@ -29,6 +29,7 @@ extern uint8	serviceMode;
 #define BLINK_WAIT_NODATA      (0x90ff)
 #define BLINK_WAIT_UNCONNECTED      (0x0090)
 #define BLINK_TRACK_STOPPPED        (0x8090)
+#define BLINK_FW_UPDATE      (0xaa55)
 
 #define BLNK_MAX 		(15)
 
@@ -44,7 +45,7 @@ extern uint16 freq, pulseCntr;
 extern sint16 windArr[FILTER_LENGHT];
 //==============================================================================
 #define PROC_DURATION	(50)
-extern uint8 terminators, inProcess;
+extern uint8 terminators, inProcess, otaStarted;
 uint16 light;
 //==============================================================================
 typedef union __attribute__ ((__packed__))

@@ -171,6 +171,12 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 		switch(pusrdata[1])
 		{
 
+		case CMD_FWUPDATE:
+					ets_uart_printf("OTA start\r\n");
+					blink = BLINK_FW_UPDATE;
+					otaStarted = 1;
+					//ota_start();
+					break;
 		 case CMD_GOHOME:
 				 break;
 
@@ -251,22 +257,26 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 //						dataLng   = 1;
 //						ansBuffer[3] = OK;
 						flashWriteBit = 1;
-						memcpy (configs.meteo.byte, pusrdata + 4, 10);
+						memcpy (configs.meteo.byte, pusrdata + 4, sizeof(u_METEO) + sizeof(u_ANGLES));
 					}
 					else //get
 					{
 						needAnswer = 1;
 						dataLng   = 10;
 						ets_uart_printf("CMD GET CFG\r\n");
-						dataLng = sizeof(u_METEO);
+						dataLng = sizeof(u_METEO) + sizeof(u_ANGLES);
 						memcpy (ansBuffer + 3, configs.meteo.byte, dataLng );
 					}
-					ets_uart_printf("METEO: %d, %d, %d, %d, %d\r\n",
+					ets_uart_printf("METEO: %d, %d, %d, %d, %d, %d, %d, %d, %d\r\n",
 													configs.meteo.latit,
 													configs.meteo.longit,
 													configs.meteo.timeZone,
 													configs.meteo.wind,
-													configs.meteo.light);
+													configs.meteo.light,
+													configs.angles.horiz_max,
+													configs.angles.horiz_min,
+													configs.angles.vert_max,
+													configs.angles.vert_min);
 				}break;
 
 			case CMD_WIFI:

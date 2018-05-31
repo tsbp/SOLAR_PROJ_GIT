@@ -31,10 +31,23 @@ typedef union __packed
 //==============================================================================
 typedef union __packed
 {
-	  uint8 byte[sizeof(u_METEO) + sizeof(s_WIFI_CFG)];
+	uint8 byte[8];
+	struct
+	{
+		uint16 horiz_max;
+		uint16 horiz_min;
+		uint16 vert_max;
+		uint16 vert_min;
+	};
+}u_ANGLES;
+//==============================================================================
+typedef union __packed
+{
+	  uint8 byte[sizeof(u_METEO) + sizeof(u_ANGLES) + sizeof(s_WIFI_CFG)];
 	  struct __packed
 	  {
 		  u_METEO meteo;
+		  u_ANGLES angles;
 		  s_WIFI_CFG wifi;
 	  };
 }u_CONFIG;

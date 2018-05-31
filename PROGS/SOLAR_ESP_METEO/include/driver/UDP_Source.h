@@ -24,6 +24,7 @@
 
 #define CMD_CFG				(0xC0)
 #define CMD_WIFI			(0xC1)
+#define CMD_FWUPDATE		(0xC2)
 
 
 void ICACHE_FLASH_ATTR UDP_Init();
