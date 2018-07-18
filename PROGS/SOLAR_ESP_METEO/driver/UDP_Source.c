@@ -175,7 +175,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 					ets_uart_printf("OTA start\r\n");
 					blink = BLINK_FW_UPDATE;
 					otaStarted = 1;
-					//ota_start();
+					ota_start();
 					break;
 		 case CMD_GOHOME:
 				 break;

@@ -260,6 +260,9 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 		default:
 		{
 			ets_uart_printf("stop\r\n");
+
+			ets_uart_printf("%d,  %d\r\n%d,  %d\r\n",
+					orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
 			//==================================
 			serviceMode = MODE_REMOTE_SEND;
 			resetCntr = 0;

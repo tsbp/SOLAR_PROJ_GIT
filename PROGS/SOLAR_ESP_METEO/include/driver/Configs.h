@@ -1,5 +1,5 @@
 //==============================================================================
-#define PRIV_PARAM_START_SEC		0x6c
+#define PRIV_PARAM_START_SEC		0x7e //0x6c
 #define PRIV_PARAM_SAVE     0
 #define SPI_FLASH_SEC_SIZE      4096
 //==============================================================================

@@ -135,9 +135,9 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 //	else
 		if(!sysState.manualMove){
 
-		if(orientation.income.elevation > ELEVATION_MAX) orientation.income.elevation = ELEVATION_MAX;
-		if(orientation.income.elevation < ELEVATION_MIN) orientation.income.elevation = ELEVATION_MIN;
-		if(orientation.income.azimuth < 5500) orientation.income.azimuth = 5500;//zatychka koncevik 36 deg
+//		if(orientation.income.elevation > ELEVATION_MAX) orientation.income.elevation = ELEVATION_MAX;
+//		if(orientation.income.elevation < ELEVATION_MIN) orientation.income.elevation = ELEVATION_MIN;
+//		if(orientation.income.azimuth < 5500) orientation.income.azimuth = 5500;//zatychka koncevik 36 deg
 
 		if(sysState.newPosition)
 		{
@@ -150,7 +150,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 				else if (orientation.income.azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) direction = LEFT;
 
 				if(direction && !sysState.motorFault)move(direction);
-				mTout = 6000;
+				mTout = 1000;//6000;
 			}
 			if(mTout) mTout--;
 			else  stopMoving();
