@@ -139,21 +139,31 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 //		if(orientation.income.elevation < ELEVATION_MIN) orientation.income.elevation = ELEVATION_MIN;
 //		if(orientation.income.azimuth < 5500) orientation.income.azimuth = 5500;//zatychka koncevik 36 deg
 
-		if(sysState.newPosition)
+		static sint16 azOld = 0, elOld = 0;
+
+		if(sysState.newPosition && !sysState.motorFault)
 		{
 			//sysState.newPosition = 0;
 			if(!direction)
 			{
-				if      (orientation.income.elevation > ( orientation.real.elevation + 6 * HORIZONTAL_OFFSET)) direction = DOWN;
-				else if (orientation.income.elevation < ( orientation.real.elevation - 6 * HORIZONTAL_OFFSET)) direction = UP;
-				else if (orientation.income.azimuth   > ( headF + 6 * HORIZONTAL_OFFSET)) direction = RIGHT;
-				else if (orientation.income.azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) direction = LEFT;
+				if      (orientation.income.elevation > ( orientation.real.elevation + 6 * HORIZONTAL_OFFSET)) {direction = DOWN; elOld = orientation.real.elevation;}
+				else if (orientation.income.elevation < ( orientation.real.elevation - 6 * HORIZONTAL_OFFSET)) {direction = UP;   elOld = orientation.real.elevation;}
+				else if (orientation.income.azimuth   > ( headF + 6 * HORIZONTAL_OFFSET)) {direction = RIGHT; azOld = orientation.real.azimuth;}
+				else if (orientation.income.azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) {direction = LEFT;  azOld = orientation.real.azimuth;}
 
-				if(direction && !sysState.motorFault)move(direction);
-				mTout = 1000;//6000;
+				if(direction)
+				{
+					move(direction);
+					mTout = 1000;//6000;
+				}
 			}
+
 			if(mTout) mTout--;
-			else  stopMoving();
+			else direction = 0;
+//			{
+//				if (direction) ets_uart_printf("    real      old \r\nazim %d,  %d\r\nelev %d,  %d\r\n",
+//						orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
+//			}
 		}
 		switch(direction)
 				{
@@ -162,7 +172,23 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 					{
 						if (orientation.income.azimuth <= (orientation.real.azimuth + HORIZONTAL_OFFSET) &&
 							orientation.income.azimuth >= (orientation.real.azimuth - HORIZONTAL_OFFSET))
+						{
 							stopMoving();
+							ets_uart_printf("mTout = %d\r\n", mTout);
+							ets_uart_printf("    real      old \r\nazim %d,  %d\r\nelev %d,  %d\r\n",
+													orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
+						}
+
+						if (!mTout &
+								(orientation.real.azimuth    < (azOld + 200) && orientation.real.azimuth    > (azOld - 200)))
+						{
+							// not moving
+							ets_uart_printf("mot err\r\n");
+							sysState.motorFault = 1;
+							blink = BLINK_MOTOR_FLT;
+							stopMoving();
+						}
+
 					}break;
 
 					case UP:
@@ -170,7 +196,22 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 					{
 						if (orientation.income.elevation <= (orientation.real.elevation + HORIZONTAL_OFFSET) &&
 							orientation.income.elevation >= (orientation.real.elevation - HORIZONTAL_OFFSET))
+						{
 							stopMoving();
+							ets_uart_printf("mTout = %d\r\n", mTout);
+							ets_uart_printf("    real      old \r\nazim %d,  %d\r\nelev %d,  %d\r\n",
+									orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
+						}
+
+						if (!mTout &
+								(orientation.real.elevation  < (elOld + 200) && orientation.real.elevation  > (elOld - 200)))
+						{
+							// not moving
+							ets_uart_printf("mot err\r\n");
+							sysState.motorFault = 1;
+							blink = BLINK_MOTOR_FLT;
+							stopMoving();
+						}
 					}break;
 				}
 
