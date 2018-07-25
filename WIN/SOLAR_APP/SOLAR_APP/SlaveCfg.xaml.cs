@@ -65,7 +65,7 @@ namespace SOLAR_APP
 			
 			sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
 			                         ProtocolType.Udp);		
-			endPoint = new IPEndPoint(Window1.sIp, 7171);
+			endPoint = new IPEndPoint(Window1.ipToControl, 7171);
 			
 			buf[0]  = (byte) Window1.ID_MASTER;
 			buf[2]  = (byte) 0x01;
@@ -74,7 +74,7 @@ namespace SOLAR_APP
 			
 			slMode = new slaveMode();
 			//slMode.sMode = "/SOLAR_APP;component/Images/light.png";
-			winSlave.Title = "IP: " + Window1.sIp.ToString();
+			winSlave.Title = "IP: " + Window1.ipToControl.ToString();
 			
 //			//========== get version =======================
 //			buf[1]  = (byte) Window1.CMD_VERSION;	

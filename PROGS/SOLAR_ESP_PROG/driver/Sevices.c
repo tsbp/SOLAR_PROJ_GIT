@@ -229,7 +229,9 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 {
 //	static sint16 azOld = 0, elOld = 0;
 
-	PCF8574_writeByte(0x3f, ((~a) << 4) | 0x0f);
+	//PCF8574_writeByte(0x3f, ((~a) << 4) | 0x0f);
+	PCF8574_writeByte(0x3f, (~a)  | 0xf0);
+	ets_uart_printf("MOVE ");
 //	if(a)
 //	{
 //		azOld = orientation.real.azimuth;

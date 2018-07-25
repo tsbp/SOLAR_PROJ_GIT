@@ -73,7 +73,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	}
 
 	//======== PCF8574 =====================
-		terminators = PCF8574_readByte(addr);
+		terminators = PCF8574_readByte(addr)>>4;
 		//======== BH1715  =====================
 		BH1715(I2C_READ, 0x23, 0x01, (unsigned char*)&light, 2);
 		light = ((unsigned char*)&light)[1] |

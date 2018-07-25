@@ -285,8 +285,9 @@ namespace SOLAR_APP
 					if(iInfo[i].ip != 0) 
 					{
 						
-						if(items.Count == 0) 
+						if(iInfo[i].ip == 1000)//(items.Count == 0)
 						{
+							iInfo[i].ip = 1;
 							items.Add(new SlaveState(){
 								          	ip    = i,
 								          	pitch = iInfo[i].pitch,
@@ -308,16 +309,16 @@ namespace SOLAR_APP
 								
 								slavestt = Int32.Parse(iInfo[items[currentSlave].ip].stt);
 							}
-							else
-							{
-								items.Add(new SlaveState(){
-								          	ip    = i,
-								          	pitch = "" + iInfo[i].pitch,
-								          	roll  = "" + iInfo[i].roll,
-								          	head  = "" + iInfo[i].head,
-								          	light = "" + iInfo[i].light,
-								          	terms = "" + iInfo[i].terms});
-							}
+//							else if(items[a].ip == 1000)
+//							{
+//								items.Add(new SlaveState(){
+//								          	ip    = i,
+//								          	pitch = "" + iInfo[i].pitch,
+//								          	roll  = "" + iInfo[i].roll,
+//								          	head  = "" + iInfo[i].head,
+//								          	light = "" + iInfo[i].light,
+//								          	terms = "" + iInfo[i].terms});
+//							}
 						}
 					}
 				}					
@@ -382,7 +383,6 @@ namespace SOLAR_APP
 	                    			case CMD_STATE:
 	                    				sIp = RemoteIpEndPoint.Address;
 	                    				addr = sIp.GetAddressBytes();
-	                    				iInfo[(int)addr[3]].ip    = 1;
 	                    				
 	                    				double tt = Double.Parse(String.Format("{0,4:N1}", 
 	                    				                           ((double)BitConverter.ToInt16(new byte[] { receiveBytes[7], receiveBytes[8] }, 0)/10000) * (180.0 / Math.PI)));
@@ -395,6 +395,19 @@ namespace SOLAR_APP
 	                    				iInfo[(int)addr[3]].terms = "" + receiveBytes[11];
 	                    				iInfo[(int)addr[3]].stt   = "" + receiveBytes[12];
 	                    				
+//	                    				//add new item to collection
+//	                    				if(iInfo[(int)addr[3]].ip == 0)
+//	                    				{
+//	                    					items.Add(new SlaveState(){
+//								          	ip    = (int)addr[3],
+//								          	pitch = "" + iInfo[(int)addr[3]].pitch,
+//								          	roll  = "" + iInfo[(int)addr[3]].roll,
+//								          	head  = "" + iInfo[(int)addr[3]].head,
+//								          	light = "" + iInfo[(int)addr[3]].light,
+//								          	terms = "" + iInfo[(int)addr[3]].terms});
+//	                    				}	                    				
+	                    				if (iInfo[(int)addr[3]].ip == 0) iInfo[(int)addr[3]].ip    = 1000;
+	                    				 
 	                    				break;
 	                    			case CMD_VERSION:
 	                    				
@@ -413,7 +426,7 @@ namespace SOLAR_APP
             }
         }
 		
-		public static IPAddress mIp, sIp;
+		public static IPAddress mIp, sIp, ipToControl;
 		//===========================================================================================
 		void meteoCfg(object sender, MouseButtonEventArgs e)
 		{
@@ -485,6 +498,12 @@ namespace SOLAR_APP
 			byte[] send_buffer = {ID_MASTER, CMD_VERSION, 0, (byte) 0xcc, (byte) 0xcc};
 			
 			sock.SendTo(send_buffer , endPoint);
+			
+			byte [] adr = new byte[4];
+			adr = sIp.GetAddressBytes();
+			adr[3] = (byte)items[currentSlave].ip;
+			
+			ipToControl = new IPAddress(adr);
 			
 			SlaveCfg winS = new SlaveCfg();
 			winS.ShowDialog();
