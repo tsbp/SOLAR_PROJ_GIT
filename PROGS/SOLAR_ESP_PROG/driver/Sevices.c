@@ -288,7 +288,7 @@ void ICACHE_FLASH_ATTR modeSwitch(void)
 						{
 							sysState.byte = 0;
 							PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
-							direction = 0;
+							//direction = 0;
 							stopMoving();
 						}
 						else
@@ -296,7 +296,7 @@ void ICACHE_FLASH_ATTR modeSwitch(void)
 							PCF8574_writeByte(0x3B, (0x01 << 4) | 0x8f);
 							sysState.manualMove = 1;
 							blink = BLINK_MANUAL;
-							//stopMoving();
+							stopMoving();
 						}
 }
 //==============================================================================

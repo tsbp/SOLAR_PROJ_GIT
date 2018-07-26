@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Window
 	x:Class="SOLAR_APP.Window1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="SOLAR_APP"
@@ -390,7 +390,7 @@
 							<Label
 								HorizontalAlignment="Center"
 								VerticalAlignment="Center"
-								Content="{Binding pitch}"
+								Content="{Binding roll}"
 								Foreground="Black" />
 						</Border>
 						<Border
@@ -401,7 +401,7 @@
 							<Label
 								HorizontalAlignment="Center"
 								VerticalAlignment="Center"
-								Content="{Binding roll}"
+								Content="{Binding pitch}"
 								Foreground="Black" />
 						</Border>
 						<Border
@@ -479,15 +479,15 @@
 			<Label
 				Grid.Column="1"
 				HorizontalContentAlignment="Center"
-				FontSize="14">PITCH</Label>
+				FontSize="14">РЕЖИМ</Label>
 			<Label
 				Grid.Column="2"
 				HorizontalContentAlignment="Center"
-				FontSize="14">ROLL</Label>
+				FontSize="14">НАКЛОН</Label>
 			<Label
 				Grid.Column="3"
 				HorizontalContentAlignment="Center"
-				FontSize="14">HEAD</Label>
+				FontSize="14">АЗИМУТ</Label>
 			<Label
 				Grid.Column="4"
 				HorizontalContentAlignment="Center"

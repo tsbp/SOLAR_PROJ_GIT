@@ -144,6 +144,7 @@ namespace SOLAR_APP
 			public string light;
 			public string terms;
 			public string stt;
+			public int timeOut;
 		};
 		
 		struct masterInfo
@@ -283,9 +284,9 @@ namespace SOLAR_APP
 				for(int i = 0; i < 256; i++)
 				{
 					if(iInfo[i].ip != 0) 
-					{
+					{		
 						
-						if(iInfo[i].ip == 1000)//(items.Count == 0)
+						if(iInfo[i].ip == 1000)
 						{
 							iInfo[i].ip = 1;
 							items.Add(new SlaveState(){
@@ -301,25 +302,33 @@ namespace SOLAR_APP
 						{
 							if(items[a].ip == i)
 							{
+								
+								
 								items[a].pitch = "" + iInfo[i].pitch;
-								items[a].roll  = "" + iInfo[i].roll;
+//								items[a].roll  = "" + iInfo[i].roll;
 								items[a].head  = "" + iInfo[i].head;
 								items[a].light = "" + iInfo[i].light;
 								items[a].terms = "" + iInfo[i].terms;
 								
 								slavestt = Int32.Parse(iInfo[items[currentSlave].ip].stt);
+								
+								int ss = Int32.Parse(iInfo[items[a].ip].stt);								
+								if(((byte)(ss & (byte)0xff) & 0x02) == 0)
+									items[a].roll = "АВТОМАТ";
+								else
+									items[a].roll = "РУЧНОЙ";
+									
 							}
-//							else if(items[a].ip == 1000)
-//							{
-//								items.Add(new SlaveState(){
-//								          	ip    = i,
-//								          	pitch = "" + iInfo[i].pitch,
-//								          	roll  = "" + iInfo[i].roll,
-//								          	head  = "" + iInfo[i].head,
-//								          	light = "" + iInfo[i].light,
-//								          	terms = "" + iInfo[i].terms});
-//							}
-						}
+							
+							// delete item if device has disapeared
+							if(iInfo[items[a].ip].timeOut < 100) 
+								iInfo[items[a].ip].timeOut++;
+							else
+							{
+								iInfo[items[a].ip].ip = 0;
+								items.Remove(items[a]);
+							}
+						}						
 					}
 				}					
 			}
@@ -395,18 +404,9 @@ namespace SOLAR_APP
 	                    				iInfo[(int)addr[3]].terms = "" + receiveBytes[11];
 	                    				iInfo[(int)addr[3]].stt   = "" + receiveBytes[12];
 	                    				
-//	                    				//add new item to collection
-//	                    				if(iInfo[(int)addr[3]].ip == 0)
-//	                    				{
-//	                    					items.Add(new SlaveState(){
-//								          	ip    = (int)addr[3],
-//								          	pitch = "" + iInfo[(int)addr[3]].pitch,
-//								          	roll  = "" + iInfo[(int)addr[3]].roll,
-//								          	head  = "" + iInfo[(int)addr[3]].head,
-//								          	light = "" + iInfo[(int)addr[3]].light,
-//								          	terms = "" + iInfo[(int)addr[3]].terms});
-//	                    				}	                    				
+               				
 	                    				if (iInfo[(int)addr[3]].ip == 0) iInfo[(int)addr[3]].ip    = 1000;
+	                    				iInfo[(int)addr[3]].timeOut = 0;
 	                    				 
 	                    				break;
 	                    			case CMD_VERSION:
@@ -492,18 +492,22 @@ namespace SOLAR_APP
 			
 			
 			Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
-			                         ProtocolType.Udp);		
-			IPEndPoint endPoint = new IPEndPoint(sIp, 7171);
-			
-			byte[] send_buffer = {ID_MASTER, CMD_VERSION, 0, (byte) 0xcc, (byte) 0xcc};
-			
-			sock.SendTo(send_buffer , endPoint);
+			                         ProtocolType.Udp);				
 			
 			byte [] adr = new byte[4];
 			adr = sIp.GetAddressBytes();
 			adr[3] = (byte)items[currentSlave].ip;
 			
 			ipToControl = new IPAddress(adr);
+			
+			IPEndPoint endPoint = new IPEndPoint(ipToControl, 7171);
+			
+			byte[] send_buffer = {ID_MASTER, CMD_VERSION, 0, (byte) 0xcc, (byte) 0xcc};
+			version = "";
+			
+			sock.SendTo(send_buffer , endPoint);
+			
+			
 			
 			SlaveCfg winS = new SlaveCfg();
 			winS.ShowDialog();
@@ -527,7 +531,17 @@ namespace SOLAR_APP
                 	}
                 }
                 
-                public string roll  { get; set; }
+                public string _roll;
+                public string roll  {
+                	get                	{ return _roll;}
+                	set
+                	{
+                		_roll = value;
+                		if (PropertyChanged != null)
+                			PropertyChanged(this, new PropertyChangedEventArgs("roll"));
+                	}
+                }
+                
                 
                 public string _head;
                 public string head
