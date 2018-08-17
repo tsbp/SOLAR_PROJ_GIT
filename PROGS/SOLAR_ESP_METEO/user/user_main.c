@@ -90,12 +90,20 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			else                                 wifi_get_ip_info(STATION_IF, &ipconfig);
 			currentIP = ipconfig.ip.addr;
 			//ets_uart_printf(IPSTR, IP2STR(&currentIP));
-			if(otaStarted) blink = BLINK_FW_UPDATE;
-			else
-			{
-				if(mState.stt)	blink = BLINK_WAIT;
-				else   blink = BLINK_WAIT_NODATA;
-			}
+//			if(mState.stt == OTA_STARTED/*otaStarted*/) blink = BLINK_FW_UPDATE;
+//			else
+//			{
+//				if(!mState.stt)	blink = BLINK_WAIT;
+//				else   //blink = BLINK_WAIT_NODATA;
+				switch(mState.stt)
+				{
+					case STOPPED: 		blink = BLINK_TRACK_STOPPPED; break;
+					case TRACKING: 		blink = BLINK_WAIT; break;
+					case ALARM: 		blink = BLINK_WAIT_NODATA; break;
+					case MANUAL_ALARM: 	blink = BLINK_WAIT_NODATA; break;
+					case OTA_STARTED:	blink = BLINK_FW_UPDATE; break;
+				}
+//			}
 			if(cntr_b == 1 && !rtc_get_current_time()) sntp_get_stamp();
 			UDP_cmdState();
 		}

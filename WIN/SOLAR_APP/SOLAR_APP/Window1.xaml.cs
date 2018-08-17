@@ -566,7 +566,19 @@ namespace SOLAR_APP
                 			PropertyChanged(this, new PropertyChangedEventArgs("light"));
                 	}
                 }
-                public string terms { get; set; }
+                
+//                public string terms { get; set; }
+				 public string _terms;
+                public string terms
+                {
+                	get				{ return _terms;}
+                	set
+                	{
+                		_terms = value;
+                		if (PropertyChanged != null)
+                			PropertyChanged(this, new PropertyChangedEventArgs("terms"));
+                	}
+                }
                 
                 
                 public event PropertyChangedEventHandler PropertyChanged;

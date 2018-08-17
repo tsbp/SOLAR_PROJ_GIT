@@ -28,7 +28,7 @@ extern uint8	serviceMode;
 #define BLINK_WAIT      (0x9000)
 #define BLINK_WAIT_NODATA      (0x90ff)
 #define BLINK_WAIT_UNCONNECTED      (0x0090)
-#define BLINK_TRACK_STOPPPED        (0x8090)
+#define BLINK_TRACK_STOPPPED        (0x8080)
 #define BLINK_FW_UPDATE      (0xaa55)
 
 #define BLNK_MAX 		(15)
@@ -67,6 +67,7 @@ typedef union __attribute__ ((__packed__))
 #define TRACKING        (1)
 #define ALARM           (2)
 #define MANUAL_ALARM    (3)
+#define OTA_STARTED     (4)
 //=========================================================================================
 typedef union __packed
 {
