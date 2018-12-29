@@ -94,7 +94,7 @@ sint16 mFilter(sint16 * aBuf, uint16 aLng)
   for(i = 0; i < aLng; i++) avgBuf[i] = aBuf[i];
 
   for(k = 0; k < aLng - 1; k++)
-    for(i = k + 1; i < aLng - 1; i++)
+    for(i = k + 1; i < aLng; i++)
     {
       if(avgBuf[k] < avgBuf[i])
       {

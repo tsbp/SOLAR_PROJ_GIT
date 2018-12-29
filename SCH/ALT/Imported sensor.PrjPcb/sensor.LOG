@@ -1,0 +1,109 @@
+PCAD Importer Log
+Project : sensor.PrjPcb
+
+Section : G:\Voodoo\SOLAR_PROJ_GIT\SCH\sensor.sch
+    Section : Parsing Messages
+        Warning - 1 : Skipping Token defaultPinDes On Line 3255
+        Warning - 1 : Skipping Token defaultPinDes On Line 3263
+        Warning - 1 : Skipping Token defaultPinDes On Line 3282
+        Warning - 1 : Skipping Token defaultPinDes On Line 3290
+        Warning - 1 : Skipping Token defaultPinDes On Line 3308
+        Warning - 1 : Skipping Token defaultPinDes On Line 3316
+        Warning - 1 : Skipping Token defaultPinDes On Line 3334
+        Warning - 1 : Skipping Token defaultPinDes On Line 3342
+        Warning - 1 : Skipping Token defaultPinDes On Line 3360
+        Warning - 1 : Skipping Token defaultPinDes On Line 3368
+        Warning - 1 : Skipping Token defaultPinDes On Line 3376
+        Warning - 1 : Skipping Token defaultPinDes On Line 3394
+        Warning - 1 : Skipping Token defaultPinDes On Line 3402
+        Warning - 1 : Skipping Token defaultPinDes On Line 3420
+        Warning - 1 : Skipping Token defaultPinDes On Line 3428
+        Warning - 1 : Skipping Token defaultPinDes On Line 3448
+        Warning - 1 : Skipping Token defaultPinDes On Line 3456
+        Warning - 1 : Skipping Token defaultPinDes On Line 3464
+        Warning - 1 : Skipping Token defaultPinDes On Line 3472
+        Warning - 1 : Skipping Token defaultPinDes On Line 3480
+        Warning - 1 : Skipping Token defaultPinDes On Line 3488
+        Warning - 1 : Skipping Token defaultPinDes On Line 3506
+        Warning - 1 : Skipping Token defaultPinDes On Line 3514
+        Warning - 1 : Skipping Token defaultPinDes On Line 3522
+        Warning - 1 : Skipping Token defaultPinDes On Line 3530
+        Warning - 1 : Skipping Token defaultPinDes On Line 3538
+        Warning - 1 : Skipping Token defaultPinDes On Line 3570
+        Warning - 1 : Skipping Token defaultPinDes On Line 3578
+        Warning - 1 : Skipping Token defaultPinDes On Line 3586
+        Warning - 1 : Skipping Token defaultPinDes On Line 3594
+        Warning - 1 : Skipping Token defaultPinDes On Line 3602
+        Warning - 1 : Skipping Token defaultPinDes On Line 3610
+        Warning - 1 : Skipping Token defaultPinDes On Line 3618
+        Warning - 1 : Skipping Token defaultPinDes On Line 3626
+        Warning - 1 : Skipping Token defaultPinDes On Line 3634
+        Warning - 1 : Skipping Token defaultPinDes On Line 3642
+        Warning - 1 : Skipping Token defaultPinDes On Line 3650
+        Warning - 1 : Skipping Token defaultPinDes On Line 3658
+        Warning - 1 : Skipping Token defaultPinDes On Line 3666
+        Warning - 1 : Skipping Token defaultPinDes On Line 3674
+        Warning - 1 : Skipping Token defaultPinDes On Line 3692
+        Warning - 1 : Skipping Token defaultPinDes On Line 3700
+        Warning - 1 : Skipping Token defaultPinDes On Line 3708
+        Warning - 1 : Skipping Token gridDfns On Line 4397
+        Warning - 1 : Skipping Token refPointSize On Line 4429
+        Warning - 1 : Skipping Token infoPointSize On Line 4430
+        Warning - 1 : Skipping Token junctionSize On Line 4431
+        Warning - 1 : Skipping Token refPointSizePrint On Line 4432
+        Warning - 1 : Skipping Token infoPointSizePrint On Line 4433
+        Warning - 1 : Skipping Token junctionSizePrint On Line 4434
+        Warning - 1 : Skipping Token PrintRegion On Line 4914
+        Warning - 1 : Skipping Token schematicPrintSettings On Line 4918
+        Warning - 1 : Skipping Token ecoState On Line 4933
+        Warning - 1 : Skipping Token currentTextStyle On Line 4934
+        Warning - 1 : Skipping Token reportSettings On Line 4937
+    EndSection
+
+    Section : Generating SCH Library - sensor.SchLib
+        Warning : Create component variant [C0805THRU_VARIANT_1] for component with original name [C0805THRU]
+        Warning : Create component variant [C0805THRU_VARIANT_2] for component with original name [C0805THRU]
+        Warning : Component [BZV55] - removed empty display mode [IEEE] for part number [1]
+        Warning : Component [CC1210] - removed empty display mode [IEEE] for part number [1]
+    EndSection
+
+    Section : Generating SCH Sheet - Sheet1.SCHDOC
+        Warning : Output port [SENS.+P] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.3V3] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.GND] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.3V3] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.CSL] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.SDAA] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.3V3] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.+PWR] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.3V3] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.CSL] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.+PWR] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.SDA] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.GND] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.3V3] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.GND] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.GND] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.CSL] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.3V3] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.3V3] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.SDA] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.I2C.SCL] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.I2C.SDA] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.+PWR] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.+PWR] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.SDAA] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.+PWR] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.GND] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.I2C.SCL] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.I2C.SDA] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.+P] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.SDAA] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.CSL] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.SDA] width was re-calculated to [401.351mil]
+        Warning : Output port [SENS.GND] width was re-calculated to [401.351mil]
+    EndSection
+
+    Section : Analyzing SCH Sheet - Sheet1.SCHDOC
+    EndSection
+EndSection

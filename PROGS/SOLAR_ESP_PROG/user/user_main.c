@@ -73,13 +73,28 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	}
 
 	//======== PCF8574 =====================
-		terminators = PCF8574_readByte(addr)>>4;
-		//======== BH1715  =====================
+	terminators = PCF8574_readByte(addr)>>4;
+	//======== BH1715  =====================
+	static uint16 lightOld, lightCntr = 10;
+	if(lightCntr) lightCntr--;
+	else
+	{
+		lightCntr = 100;
 		BH1715(I2C_READ, 0x23, 0x01, (unsigned char*)&light, 2);
 		light = ((unsigned char*)&light)[1] |
 				((unsigned char*)&light)[0] << 8;
+	}
+//	lightOld = light;
 
-		if(!sysState.manualMoveRemote) keyProcessing((~PCF8574_readByte(0x3B)) & (~0x70));
+//	if(light == lightOld) lightCntr++;
+//	else lightCntr = 0;
+//	if(lightCntr > 1000) //======== light sensor reinit
+//	{
+//		BH1715(I2C_WRITE, 0x23, 0x01, 0, 1);
+//		BH1715(I2C_WRITE, 0x23, 0x10, 0, 1);
+//	}
+	//=======================================
+	if(!sysState.manualMoveRemote) keyProcessing((~PCF8574_readByte(0x3B)) & (~0x70));
 
 	//======== LSM303  =====================
 	lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6);
