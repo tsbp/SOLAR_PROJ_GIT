@@ -382,6 +382,12 @@ namespace SOLAR_APP
 	                    			mCfgWin.vals[2] = (double)( receiveBytes[7]  | (receiveBytes[8])  << 8) ;
 	                    			mCfgWin.vals[3] = (double)( receiveBytes[9]  | (receiveBytes[10]) << 8);
 	                    			mCfgWin.vals[4] = (double)( receiveBytes[11] | (receiveBytes[12]) << 8) ;
+	                    			
+	                                mCfgWin.vals[5] = (double)( receiveBytes[13] | (receiveBytes[14]) << 8) ;
+	                                mCfgWin.vals[6] = (double)( receiveBytes[15] | (receiveBytes[16]) << 8) ;
+	                                mCfgWin.vals[7] = (double)( receiveBytes[17] | (receiveBytes[18]) << 8) ;
+	                                mCfgWin.vals[8] = (double)( receiveBytes[19] | (receiveBytes[20]) << 8) ;
+	                    			
 	                    			break;
 	                    	}break;
 	                    	

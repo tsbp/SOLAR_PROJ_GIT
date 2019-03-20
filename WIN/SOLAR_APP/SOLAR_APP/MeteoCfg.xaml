@@ -4,19 +4,19 @@
 	Title="Meteo config"
 	Width="300"
 	WindowStartupLocation="CenterScreen"
-	Height="307">
-	<Grid	 
-	Background="#55555555">
+	Height="400">
+	<Grid
+		Background="#55555555">
 		<Grid.RowDefinitions>
 			<RowDefinition
-				Height="4*" />
+				Height="4*" />			
 			<RowDefinition
 				Height="*" />
 		</Grid.RowDefinitions>
 		<ListView
 			Name="lvConfigs"
 			BorderThickness="0"
-			DockPanel.Dock="Top"			
+			DockPanel.Dock="Top"
 			VerticalContentAlignment="Stretch"
 			Grid.Column="0"
 			Grid.Row="0"
@@ -25,8 +25,7 @@
 			Margin="5,5,5,0">
 			<ListView.Background>
 				<ImageBrush
-					ImageSource="/SOLAR_APP;component/Images/settt.ico"
-				></ImageBrush>
+					ImageSource="/SOLAR_APP;component/Images/settt.ico"></ImageBrush>
 			</ListView.Background>
 			<ListView.ItemTemplate>
 				<DataTemplate>
@@ -35,7 +34,7 @@
 							<ColumnDefinition
 								Width="3*" />
 							<ColumnDefinition
-								Width="2*"  />
+								Width="2*" />
 						</Grid.ColumnDefinitions>
 						<Border
 							BorderBrush="White"
@@ -46,7 +45,7 @@
 								<DropShadowEffect
 									ShadowDepth="5" />
 							</Border.Effect>
-							<Label								
+							<Label
 								HorizontalAlignment="Center"
 								VerticalAlignment="Center"
 								Content="{Binding name}"
@@ -70,7 +69,7 @@
 								Background="Transparent"
 								Foreground="White"
 								VerticalAlignment="Center"
-								HorizontalAlignment="Center"								
+								HorizontalAlignment="Center"
 								Grid.Column="1"
 								Text="{Binding data}"
 								FontWeight="Bold"
@@ -80,12 +79,133 @@
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>
+		<!--Grid
+			Margin="5,5,5,5"
+			Width="Stretch"
+			Height="Auto"
+			Grid.Column="0"
+			Grid.Row="1">
+			<Grid.RowDefinitions>
+				<RowDefinition
+					Height="Auto" />
+				<RowDefinition
+					Height="Auto" />
+				<RowDefinition
+					Height="Auto" />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition
+					Width="*" />
+				<ColumnDefinition
+					Width="*" />
+				<ColumnDefinition
+					Width="*" />
+			</Grid.ColumnDefinitions>
+			<Label
+				Grid.Column="0"
+				Grid.Row="0"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Content="Угол"
+				Foreground="White"
+				FontWeight="Bold"
+				FontSize="20" />
+			<Label
+				Grid.Column="0"
+				Grid.Row="1"
+				HorizontalAlignment="Center"
+				Content="Мин."
+				Foreground="White"
+				FontWeight="Bold"
+				FontSize="20"
+				VerticalAlignment="Bottom"
+				Margin="0,0,0,0" />
+			<Label
+				Grid.Column="0"
+				Grid.Row="2"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Content="Макс."
+				Foreground="White"
+				FontWeight="Bold"
+				FontSize="20" />
+		<Label
+				Grid.Column="1"
+				Grid.Row="0"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Content="Гориз."
+				Foreground="White"
+				FontWeight="Bold"
+				FontSize="20" />
+			<TextBox
+				Grid.Column="1"
+				Grid.Row="1"
+				HorizontalContentAlignment="Stretch"
+								VerticalContentAlignment="Stretch"
+								BorderThickness="0"
+								Background="Transparent"
+								Foreground="White"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"								
+								Text="{Binding xMax}"
+								FontWeight="Bold"
+								FontSize="20" />
+			<TextBox
+				Grid.Column="1"
+				Grid.Row="2"
+				HorizontalContentAlignment="Stretch"
+								VerticalContentAlignment="Stretch"
+								BorderThickness="0"
+								Background="Transparent"
+								Foreground="White"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"								
+								Text="{Binding xMin}"
+								FontWeight="Bold"
+								FontSize="20" />
+		<Label
+				Grid.Column="2"
+				Grid.Row="0"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Content="Вертик."
+				Foreground="White"
+				FontWeight="Bold"
+				FontSize="20" />
+			<TextBox
+				Grid.Column="2"
+				Grid.Row="1"
+				HorizontalContentAlignment="Stretch"
+								VerticalContentAlignment="Stretch"
+								BorderThickness="0"
+								Background="Transparent"
+								Foreground="White"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"								
+								Text="{Binding yMax}"
+								FontWeight="Bold"
+								FontSize="20" />
+			<TextBox
+				Grid.Column="2"
+				Grid.Row="2"
+				HorizontalContentAlignment="Stretch"
+								VerticalContentAlignment="Stretch"
+								BorderThickness="0"
+								Background="Transparent"
+								Foreground="White"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"								
+								Text="{Binding yMin}"
+								FontWeight="Bold"
+								FontSize="20" />
+		</Grid-->
 		<Button
 			Margin="5,5,5,5"
 			Width="Auto"
 			Height="Auto"
 			Grid.Column="0"
-			Grid.Row="1"
+			Grid.Row="2"
 			Content="Применить"
 			Click="okBtnClick" />
 	</Grid>
