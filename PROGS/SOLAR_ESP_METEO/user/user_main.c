@@ -135,8 +135,12 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		mState.elev = (int)(9000 - 100 * elev * 57.2958);
 		if(mState.elev > MAX_ELEVATION)
 		{
-			mState.azim = 100 * configs.angles.horiz_min;//HOME_AZIMUTH;
-			mState.elev = 100 * configs.angles.vert_min; //HOME_ELEVATION;
+//			mState.azim = 100 * configs.angles.horiz_min;//HOME_AZIMUTH;
+//			mState.elev = 100 * configs.angles.vert_min; //HOME_ELEVATION;
+
+			//parking to south
+			mState.azim = 100 * 180; //parking to south
+			mState.elev = 100 * 10;
 		}
 		else // angle restrictions
 		{

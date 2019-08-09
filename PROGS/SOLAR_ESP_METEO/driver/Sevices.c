@@ -266,7 +266,13 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 		windTimeoutCntr--;
 	}
 
-	if(mState.stt == ALARM || mState.stt == MANUAL_ALARM) mState.elev = 100 * configs.angles.vert_min;//HOME_ELEVATION; // wind to fast
+	if(mState.stt == ALARM || mState.stt == MANUAL_ALARM) // wind to fast then parking to south
+	{
+		//mState.elev = 100 * configs.angles.vert_min;//HOME_ELEVATION;
+
+		mState.azim = 100 * 180;//configs.angles.horiz_min;//HOME_AZIMUTH;
+		mState.elev = 100 * 10;//configs.angles.vert_min; //HOME_ELEVATION;
+	}
 	//========= Light ==========
 	int i, cntr_a = 0;
 	long light = 0;

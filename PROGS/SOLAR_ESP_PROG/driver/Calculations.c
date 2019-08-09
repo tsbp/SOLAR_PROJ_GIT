@@ -77,7 +77,7 @@ void ICACHE_FLASH_ATTR getAngles(u3AXIS_DATA* aRawAcc, u3AXIS_DATA* aRawMag, sin
 	double accznorm =  c / cdf;
 
 	double tP = asin(-accxnorm);
-	double tR = 0;//asin(accynorm/cos(tP));
+	double tR = asin(accynorm/cos(tP));//0;//asin(accynorm/cos(tP));
 
 	if(c < 0) tP = (M_PI - tP);
 
