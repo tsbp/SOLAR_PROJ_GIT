@@ -156,13 +156,26 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 			 break;
 
 		    case CMD_SET_POSITION:
-		    	orientation.income.azimuth   = (sint16)(pusrdata[5] | (pusrdata[6] << 8));
-		    	orientation.income.elevation = (sint16)(pusrdata[3] | (pusrdata[4] << 8));
+				{
+					sint16 a = (sint16)(pusrdata[5] | (pusrdata[6] << 8));
+					sint16 e = (sint16)(pusrdata[3] | (pusrdata[4] << 8));
 
-				ets_uart_printf("Elevation: %d, Azimuth: %d\r\n",
-						orientation.income.elevation,
-						orientation.income.azimuth);
-				sysState.newPosition = 1;
+
+					if (a > (orientation.income.azimuth   + 1000) ||
+						a < (orientation.income.azimuth   - 1000) ||
+					    e > (orientation.income.elevation + 1000) ||
+						e < (orientation.income.elevation - 1000))
+					sysState.moving = 0;
+
+					orientation.income.azimuth   = a; //(sint16)(pusrdata[5] | (pusrdata[6] << 8));
+					orientation.income.elevation = e; //(sint16)(pusrdata[3] | (pusrdata[4] << 8));
+
+
+					ets_uart_printf("Elevation: %d, Azimuth: %d\r\n",
+							orientation.income.elevation,
+							orientation.income.azimuth);
+					sysState.newPosition = 1;
+		    }
 				break;
 
 		    case CMD_MODE:

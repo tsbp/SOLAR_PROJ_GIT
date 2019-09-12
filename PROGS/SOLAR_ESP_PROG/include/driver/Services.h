@@ -48,11 +48,13 @@ void ICACHE_FLASH_ATTR blinking(unsigned int blnk);
 void ICACHE_FLASH_ATTR leds(unsigned char aStt);
 void ICACHE_FLASH_ATTR move(uint8 a);
 void ICACHE_FLASH_ATTR modeSwitch(void);
+uint16 macMatch(uint8 *aMac);
 
 extern uint16 dataPresent;
 extern unsigned int blink;
 //extern sint16 azimuth, elevation;
 extern uint8 direction;
+extern uint16 thingspeakField;
 //==============================================================================
 #define PROC_DURATION	(120)
 extern uint8 terminators, inProcess;

@@ -312,12 +312,17 @@ namespace SOLAR_APP
 								
 								slavestt = Int32.Parse(iInfo[items[currentSlave].ip].stt);
 								
-								int ss = Int32.Parse(iInfo[items[a].ip].stt);								
-								if(((byte)(ss & (byte)0xff) & 0x02) == 0)
-									items[a].roll = "АВТОМАТ";
+								int ss = Int32.Parse(iInfo[items[a].ip].stt);
+								
+								if(((byte)(ss & (byte)0xff) & (byte)0x20) == 32)
+									items[a].roll = "АВАРИЯ";
 								else
-									items[a].roll = "РУЧНОЙ";
-									
+								{
+									if(((byte)(ss & (byte)0xff) & 0x02) == 0)
+										items[a].roll = "АВТОМАТ";
+									else
+										items[a].roll = "РУЧНОЙ";
+								}	
 							}
 							
 							// delete item if device has disapeared

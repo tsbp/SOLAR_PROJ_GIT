@@ -207,20 +207,43 @@ void ICACHE_FLASH_ATTR thingspeak_http_callback(char * response, int http_status
 	ets_uart_printf("Free heap size = %d\r\n", system_get_free_heap_size());
 }
 //==============================================================================
+uint16 thingspeakField = 0;
+//==============================================================================
 void ICACHE_FLASH_ATTR sendToTingspeak(void)
 {
 	static char data[256];
 	static char azi[10], eli[10], azr[10], elr[10], li[10];
 
-	os_sprintf(azi, "%d.%d", orientation.income.azimuth/100,   orientation.income.azimuth%100);
-	os_sprintf(eli, "%d.%d", orientation.income.elevation/100, orientation.income.elevation%100);
+//	os_sprintf(azi, "%d.%d", orientation.income.azimuth/100,   orientation.income.azimuth%100);
+//	os_sprintf(eli, "%d.%d", orientation.income.elevation/100, orientation.income.elevation%100);
 	os_sprintf(azr, "%d.%d", orientation.real.azimuth/100,     orientation.real.azimuth%100);
 	os_sprintf(elr, "%d.%d", orientation.real.elevation/100,   orientation.real.elevation%100);
 	os_sprintf(li,  "%d   ", light);
-				//ets_uart_printf("az %s, el %s\r\n", az, el);
 
-	os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s&field3=%s&field4=%s&field5=%s",
-			THINGSPEAK_SERVER, THINGSPEAK_API_KEY, azi, eli, azr, elr, li);
+
+    switch(thingspeakField)
+    {
+		case 0:
+				os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s&field3=%s",
+							THINGSPEAK_SERVER, THINGSPEAK_API_KEY0, azr, elr, li);
+				break;
+		case 1:
+				os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s&field3=%s",
+							THINGSPEAK_SERVER, THINGSPEAK_API_KEY1, azr, elr, li);
+				break;
+		case 2:
+				os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s&field3=%s",
+							THINGSPEAK_SERVER, THINGSPEAK_API_KEY2, azr, elr, li);
+				break;
+		case 3:
+				os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s&field3=%s",
+							THINGSPEAK_SERVER, THINGSPEAK_API_KEY3, azr, elr, li);
+				break;
+    }
+
+
+//	os_sprintf(data, "http://%s/update?api_key=%s&field1=%s&field2=%s&field3=%s&field4=%s&field5=%s",
+//			THINGSPEAK_SERVER, THINGSPEAK_API_KEY, azi, eli, azr, elr, li);
 	ets_uart_printf("Request: %s\r\n", data);
 	http_get(data, "", thingspeak_http_callback);
 }
@@ -243,25 +266,30 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 			ets_uart_printf("LEFT\r\n");
 			//azOld = orientation.real.azimuth;
 			blink = BLINK_BACKWARD;
+			sysState.moving = 1;
 			break;
 		case RIGHT:
 			ets_uart_printf("RIGHT\r\n");
 			//azOld = orientation.real.azimuth;
 			blink = BLINK_FORWARD;
+			sysState.moving = 1;
 			break;
 		case UP:
 			blink = BLINK_UP;
 			//elOld = orientation.real.elevation;
 			ets_uart_printf("UP\r\n");
+			sysState.moving = 1;
 			 break;
 		case DOWN:
 			ets_uart_printf("DOWN\r\n");
 			//elOld = orientation.real.elevation;
 			blink = BLINK_DOWN;
+			sysState.moving = 1;
 			break;
 		default:
 		{
 			ets_uart_printf("stop\r\n");
+			sysState.moving = 0;
 
 //			ets_uart_printf("%d,  %d\r\n%d,  %d\r\n",
 //					orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
@@ -270,14 +298,7 @@ void ICACHE_FLASH_ATTR move(uint8 a)
 			resetCntr = 0;
 			service_timer_start();
 
-//			// check if moving
-//			if((orientation.real.azimuth    < (azOld + 200) && orientation.real.azimuth    > (azOld - 200)) &&
-//			   (orientation.real.elevation  < (elOld + 200) && orientation.real.elevation  > (elOld - 200)) )
-//			{
-//				// not moving
-//				sysState.motorFault = 1;
-//				blink = BLINK_MOTOR_FLT;
-//			}
+
 		}
 	}
 }
@@ -289,13 +310,18 @@ void ICACHE_FLASH_ATTR modeSwitch(void)
 							sysState.byte = 0;
 							PCF8574_writeByte(0x3B, (0x00 << 4) | 0x8f);
 							//direction = 0;
+							orientation.income.azimuth   = 0;
+							orientation.income.elevation = 0;
 							stopMoving();
 						}
 						else
 						{
 							PCF8574_writeByte(0x3B, (0x01 << 4) | 0x8f);
 							sysState.manualMove = 1;
+							sysState.motorFault = 0;
 							blink = BLINK_MANUAL;
+							orientation.income.azimuth   = 0;
+							orientation.income.elevation = 0;
 							stopMoving();
 						}
 }
@@ -353,6 +379,26 @@ void ICACHE_FLASH_ATTR keyProcessing(uint8 dd)
 				}
 			}
 			ddOld = dd;
+}
+//==============================================================================
+const uint8 deviceMac[3][6] = {
+		{0x60, 0x01, 0x94, 0x80, 0x9a, 0x99},
+		{0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00, 0x00}};
+		//{0x62, 0x01, 0x94, 0x80, 0x9a, 0x99}};
+//==============================================================================
+uint16 macMatch(uint8 *aMac)
+{
+	int i,j, match;
+
+	for(i = 0; i < 3; i++)
+	{
+		match = 0;
+		for(j = 0; j < 6; j++)
+			if(aMac[j] == deviceMac[i][j]) match++;
+		if(match >= 6) return i;
+	}
+	return 3;
 }
 //==============================================================================
 

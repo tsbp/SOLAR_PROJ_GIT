@@ -51,7 +51,14 @@ void ICACHE_FLASH_ATTR stopMoving(void)
 	direction = 0;
 	move(direction);
 	sysState.newPosition = 0;
-
+}
+//===================================================================================
+void ICACHE_FLASH_ATTR motorFault(void)
+{
+	ets_uart_printf("mot err\r\n");
+	sysState.motorFault = 1;
+	blink = BLINK_MOTOR_FLT;
+	stopMoving();
 }
 //======================= Main code function ============================================================
 void ICACHE_FLASH_ATTR loop(os_event_t *events)
@@ -97,7 +104,8 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	if(!sysState.manualMoveRemote) keyProcessing((~PCF8574_readByte(0x3B)) & (~0x70));
 
 	//======== LSM303  =====================
-	lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6);
+	if (!lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6) && !sysState.manualMove && !sysState.motorFault)
+		motorFault();
 	lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_OUT_X_H, tmp, 6);
 	compass.x = ((tmp[0] << 8) | tmp[1]) ;
 	compass.z = ((tmp[2] << 8) | tmp[3]) ;
@@ -132,54 +140,32 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	headF =  mFilter(headFarr,  FILTER_LENGHT);
 	//ets_uart_printf("sysState = %d\r\n", sysState);
 
-	//=====================================================================
-//	if(sysState.manualMoveRemote)
-//	{
-//		if(manualDuration) manualDuration--;
-//		else
-//		{
-//			sysState.byte = 0;
-//			manualDuration = PROC_DURATION;
-//			orientation.income.azimuth   = (uint16) orientation.real.azimuth;
-//			orientation.income.elevation = (uint16) orientation.real.elevation;
-//			move(0);
-//		}
-//	}
-//
-//	//=== sun tracking ====================================================
-//	else
-		if(!sysState.manualMove){
 
-//		if(orientation.income.elevation > ELEVATION_MAX) orientation.income.elevation = ELEVATION_MAX;
-//		if(orientation.income.elevation < ELEVATION_MIN) orientation.income.elevation = ELEVATION_MIN;
-//		if(orientation.income.azimuth < 5500) orientation.income.azimuth = 5500;//zatychka koncevik 36 deg
+//	//=== sun tracking ====================================================
+
+ if(!sysState.manualMove){
 
 		static sint16 azOld = 0, elOld = 0;
 
 		if(sysState.newPosition && !sysState.motorFault)
 		{
-			//sysState.newPosition = 0;
-			if(!direction)
+			//stopMoving();
+			sysState.newPosition = 0;
+			if(!sysState.moving)
 			{
 				if      (orientation.income.elevation > ( orientation.real.elevation + 6 * HORIZONTAL_OFFSET)) {direction = DOWN; elOld = orientation.real.elevation;}
 				else if (orientation.income.elevation < ( orientation.real.elevation - 6 * HORIZONTAL_OFFSET)) {direction = UP;   elOld = orientation.real.elevation;}
 				else if (orientation.income.azimuth   > ( headF + 6 * HORIZONTAL_OFFSET)) {direction = RIGHT; azOld = orientation.real.azimuth;}
 				else if (orientation.income.azimuth   < ( headF - 6 * HORIZONTAL_OFFSET)) {direction = LEFT;  azOld = orientation.real.azimuth;}
+				else  direction = 0;
 
-				if(direction)
-				{
-					move(direction);
-					mTout = 1000;//6000;
-				}
+				move(direction);
+				mTout = 1000;//6000;
 			}
-
-			if(mTout) mTout--;
-			else direction = 0;
-//			{
-//				if (direction) ets_uart_printf("    real      old \r\nazim %d,  %d\r\nelev %d,  %d\r\n",
-//						orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
-//			}
 		}
+
+	    if(mTout) mTout--;
+
 		switch(direction)
 				{
 					case RIGHT:
@@ -189,6 +175,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 							orientation.income.azimuth >= (orientation.real.azimuth - HORIZONTAL_OFFSET))
 						{
 							stopMoving();
+							//sysState.newPosition = 0;
 							ets_uart_printf("mTout = %d\r\n", mTout);
 							ets_uart_printf("    real      old \r\nazim %d,  %d\r\nelev %d,  %d\r\n",
 													orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
@@ -198,10 +185,11 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 								(orientation.real.azimuth    < (azOld + 200) && orientation.real.azimuth    > (azOld - 200)))
 						{
 							// not moving
-							ets_uart_printf("mot err\r\n");
-							sysState.motorFault = 1;
-							blink = BLINK_MOTOR_FLT;
-							stopMoving();
+							motorFault();
+//							ets_uart_printf("mot err\r\n");
+//							sysState.motorFault = 1;
+//							blink = BLINK_MOTOR_FLT;
+//							stopMoving();
 						}
 
 					}break;
@@ -213,6 +201,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 							orientation.income.elevation >= (orientation.real.elevation - HORIZONTAL_OFFSET))
 						{
 							stopMoving();
+							//sysState.newPosition = 0;
 							ets_uart_printf("mTout = %d\r\n", mTout);
 							ets_uart_printf("    real      old \r\nazim %d,  %d\r\nelev %d,  %d\r\n",
 									orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
@@ -222,10 +211,11 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 								(orientation.real.elevation  < (elOld + 200) && orientation.real.elevation  > (elOld - 200)))
 						{
 							// not moving
-							ets_uart_printf("mot err\r\n");
-							sysState.motorFault = 1;
-							blink = BLINK_MOTOR_FLT;
-							stopMoving();
+							motorFault();
+//							ets_uart_printf("mot err\r\n");
+//							sysState.motorFault = 1;
+//							blink = BLINK_MOTOR_FLT;
+//							stopMoving();
 						}
 					}break;
 				}
@@ -296,6 +286,21 @@ void ICACHE_FLASH_ATTR user_init(void)
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(1000);
 	ets_uart_printf("\r\n\r\n*** Solar slave\r\n*** Firmware compiled: %s\r\n\r\n", VERSION);
+
+	char macaddr[6];
+//	wifi_get_macaddr(STATION_MODE, macaddr);
+//	ets_uart_printf(MACSTR, MAC2STR(macaddr));
+//	ets_uart_printf("\r\n");
+//	wifi_get_macaddr(SOFTAP_MODE, macaddr);
+//	ets_uart_printf(MACSTR, MAC2STR(macaddr));
+//	ets_uart_printf("\r\n");
+	wifi_get_macaddr(NULL_MODE, macaddr);
+		ets_uart_printf(MACSTR, MAC2STR(macaddr));
+		ets_uart_printf("\r\n");
+
+	thingspeakField =  macMatch(macaddr);
+
+	ets_uart_printf("mac match %d\r\n", thingspeakField);
 
 //	//saveConfigs();
 

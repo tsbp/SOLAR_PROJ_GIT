@@ -6,7 +6,7 @@ u3AXIS_DATA accel, compass;
 
 
 //==============================================================================
-void lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned char *aBuf, unsigned int aLng)
+uint16 lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned char *aBuf, unsigned int aLng)
 {
 	uint16 i;
 
@@ -19,13 +19,13 @@ void lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned 
 	{
 		//addr = addr << 1;
 		i2c_writeByte(addr);
-		if (!i2c_check_ack()) { i2c_stop(); return ;}
+		if (!i2c_check_ack()) { i2c_stop(); return 0;}
 
 		i2c_writeByte(reg);
-		if (!i2c_check_ack()) { i2c_stop(); return ;}
+		if (!i2c_check_ack()) { i2c_stop(); return 0;}
 
 		i2c_writeByte(*aBuf);
-		if (!i2c_check_ack()) { i2c_stop(); return ;}
+		if (!i2c_check_ack()) { i2c_stop(); return 0;}
 
 
 	}
@@ -33,18 +33,18 @@ void lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned 
 	{
 		//addr = addr << 1;
 		i2c_writeByte(addr);
-		if (!i2c_check_ack()) { i2c_stop(); return ;}
+		if (!i2c_check_ack()) { i2c_stop(); return 0;}
 
 		if(aLng > 1) reg = (reg | BIT7);
 		i2c_writeByte(reg);
-		if (!i2c_check_ack()) { i2c_stop(); return ;}
+		if (!i2c_check_ack()) { i2c_stop(); return 0;}
 
 		i2c_start();
 
 		//addr = addr << 1;
 		addr |= BIT0;
 		i2c_writeByte(addr);
-		if (!i2c_check_ack()) { i2c_stop(); return ;}
+		if (!i2c_check_ack()) { i2c_stop(); return 0;}
 
 		for(i = 0; i < aLng; i++)
 		{
@@ -57,30 +57,7 @@ void lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned 
 
 	i2c_stop();
 
-  
-//  if(aOp == I2C_READ && aLng > 1) MSData[0] = (aReg | BIT7);
-//  else                            MSData[0] = (aReg);
-//
-//  if(aOp == I2C_WRITE)
-//  {
-//    MSData[1] = *aBuf;
-//    NUM_BYTES_TX = 2;
-//  }
-//  else
-//    NUM_BYTES_TX = 1;
-//   //Transmit process
-//  Setup_TX(aDev);
-//
-//  i2cTransmit();
-//  while (UCB0CTL1 & UCTXSTP);             // Ensure stop condition got sent
-//
-//  if(aOp == I2C_READ)
-//  {
-//    Setup_RX(aDev);
-//    i2cReceive(aLng/*6*/, aBuf);
-//    while (UCB0CTL1 & UCTXSTP);
-//    __no_operation();
-//  }
+	return 1;
 }
 //==============================================================================
 unsigned char regValue = 0;

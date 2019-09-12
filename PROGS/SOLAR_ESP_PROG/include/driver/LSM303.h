@@ -103,6 +103,6 @@ typedef union __attribute__ ((__packed__))
 extern u3AXIS_DATA accel, compass;
 /*=====================================================================================================*/
 void LSM303Init(void);
-void lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned char *aBuf, unsigned int aLng);
+uint16 lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned char *aBuf, unsigned int aLng);
 /*=====================================================================================================*/
 #endif
