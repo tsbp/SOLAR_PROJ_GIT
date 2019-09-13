@@ -91,15 +91,6 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		light = ((unsigned char*)&light)[1] |
 				((unsigned char*)&light)[0] << 8;
 	}
-//	lightOld = light;
-
-//	if(light == lightOld) lightCntr++;
-//	else lightCntr = 0;
-//	if(lightCntr > 1000) //======== light sensor reinit
-//	{
-//		BH1715(I2C_WRITE, 0x23, 0x01, 0, 1);
-//		BH1715(I2C_WRITE, 0x23, 0x10, 0, 1);
-//	}
 	//=======================================
 	if(!sysState.manualMoveRemote) keyProcessing((~PCF8574_readByte(0x3B)) & (~0x70));
 
@@ -122,15 +113,9 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 	getAngles(&aa, &cc, &Pitch, &Roll, &Yaw);
 
-	_roll    = Roll;
+	_roll    = 0;//Roll;
 	_pitch   = Pitch;
 	_heading = Yaw;
-	//_heading = ;
-
-//	long angle = (_pitch  * 18000 / 31416);
-//
-//	long head = ( _heading  * 18000 / 31416);
-//	if(head < 0) head += 36000;
 
 	orientation.real.elevation = ((long)_pitch   * 18000 / 31416);
 	orientation.real.azimuth   = ((long)_heading * 18000 / 31416);
@@ -141,7 +126,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	//ets_uart_printf("sysState = %d\r\n", sysState);
 
 
-//	//=== sun tracking ====================================================
+ //=== sun tracking ====================================================
 
  if(!sysState.manualMove){
 
@@ -149,7 +134,6 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 		if(sysState.newPosition && !sysState.motorFault)
 		{
-			//stopMoving();
 			sysState.newPosition = 0;
 			if(!sysState.moving)
 			{
@@ -164,75 +148,48 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			}
 		}
 
-	    if(mTout) mTout--;
+		if (sysState.moving)
+		{
+			if (mTout) 	mTout--;
 
-		switch(direction)
-				{
-					case RIGHT:
-					case LEFT:
+			switch (direction)
+			{
+				case RIGHT:
+				case LEFT:
 					{
 						if (orientation.income.azimuth <= (orientation.real.azimuth + HORIZONTAL_OFFSET) &&
 							orientation.income.azimuth >= (orientation.real.azimuth - HORIZONTAL_OFFSET))
 						{
 							stopMoving();
-							//sysState.newPosition = 0;
 							ets_uart_printf("mTout = %d\r\n", mTout);
 							ets_uart_printf("    real      old \r\nazim %d,  %d\r\nelev %d,  %d\r\n",
-													orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
+									orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
 						}
-
-						if (!mTout &
-								(orientation.real.azimuth    < (azOld + 200) && orientation.real.azimuth    > (azOld - 200)))
-						{
-							// not moving
+						else if (!mTout & // not moving
+								(orientation.real.azimuth < (azOld + 200) && orientation.real.azimuth > (azOld - 200)))
 							motorFault();
-//							ets_uart_printf("mot err\r\n");
-//							sysState.motorFault = 1;
-//							blink = BLINK_MOTOR_FLT;
-//							stopMoving();
-						}
 
 					}break;
 
-					case UP:
-					case DOWN:
+				case UP:
+				case DOWN:
 					{
 						if (orientation.income.elevation <= (orientation.real.elevation + HORIZONTAL_OFFSET) &&
 							orientation.income.elevation >= (orientation.real.elevation - HORIZONTAL_OFFSET))
 						{
 							stopMoving();
-							//sysState.newPosition = 0;
 							ets_uart_printf("mTout = %d\r\n", mTout);
 							ets_uart_printf("    real      old \r\nazim %d,  %d\r\nelev %d,  %d\r\n",
 									orientation.real.azimuth, azOld, orientation.real.elevation, elOld);
 						}
-
-						if (!mTout &
-								(orientation.real.elevation  < (elOld + 200) && orientation.real.elevation  > (elOld - 200)))
-						{
-							// not moving
+						else if (!mTout &  // not moving
+								(orientation.real.elevation < (elOld + 200) && orientation.real.elevation > (elOld - 200)))
 							motorFault();
-//							ets_uart_printf("mot err\r\n");
-//							sysState.motorFault = 1;
-//							blink = BLINK_MOTOR_FLT;
-//							stopMoving();
-						}
 					}break;
-				}
-
+			}
+		}
 
 	}
-
-
-	//=====================================================================
-//		static c = 50;
-//		if(c) c--;
-//		else
-//		{
-//			c = 50;
-//			ets_uart_printf("elevation = %d, head = %d, angle = %d\r\n", elevation, head, angle);
-//
-//		}
 }
 //==============================================================================
 void ICACHE_FLASH_ATTR setup(void)
