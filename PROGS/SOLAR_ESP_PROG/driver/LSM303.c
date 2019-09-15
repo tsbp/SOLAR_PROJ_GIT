@@ -8,7 +8,7 @@ u3AXIS_DATA accel, compass;
 //==============================================================================
 uint16 lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned char *aBuf, unsigned int aLng)
 {
-	uint16 i;
+	uint16 i, err = 0;
 
 	i2c_start();
 
@@ -19,13 +19,13 @@ uint16 lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigne
 	{
 		//addr = addr << 1;
 		i2c_writeByte(addr);
-		if (!i2c_check_ack()) { i2c_stop(); return 0;}
+		if (!i2c_check_ack()) { i2c_stop(); err++;} // return 0;}
 
 		i2c_writeByte(reg);
-		if (!i2c_check_ack()) { i2c_stop(); return 0;}
+		if (!i2c_check_ack()) { i2c_stop(); err++;} // return 0;}
 
 		i2c_writeByte(*aBuf);
-		if (!i2c_check_ack()) { i2c_stop(); return 0;}
+		if (!i2c_check_ack()) { i2c_stop(); err++;} // return 0;}
 
 
 	}
@@ -33,18 +33,18 @@ uint16 lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigne
 	{
 		//addr = addr << 1;
 		i2c_writeByte(addr);
-		if (!i2c_check_ack()) { i2c_stop(); return 0;}
+		if (!i2c_check_ack()) { i2c_stop(); err++;} // return 0;}
 
 		if(aLng > 1) reg = (reg | BIT7);
 		i2c_writeByte(reg);
-		if (!i2c_check_ack()) { i2c_stop(); return 0;}
+		if (!i2c_check_ack()) { i2c_stop(); err++;} // return 0;}
 
 		i2c_start();
 
 		//addr = addr << 1;
 		addr |= BIT0;
 		i2c_writeByte(addr);
-		if (!i2c_check_ack()) { i2c_stop(); return 0;}
+		if (!i2c_check_ack()) { i2c_stop(); err++;} // return 0;}
 
 		for(i = 0; i < aLng; i++)
 		{
@@ -56,7 +56,7 @@ uint16 lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigne
 	}
 
 	i2c_stop();
-
+	if(err) return 0;
 	return 1;
 }
 //==============================================================================
