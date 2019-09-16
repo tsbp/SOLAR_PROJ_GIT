@@ -1,6 +1,7 @@
 //==============================================================================
 #include "driver/LSM303.h"
 #include "driver/i2c.h"
+#include "driver/services.h"
 //==============================================================================
 u3AXIS_DATA accel, compass;
 
@@ -64,43 +65,47 @@ unsigned char regValue = 0;
 //==============================================================================
 void LSM303Init(void)
 {
+	uint16 a = 0;
   //============= accelerometer ==========================
-  lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue, 1);
+  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue, 1);
   ets_uart_printf("LSM303A_CTRL_REG1 %02x\r\n",  regValue);
   regValue = 0x57;
-  lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue,   1);
+  a += lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue,   1);
   ets_uart_printf("LSM303A_CTRL_REG1 %02x\r\n",  regValue);
   //__delay_cycles(80000L);
-  lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue, 1);
+  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue, 1);
   //ets_uart_printf("LSM303A_CTRL_REG1 %02x\r\n",  regValue);
   
-  lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue, 1);
+  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue, 1);
   ets_uart_printf("LSM303A_CTRL_REG2 %02x\r\n",  regValue);
   regValue = 0x00;
-  lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue,   1);
+  a += lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue,   1);
   ets_uart_printf("LSM303A_CTRL_REG2 %02x\r\n",  regValue);
-  lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue, 1);
+  a +=  lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue, 1);
   ets_uart_printf("LSM303A_CTRL_REG2 %02x\r\n",  regValue);
   
-  lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
+  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
   ets_uart_printf("LSM303A_CTRL_REG4 %02x\r\n",  regValue);
   regValue |= (BIT3 );//| BIT7);
-  lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
+  a += lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
   ets_uart_printf("LSM303A_CTRL_REG4 %02x\r\n",  regValue);
   //__delay_cycles(80000L);
-  lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
+  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
   ets_uart_printf("LSM303A_CTRL_REG4 %02x\r\n",  regValue);
   
-  //============= magnitometer ===========================
-  lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_CRA_REG, &regValue, 1);
+  //============= magnetometer ===========================
+  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_CRA_REG, &regValue, 1);
   regValue = 0x9c;
-  lsm303(I2C_WRITE, LSM303M_I2C_ADDR, LSM303M_CRA_REG, &regValue, 1);
+  a += lsm303(I2C_WRITE, LSM303M_I2C_ADDR, LSM303M_CRA_REG, &regValue, 1);
   //__delay_cycles(80000L);
-  lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_CRB_REG, &regValue, 1);
+  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_CRB_REG, &regValue, 1);
   
-  lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
+  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
   regValue = 0;
-  lsm303(I2C_WRITE, LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
+  a += lsm303(I2C_WRITE, LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
   //__delay_cycles(80000L);
-  lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
+  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
+
+  if(a) sysState.sensorError = 0;
+  ets_uart_printf("a = %d\r\n",  a);
 }

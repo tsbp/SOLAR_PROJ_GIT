@@ -97,16 +97,23 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	//======== LSM303  =====================
 //	if (!lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6) && !sysState.manualMove && !sysState.motorFault)
 //		motorFault();
-	static uint16 compassOk = 0;
-//	if(sysState.motorFault) LSM303Init();
-//	else
-		if(!lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6))
+	static uint16 compassOk = 100;
+
+	if(sysState.sensorError) { if(compassOk) compassOk--; if(!compassOk ){LSM303Init(); compassOk = 100;}}
+	else if(!lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6))
 	{
 		if(compassOk) compassOk--;
 		if(!compassOk )//&& !sysState.manualMove && !sysState.motorFault)
+	    {
+  			sysState.sensorError = 1;
+			motorFault();
+			compassOk = 100;
 			ets_uart_printf("Sensor error \r\n");
+			//LSM303Init();
+	    }
 	}
-	else compassOk = 10;
+	else compassOk = 100;
+
 
 	lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_OUT_X_H, tmp, 6);
 	compass.x = ((tmp[0] << 8) | tmp[1]) ;

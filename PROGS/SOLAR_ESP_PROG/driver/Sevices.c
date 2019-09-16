@@ -103,7 +103,7 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 					if(resetCntr >= 4)
 					{
 						ets_uart_printf("OTA start\r\n");
-						blink = BLINK_MOTOR_FLT;
+						blink = BLINK_FW_UPDATE;
 						sysState.motorFault = 1;
 						ota_start();
 					}

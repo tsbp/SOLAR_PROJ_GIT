@@ -68,7 +68,7 @@ typedef union
 		uint8 manualMoveRemote :1;
 		uint8 manualMove	    :1;
 		uint8 moving       	:1;
-		uint8 automaticMoveV	:1;
+		uint8 sensorError	:1;
 		uint8 newPosition  	:1;
 		uint8 motorFault	    :1;
 	};
