@@ -105,7 +105,7 @@ void ICACHE_FLASH_ATTR UDP_cmdState()
 	{
 		//ets_uart_printf("CMD_STATE meteo\r\n");
 		UDP_PC->proto.udp->remote_ip[3] = 255;
-		dataLng = 15;
+		dataLng = 24;
 		buf[0]  = ID_METEO;
 		memcpy (buf+3, mState.byte, dataLng );
 
@@ -231,7 +231,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				case ID_MASTER:
 					//UDP_PC->proto.udp->remote_ip[3] = 255;
 					needAnswer = 1;
-					dataLng = 15;
+					dataLng = 24;//15;
 					ansBuffer[0]  = ID_METEO;
 					memcpy (ansBuffer+3, mState.byte, dataLng );
 					break;
@@ -247,7 +247,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 			case CMD_CFG:
 				{
-					ets_uart_printf("CMD_CFG: ");
+					ets_uart_printf("FUCK_CMD_CFG: ");
 											for (a = 0; a < length; a++)
 												ets_uart_printf("%02x ", pusrdata[a]);
 											ets_uart_printf("\r\n");

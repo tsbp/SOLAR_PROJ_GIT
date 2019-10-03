@@ -153,18 +153,18 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		meteoProcessing();
 
 		//==============================================================
-		if(mState.stt) UDP_Angles();
+		if(mState.stt)
+		{
+			static int a = 10;
+			UDP_Angles();
+			if(a) a--;
+			else
+			{
+				a = 10;
+				if(wifi_station_get_connect_status() == STATION_GOT_IP) openWeather_request();
+			}
+		}
 	}
-
-//	static c = 10;
-//	if(c) c--;
-//	else
-//	{
-//		c = 10;
-//
-//	}
-
-
 }
 
 //==============================================================================
@@ -217,11 +217,6 @@ void ICACHE_FLASH_ATTR user_init(void)
 
 	ets_uart_printf("configs.meteo.light %d\r\n", configs.meteo.light);
 	ets_uart_printf("configs.meteo.wind  %d\r\n", configs.meteo.wind);
-
-//	char macaddr[6];
-//	wifi_get_macaddr(STATION_MODE, macaddr);
-//	ets_uart_printf(MACSTR, MAC2STR(macaddr));
-//	ets_uart_printf("\r\n");
 
 	if(configs.wifi.mode == STATION_MODE)
 		setup_wifi_st_mode();

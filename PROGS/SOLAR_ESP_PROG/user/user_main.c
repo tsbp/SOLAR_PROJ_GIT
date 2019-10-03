@@ -105,8 +105,11 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		if(compassOk) compassOk--;
 		if(!compassOk )//&& !sysState.manualMove && !sysState.motorFault)
 	    {
-  			sysState.sensorError = 1;
-			motorFault();
+			if(!sysState.manualMove)
+			{
+				sysState.sensorError = 1;
+				motorFault();
+			}
 			compassOk = 100;
 			ets_uart_printf("Sensor error \r\n");
 			//LSM303Init();

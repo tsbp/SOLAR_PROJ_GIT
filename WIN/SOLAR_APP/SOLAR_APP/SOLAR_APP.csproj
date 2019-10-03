@@ -22,7 +22,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -98,6 +98,26 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Resource Include="Images\OpenWeather\01d%402x.png" />
+    <Resource Include="Images\OpenWeather\01n%402x.png" />
+    <Resource Include="Images\OpenWeather\02d%402x.png" />
+    <Resource Include="Images\OpenWeather\02n%402x.png" />
+    <Resource Include="Images\OpenWeather\03d%402x.png" />
+    <Resource Include="Images\OpenWeather\03n%402x.png" />
+    <Resource Include="Images\OpenWeather\04d%402x.png" />
+    <Resource Include="Images\OpenWeather\04n%402x.png" />
+    <Resource Include="Images\OpenWeather\09d%402x.png" />
+    <Resource Include="Images\OpenWeather\09n%402x.png" />
+    <Resource Include="Images\OpenWeather\10d%402x.png" />
+    <Resource Include="Images\OpenWeather\10n%402x.png" />
+    <Resource Include="Images\OpenWeather\11d%402x.png" />
+    <Resource Include="Images\OpenWeather\11n%402x.png" />
+    <Resource Include="Images\OpenWeather\13d%402x.png" />
+    <Resource Include="Images\OpenWeather\13n%402x.png" />
+    <Resource Include="Images\OpenWeather\50d%402x.png" />
+    <Resource Include="Images\OpenWeather\50n%402x.png" />
+    <Resource Include="Images\humid.png" />
+    <Resource Include="Images\temper.png" />
     <Resource Include="Images\dwn.png" />
     <Resource Include="Images\lft.png" />
     <Resource Include="Images\rght.png" />
@@ -115,6 +135,8 @@
     <Resource Include="Images\compass.png" />
     <Resource Include="Images\dual_compass_rose.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Images\OpenWeather" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -3,6 +3,7 @@
 #include "osapi.h"
 #include "os_type.h"
 #include "user_interface.h"
+#include "user_config.h"
 #include "gpio.h"
 #include "driver/uart.h"
 #include "driver/Configs.h"
@@ -10,7 +11,7 @@
 #include "driver/wifi.h"
 #include "driver/gpio16.h"
 #include "driver/services.h"
-
+#include "driver/httpclient.h"
 //==============================================================================
 
 static volatile os_timer_t service_timer;
@@ -290,5 +291,115 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 	else mState.light = 0;
 	//ets_uart_printf("light %d cntr %d\r\n", mState.light, cntr);
 }
+//==============================================================================
+//                              OPEN WEATHER
+//==============================================================================
+//float stof(const char* s){
+//	int point_seen;
+//  float rez = 0, fact = 1;
+//  if (*s == '-'){
+//    s++;
+//    fact = -1;
+//  };
+//  for (point_seen = 0; *s; s++){
+//    if (*s == '.'){
+//      point_seen = 1;
+//      continue;
+//    };
+//    int d = *s - '0';
+//    if (d >= 0 && d <= 9){
+//      if (point_seen) fact /= 10.0f;
+//      rez = rez * 10.0f + (float)d;
+//    };
+//  };
+//  return rez * fact;
+//};
+float str2float (const char * str) {
+  unsigned char abc;
+  float ret = 0, fac = 1;
+  for (abc = 9; abc & 1; str++) {
+    abc  =  *str == '-' ?
+              (abc & 6 ? abc & 14 : (abc & 47) | 36)
+            : *str == '+' ?
+              (abc & 6 ? abc & 14 : (abc & 15) | 4)
+            : *str > 47 && *str < 58 ?
+              abc | 18
+            : (abc & 8) && *str == '.' ?
+              (abc & 39) | 2
+            : !(abc & 2) && (*str == ' ' || *str == '\t') ?
+              (abc & 47) | 1
+            :
+              abc & 46;
+    if (abc & 16) {
+      ret = abc & 8 ? *str - 48 + ret * 10 : (*str - 48) / (fac *= 10) + ret;
+    }
+  }
+  return abc & 32 ? -ret : ret;
+}
+//==============================================================================
+void ICACHE_FLASH_ATTR openWeather_http_callback(char * response, int http_status, char * full_response)
+{
+	char data[20];
+	ets_uart_printf("Answers: \r\n");
+	if (http_status == 200)
+	{
+
+//		ets_uart_printf("response=%s<EOF>\n", response);
+//		ets_uart_printf("---------------------------\r\n");
+
+		char* a = strstr(response, "speed");
+		char* b = strstr(response, "deg");
+		response[b - response - 2] = 0x00;
+		os_sprintf(data, "%s", a + 7);
+		mState.forecast.wind = (int)(str2float(data) * 100);
+		ets_uart_printf("%s_", a + 7);
+
+
+		a = strstr(response, "humidity");
+		b = strstr(response, "temp_min");
+		response[b - response - 2] = 0x00;
+		os_sprintf(data, a + 10);
+		mState.forecast.humid = (int)(str2float(data) * 100);
+		ets_uart_printf("%s_", a + 10);
+
+		a = strstr(response, "temp");
+		b = strstr(response, "pressure");
+		response[b - response - 2] = 0x00;
+		os_sprintf(data, a + 6);
+		mState.forecast.temp = (int)(str2float(data) * 100);
+		ets_uart_printf("%s_", a + 6);
+
+		a = strstr(response, "icon");
+		b = strstr(response, "base");
+		response[b - response - 5] = 0x00;
+		ets_uart_printf("%s\n", a + 7);
+		os_sprintf(mState.forecast.icon, a + 7);
+
+		ets_uart_printf("temp = %d, wind = %d, hum = %d, icon(%s)\n",
+				mState.forecast.temp, mState.forecast.wind, mState.forecast.humid, mState.forecast.icon);
+
+		ets_uart_printf("---------------------------\r\n");
+	}
+
+	ets_uart_printf("Free heap size = %d\r\n", system_get_free_heap_size());
+}
+//==============================================================================
+void ICACHE_FLASH_ATTR openWeather_request(void)
+{
+	static char data[256];
+	static char lat[10];
+	static char lon[10];
+
+//	0.01 * configs.meteo.latit,
+//	0.01 * configs.meteo.longit,
+
+	os_sprintf(lat, "%d.%d%d", configs.meteo.latit  / 100, (configs.meteo.latit  % 100) / 10, (configs.meteo.latit  % 100) % 10);
+	os_sprintf(lon, "%d.%d%d", configs.meteo.longit / 100, (configs.meteo.longit % 100) / 10, (configs.meteo.longit % 100) % 10);
+
+	os_sprintf(data, "http://%s/data/2.5/weather?lat=%s&lon=%s&units=metric&appid=%s", OPENWEATHER_SERVER, lat, lon, OPENWEATHER_API_KEY);
+	ets_uart_printf("Request: %s\r\n", data);
+	http_get(data, "", openWeather_http_callback);
+}
+
 
 

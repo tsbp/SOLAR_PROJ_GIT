@@ -21,6 +21,7 @@ using System.Threading;
 using System.Windows.Threading;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Windows.Media.Imaging;
 
 using System.Windows.Shapes;
 
@@ -104,6 +105,42 @@ namespace SOLAR_APP
         }
 		
 		//======================================================================
+		public class Phone: INotifyPropertyChanged
+		{
+//			public string ImagePath { get; set; }
+			private String _ImagePath;
+			public string ImagePath
+			{ 
+				get
+				{ return _ImagePath;}
+				set
+				{
+					_ImagePath = value;
+					if (PropertyChanged != null)
+						PropertyChanged(this, new PropertyChangedEventArgs("ImagePath"));
+				}
+			}
+			
+			//public string Title { get; set; } // модель телефона	
+			private String _Title;
+			public string Title
+			{ 
+				get
+				{ return _Title;}
+				set
+				{
+					_Title = value;
+					if (PropertyChanged != null)
+						PropertyChanged(this, new PropertyChangedEventArgs("Title"));
+				}
+			}
+			
+            public event PropertyChangedEventHandler PropertyChanged;			
+		}
+		public ObservableCollection<Phone> Phones { get; set; }
+		//======================================================================
+		
+		
 		DispatcherTimer dispatcherTimer;
 		public User us
 		{get; private set;}
@@ -132,6 +169,15 @@ namespace SOLAR_APP
 			
 			us.url = "/SOLAR_APP;component/Images/dual_compass_rose.png";
 			
+			Phones = new ObservableCollection<Phone>
+			{
+				new Phone {ImagePath="/Images/wind.png", Title="iPhone 6S"},
+				new Phone {ImagePath="/Images/temper.png", Title="Lumia 950"},
+				new Phone {ImagePath="/Images/humid.png", Title="Nexus 5X"},
+				
+			};
+			phonesList.ItemsSource = Phones;
+			
 		}
 		//======================================================================
 		static string returnData, cfgIncome;
@@ -156,6 +202,11 @@ namespace SOLAR_APP
 			public int wind;
 			public int light;
 			public int stt;
+			
+			public int fcWind;
+			public int fcTemp;
+			public int fcHumid;		
+			public string fcIcon;
 		};
 		static masterInfo mInfo;
 		
@@ -199,6 +250,15 @@ namespace SOLAR_APP
 				lblElev.Content  = String.Format("{0}°", (double)mInfo.elev / 100);
 				lblWind.Content  = mInfo.wind;
 				lblLight.Content = mInfo.light;
+				
+				Phones[0].Title  = String.Format("{0} m/s", (float)mInfo.fcWind  / 100);
+				Phones[1].Title  = String.Format("{0} °C",   (float)mInfo.fcTemp  / 100);
+				Phones[2].Title = String.Format("{0} %",   (float)mInfo.fcHumid / 100);
+				
+				string icon = "/SOLAR_APP;component/Images/OpenWeather/" + mInfo.fcIcon + "@2x.png";
+				
+				fcIcon.Source = new BitmapImage(new Uri(icon, UriKind.Relative)); 
+				
 				returnData = null;
 				
 				
@@ -373,8 +433,13 @@ namespace SOLAR_APP
 	                    				mInfo.elev  = (int)( receiveBytes[11] | (receiveBytes[12]) << 8);
 	                    				mInfo.wind  = (int)( receiveBytes[13] | (receiveBytes[14]) << 8);
 	                    				mInfo.light = (int)( receiveBytes[15] | (receiveBytes[16]) << 8);
-	                    				mInfo.stt = (int) (receiveBytes[17]);
+	                    				mInfo.stt =   (int) (receiveBytes[17]);
+	                    				mInfo.fcWind  = (int)(receiveBytes[18] | (receiveBytes[19]) << 8);
 	                    				
+	                    				mInfo.fcTemp  = (int)(short)(receiveBytes[20] | (receiveBytes[21] << 8));
+	                    				
+	                    				mInfo.fcHumid = (int)(receiveBytes[22] | receiveBytes[23] << 8);
+	                    				mInfo.fcIcon = Encoding.ASCII.GetString(new byte[]{ receiveBytes[24], receiveBytes[25], receiveBytes[26] });  
 	                    				returnData  = "123";
 	                    			}
 	                    			
