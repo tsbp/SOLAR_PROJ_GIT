@@ -436,22 +436,21 @@ namespace SOLAR_APP
 	                    				mInfo.wind  = (int)( receiveBytes[13] | (receiveBytes[14]) << 8);
 	                    				mInfo.light = (int)( receiveBytes[15] | (receiveBytes[16]) << 8);
 	                    				mInfo.stt =   (int) (receiveBytes[17]);
-	                    				mInfo.fcWind  = (int)(receiveBytes[18] | (receiveBytes[19]) << 8);
 	                    				
-	                    				mInfo.fcTemp  = (int)(short)(receiveBytes[20] | (receiveBytes[21] << 8));
-	                    				
-	                    				mInfo.fcHumid = (int)(receiveBytes[22] | receiveBytes[23] << 8);
-	                    				
-	                    				mInfo.fcIcon = Encoding.ASCII.GetString(new byte[]{ receiveBytes[44], receiveBytes[45], receiveBytes[46] });  
-	                    				
-	                    				
-	                    				int i;
-	                    				for( i = 0; i < 20; i++) {if(receiveBytes[24 + i]== 0) break;}
-	                    				
-	                    				byte[] tmp = new byte[i];
-	                    				for(int a = 0; a < i; a++) tmp[a] = receiveBytes[24 + a];
-	                    				mInfo.fcRegion = Encoding.ASCII.GetString(tmp);
-	                    				
+	                    				if(receiveBytes.Length > 19)
+	                    				{
+		                    				mInfo.fcWind  = (int)(receiveBytes[18] | (receiveBytes[19]) << 8);	                    				
+		                    				mInfo.fcTemp  = (int)(short)(receiveBytes[20] | (receiveBytes[21] << 8));	                    				
+		                    				mInfo.fcHumid = (int)(receiveBytes[22] | receiveBytes[23] << 8);	                    				
+		                    				mInfo.fcIcon = Encoding.ASCII.GetString(new byte[]{ receiveBytes[44], receiveBytes[45], receiveBytes[46] });	                    				
+		                    				
+		                    				int i;
+		                    				for( i = 0; i < 20; i++) {if(receiveBytes[24 + i]== 0) break;}
+		                    				
+		                    				byte[] tmp = new byte[i];
+		                    				for(int a = 0; a < i; a++) tmp[a] = receiveBytes[24 + a];
+		                    				mInfo.fcRegion = Encoding.ASCII.GetString(tmp);
+	                    				}	                    				
 	                    				returnData  = "123";
 	                    			}
 	                    			
@@ -571,7 +570,9 @@ namespace SOLAR_APP
 			FocusManager.SetFocusedElement(scope, null);
 			Keyboard.ClearFocus();
 		}
-		
+		//===========================================================================================
+		Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+			                         ProtocolType.Udp);
 		//===========================================================================================
 		void slaveCfgClick(object sender, MouseButtonEventArgs e)
 		{
@@ -579,8 +580,8 @@ namespace SOLAR_APP
 			currentSlave = fe.SelectedIndex;
 			
 			
-			Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
-			                         ProtocolType.Udp);				
+//			Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+//			                         ProtocolType.Udp);				
 			
 			byte [] adr = new byte[4];
 			adr = sIp.GetAddressBytes();
@@ -600,8 +601,23 @@ namespace SOLAR_APP
 			SlaveCfg winS = new SlaveCfg();
 			winS.ShowDialog();
 			
-		}		
+		}
 		
+		//===========================================================================================
+		void firmwareCheckClick(object sender, MouseButtonEventArgs e)
+		{
+			if(MessageBox.Show(
+				"Update device firmware?", 
+				"Firmware update",
+				MessageBoxButton.OKCancel,
+				MessageBoxImage.Question) == MessageBoxResult.OK)
+			{
+				IPEndPoint endPoint = new IPEndPoint(mIp, 7171);
+				byte[] buf = new byte[6];
+				buf[1]  = (byte)CMD_FWUPDATE;
+				sock.SendTo(buf , endPoint);
+			}
+		}					
 		//===========================================================================================
 		public class SlaveState: INotifyPropertyChanged
         {
