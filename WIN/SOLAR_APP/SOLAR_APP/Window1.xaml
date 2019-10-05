@@ -60,81 +60,91 @@
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition
-				Height="3*" />
-			<RowDefinition
 				Height="350" />
+			<RowDefinition
+				Height="3*" />
 			<RowDefinition
 				Height="2*" />
 			<RowDefinition
 				Height="7*" />
 		</Grid.RowDefinitions>
 		<Grid
-			Grid.Row="1"
+			Grid.Row="0"
 			Width="auto">
 			<Grid.RowDefinitions>
 				<RowDefinition />
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition
-					Width="3*" />
-				<ColumnDefinition
-					Width="2*" />
-				<ColumnDefinition
-					Width="*" />
-			</Grid.ColumnDefinitions>
-			<Canvas
-				x:Name="compass"
-				Grid.Row="0"
-				Grid.Column="0"
-				Height="300"
-				Width="300"
-				MouseDown="meteoCfg"
-				VerticalAlignment="Center">
-				<Canvas.ToolTip>
-					<TextBlock
-						Text="{Binding us.mState, Mode=OneWay}" />
-				</Canvas.ToolTip>
-				<Canvas.Background>
-					<ImageBrush
-						ImageSource="{Binding us.url, Mode=OneWay}" />
-				</Canvas.Background>
-				<Line
-					Name="line"
-					X1="150"
-					Y1="150"
-					X2="150"
-					Y2="300"
-					Stroke="Red"
-					StrokeThickness="2" />
-				<Ellipse
-					Name="bola"
-					Width="30"
-					Height="30"
-					Fill="Orange"
-					Stroke="Yellow"
-					StrokeThickness="4" />
-				<Ellipse
+				<ColumnDefinition Width="3*" />
+				<ColumnDefinition Width="2*" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>			
+			<Grid Grid.Column="0" Grid.Row="0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*" />
+					<RowDefinition Height="11*" />
+				</Grid.RowDefinitions>
+				<Label 
+					Name="lblRegion"
+					Grid.Row="0"
+					HorizontalAlignment="Center"
+					FontSize="16"
+					Foreground="Aqua"
+					VerticalAlignment="Center"
+					Content="123"/>
+				<Canvas
+					x:Name="compass"
+					Grid.Row="1"					
 					Height="300"
 					Width="300"
-					Stroke="Black"
-					StrokeThickness="0.5" />
-				<Line
-					X1="0"
-					Y1="150"
-					X2="300"
-					Y2="150"
-					Stroke="Black"
-					StrokeDashArray="10,5"
-					StrokeThickness="0.5" />
-				<Line
-					X1="150"
-					Y1="0"
-					X2="150"
-					Y2="300"
-					Stroke="Black"
-					StrokeDashArray="10,5"
-					StrokeThickness="0.5" />
-			</Canvas>
+					MouseDown="meteoCfg"
+					VerticalAlignment="Center">
+					<Canvas.ToolTip>
+						<TextBlock
+							Text="{Binding us.mState, Mode=OneWay}" />
+					</Canvas.ToolTip>
+					<Canvas.Background>
+						<ImageBrush
+							ImageSource="{Binding us.url, Mode=OneWay}" />
+					</Canvas.Background>
+					<Line
+						Name="line"
+						X1="150"
+						Y1="150"
+						X2="150"
+						Y2="300"
+						Stroke="Red"
+						StrokeThickness="2" />
+					<Ellipse
+						Name="bola"
+						Width="30"
+						Height="30"
+						Fill="Orange"
+						Stroke="Yellow"
+						StrokeThickness="4" />
+					<Ellipse
+						Height="300"
+						Width="300"
+						Stroke="Black"
+						StrokeThickness="0.5" />
+					<Line
+						X1="0"
+						Y1="150"
+						X2="300"
+						Y2="150"
+						Stroke="Black"
+						StrokeDashArray="10,5"
+						StrokeThickness="0.5" />
+					<Line
+						X1="150"
+						Y1="0"
+						X2="150"
+						Y2="300"
+						Stroke="Black"
+						StrokeDashArray="10,5"
+						StrokeThickness="0.5" />
+				</Canvas>
+			</Grid>			
 			<Grid
 				Grid.Row="0"
 				Grid.Column="1"
@@ -182,12 +192,12 @@
 							<ColumnDefinition
 								Width="2*" />
 						</Grid.ColumnDefinitions>
+						
 						<Image
 							Grid.Column="0"
 							Grid.Row="0"
 							Source="/SOLAR_APP;component/Images/compass.png"
-							Margin="5,5,5,5"
-							VerticalAlignment="Stretch" />
+							Margin="5,5,5,5" />
 						<Border
 							Grid.Column="1"
 							Grid.Row="0"
@@ -537,7 +547,7 @@
 				Grid.Column="5"
 				VerticalContentAlignment="Center">TERMS</Label>
 		</Grid>
-		<Grid Grid.Row="0">
+		<Grid Grid.Row="1">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="4*" />

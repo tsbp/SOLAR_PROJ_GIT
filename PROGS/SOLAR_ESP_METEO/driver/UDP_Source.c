@@ -97,7 +97,7 @@ void ICACHE_FLASH_ATTR UDP_cmdState()
 	//ets_uart_printf("currentIPask: %d, c = %d\r\n", currentIPask, bcAskCntr);
 
 	uint8 dataLng = 0;
-	uint8 buf[30] = {ID_MASTER, CMD_STATE};
+	uint8 buf[50] = {ID_MASTER, CMD_STATE};
 
 //	ets_uart_printf("? %d\r\n", ip4_addr4(&currentIP));
 
@@ -105,7 +105,7 @@ void ICACHE_FLASH_ATTR UDP_cmdState()
 	{
 		//ets_uart_printf("CMD_STATE meteo\r\n");
 		UDP_PC->proto.udp->remote_ip[3] = 255;
-		dataLng = 24;
+		dataLng = 44;
 		buf[0]  = ID_METEO;
 		memcpy (buf+3, mState.byte, dataLng );
 
@@ -134,7 +134,7 @@ uint8 crcCalc(uint8 *aBuf, uint8 aLng)
     }
 //=========================================================================================
 
-uint8 ansBuffer[30] = {ID_METEO, 0, 0};
+uint8 ansBuffer[100] = {ID_METEO, 0, 0};
 
 
 //=========================================================================================
@@ -231,7 +231,7 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 				case ID_MASTER:
 					//UDP_PC->proto.udp->remote_ip[3] = 255;
 					needAnswer = 1;
-					dataLng = 24;//15;
+					dataLng = 44;//15;
 					ansBuffer[0]  = ID_METEO;
 					memcpy (ansBuffer+3, mState.byte, dataLng );
 					break;

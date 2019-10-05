@@ -207,6 +207,7 @@ namespace SOLAR_APP
 			public int fcTemp;
 			public int fcHumid;		
 			public string fcIcon;
+			public string fcRegion;
 		};
 		static masterInfo mInfo;
 		
@@ -258,6 +259,7 @@ namespace SOLAR_APP
 				string icon = "/SOLAR_APP;component/Images/OpenWeather/" + mInfo.fcIcon + "@2x.png";
 				
 				fcIcon.Source = new BitmapImage(new Uri(icon, UriKind.Relative)); 
+				lblRegion.Content = mInfo.fcRegion;
 				
 				returnData = null;
 				
@@ -439,7 +441,17 @@ namespace SOLAR_APP
 	                    				mInfo.fcTemp  = (int)(short)(receiveBytes[20] | (receiveBytes[21] << 8));
 	                    				
 	                    				mInfo.fcHumid = (int)(receiveBytes[22] | receiveBytes[23] << 8);
-	                    				mInfo.fcIcon = Encoding.ASCII.GetString(new byte[]{ receiveBytes[24], receiveBytes[25], receiveBytes[26] });  
+	                    				
+	                    				mInfo.fcIcon = Encoding.ASCII.GetString(new byte[]{ receiveBytes[44], receiveBytes[45], receiveBytes[46] });  
+	                    				
+	                    				
+	                    				int i;
+	                    				for( i = 0; i < 20; i++) {if(receiveBytes[24 + i]== 0) break;}
+	                    				
+	                    				byte[] tmp = new byte[i];
+	                    				for(int a = 0; a < i; a++) tmp[a] = receiveBytes[24 + a];
+	                    				mInfo.fcRegion = Encoding.ASCII.GetString(tmp);
+	                    				
 	                    				returnData  = "123";
 	                    			}
 	                    			

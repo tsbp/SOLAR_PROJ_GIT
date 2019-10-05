@@ -71,19 +71,20 @@ typedef union __attribute__ ((__packed__))
 //=========================================================================================
 typedef union __packed
 {
-	uint8 byte[9];
+	uint8 byte[29];
 	struct
 	{
 		uint16 wind;
 		sint16 temp;
 		uint16 humid;
+		uint8 region[20];
 		uint8 icon[3];
 	};
 }uFORECAST;
 //=========================================================================================
 typedef union __packed
 {
-	uint8 byte[24];
+	uint8 byte[44];
 	struct
 	{
 		s_DATE_TIME dateTime;

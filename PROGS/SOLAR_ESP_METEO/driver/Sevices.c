@@ -347,12 +347,19 @@ void ICACHE_FLASH_ATTR openWeather_http_callback(char * response, int http_statu
 //		ets_uart_printf("response=%s<EOF>\n", response);
 //		ets_uart_printf("---------------------------\r\n");
 
-		char* a = strstr(response, "speed");
-		char* b = strstr(response, "deg");
+		char* a = strstr(response, "name");
+		char* b = strstr(response, "cod");
+		response[b - response - 3] = 0x00;
+		ets_uart_printf("%s_", a + 7);
+		os_sprintf(mState.forecast.region, a + 7);
+
+
+		a = strstr(response, "speed");
+		b = strstr(response, "deg");
 		response[b - response - 2] = 0x00;
 		os_sprintf(data, "%s", a + 7);
 		mState.forecast.wind = (int)(str2float(data) * 100);
-		ets_uart_printf("%s_", a + 7);
+		//ets_uart_printf("%s_", a + 7);
 
 
 		a = strstr(response, "humidity");
@@ -360,23 +367,24 @@ void ICACHE_FLASH_ATTR openWeather_http_callback(char * response, int http_statu
 		response[b - response - 2] = 0x00;
 		os_sprintf(data, a + 10);
 		mState.forecast.humid = (int)(str2float(data) * 100);
-		ets_uart_printf("%s_", a + 10);
+		//ets_uart_printf("%s_", a + 10);
 
 		a = strstr(response, "temp");
 		b = strstr(response, "pressure");
 		response[b - response - 2] = 0x00;
 		os_sprintf(data, a + 6);
 		mState.forecast.temp = (int)(str2float(data) * 100);
-		ets_uart_printf("%s_", a + 6);
+		//ets_uart_printf("%s_", a + 6);
 
 		a = strstr(response, "icon");
 		b = strstr(response, "base");
 		response[b - response - 5] = 0x00;
-		ets_uart_printf("%s\n", a + 7);
+		//ets_uart_printf("%s\n", a + 7);
 		os_sprintf(mState.forecast.icon, a + 7);
 
-		ets_uart_printf("temp = %d, wind = %d, hum = %d, icon(%s)\n",
-				mState.forecast.temp, mState.forecast.wind, mState.forecast.humid, mState.forecast.icon);
+
+		ets_uart_printf("%s, temp = %d, wind = %d, hum = %d, icon(%s)\n",
+				mState.forecast.region, mState.forecast.temp, mState.forecast.wind, mState.forecast.humid, mState.forecast.icon);
 
 		ets_uart_printf("---------------------------\r\n");
 	}
