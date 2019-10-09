@@ -101,7 +101,7 @@ void LSM303Init(void)
 
 	// write
 	for(i = 0; i < sizeof(LSM303_REGISTER_ADDR); i++)
-			lsm303(I2C_WRITE,  LSM303A_I2C_ADDR, LSM303_REGISTER_ADDR[i], &lsm303Cfg.byte[i], 1);
+			a += lsm303(I2C_WRITE,  LSM303A_I2C_ADDR, LSM303_REGISTER_ADDR[i], &lsm303Cfg.byte[i], 1);
   
 
   if(a) sysState.sensorError = 0;
