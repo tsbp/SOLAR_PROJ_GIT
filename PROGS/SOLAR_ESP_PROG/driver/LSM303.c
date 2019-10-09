@@ -63,49 +63,94 @@ uint16 lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigne
 //==============================================================================
 unsigned char regValue = 0;
 //==============================================================================
+typedef union __attribute__ ((__packed__))
+{
+  unsigned char byte[5];
+  struct
+  {
+	  unsigned char REG1;
+	  unsigned char REG2;
+	  unsigned char REG4;
+  }acc;
+  struct
+  {
+	  unsigned char CRA;
+	  unsigned char MR;
+    }mag;
+}uLSM303_CFG;
+
+ uLSM303_CFG lsm303Cfg = {
+		.acc.REG1 = 0x57,
+		.acc.REG2 = 0x00,
+		.acc.REG4 = 0x08,
+		.mag.CRA  = 0x9c,
+		.mag.MR   = 0x00,
+};
+//==============================================================================
+const unsigned char LSM303_REGISTER_ADDR[5] = {
+		LSM303A_CTRL_REG1,
+		LSM303A_CTRL_REG2,
+		LSM303A_CTRL_REG4,
+		LSM303M_CRA_REG,
+		LSM303M_MR_REG,
+};
+//==============================================================================
 void LSM303Init(void)
 {
-	uint16 a = 0;
-  //============= accelerometer ==========================
-  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue, 1);
-  ets_uart_printf("LSM303A_CTRL_REG1 %02x\r\n",  regValue);
-  regValue = 0x57;
-  a += lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue,   1);
-  ets_uart_printf("LSM303A_CTRL_REG1 %02x\r\n",  regValue);
-  //__delay_cycles(80000L);
-  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue, 1);
-  //ets_uart_printf("LSM303A_CTRL_REG1 %02x\r\n",  regValue);
+	uint16 a = 0, i;
+
+	// write
+	for(i = 0; i < sizeof(LSM303_REGISTER_ADDR); i++)
+			lsm303(I2C_WRITE,  LSM303A_I2C_ADDR, LSM303_REGISTER_ADDR[i], &lsm303Cfg.byte[i], 1);
   
-  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue, 1);
-  ets_uart_printf("LSM303A_CTRL_REG2 %02x\r\n",  regValue);
-  regValue = 0x00;
-  a += lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue,   1);
-  ets_uart_printf("LSM303A_CTRL_REG2 %02x\r\n",  regValue);
-  a +=  lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue, 1);
-  ets_uart_printf("LSM303A_CTRL_REG2 %02x\r\n",  regValue);
-  
-  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
-  ets_uart_printf("LSM303A_CTRL_REG4 %02x\r\n",  regValue);
-  regValue |= (BIT3 );//| BIT7);
-  a += lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
-  ets_uart_printf("LSM303A_CTRL_REG4 %02x\r\n",  regValue);
-  //__delay_cycles(80000L);
-  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
-  ets_uart_printf("LSM303A_CTRL_REG4 %02x\r\n",  regValue);
-  
-  //============= magnetometer ===========================
-  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_CRA_REG, &regValue, 1);
-  regValue = 0x9c;
-  a += lsm303(I2C_WRITE, LSM303M_I2C_ADDR, LSM303M_CRA_REG, &regValue, 1);
-  //__delay_cycles(80000L);
-  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_CRB_REG, &regValue, 1);
-  
-  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
-  regValue = 0;
-  a += lsm303(I2C_WRITE, LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
-  //__delay_cycles(80000L);
-  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
 
   if(a) sysState.sensorError = 0;
   ets_uart_printf("a = %d\r\n",  a);
 }
+//void LSM303Init(void)
+//{
+//	uint16 a = 0;
+//  //============= accelerometer ==========================
+//  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue, 1);
+//  ets_uart_printf("LSM303A_CTRL_REG1 %02x\r\n",  regValue);
+//  regValue = 0x57;
+//  a += lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue,   1);
+//  ets_uart_printf("LSM303A_CTRL_REG1 %02x\r\n",  regValue);
+//  //__delay_cycles(80000L);
+//  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, &regValue, 1);
+//  //ets_uart_printf("LSM303A_CTRL_REG1 %02x\r\n",  regValue);
+//
+//  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue, 1);
+//  ets_uart_printf("LSM303A_CTRL_REG2 %02x\r\n",  regValue);
+//  regValue = 0x00;
+//  a += lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue,   1);
+//  ets_uart_printf("LSM303A_CTRL_REG2 %02x\r\n",  regValue);
+//  a +=  lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG2, &regValue, 1);
+//  ets_uart_printf("LSM303A_CTRL_REG2 %02x\r\n",  regValue);
+//
+//  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
+//  ets_uart_printf("LSM303A_CTRL_REG4 %02x\r\n",  regValue);
+//  regValue |= (BIT3 );//| BIT7);
+//  a += lsm303(I2C_WRITE, LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
+//  ets_uart_printf("LSM303A_CTRL_REG4 %02x\r\n",  regValue);
+//  //__delay_cycles(80000L);
+//  a += lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, &regValue, 1);
+//  ets_uart_printf("LSM303A_CTRL_REG4 %02x\r\n",  regValue);
+//
+//  //============= magnetometer ===========================
+//  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_CRA_REG, &regValue, 1);
+//  regValue = 0x9c;
+//  a += lsm303(I2C_WRITE, LSM303M_I2C_ADDR, LSM303M_CRA_REG, &regValue, 1);
+//  //__delay_cycles(80000L);
+//  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_CRB_REG, &regValue, 1);
+//
+//  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
+//  regValue = 0;
+//  a += lsm303(I2C_WRITE, LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
+//  //__delay_cycles(80000L);
+//  a += lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_MR_REG,  &regValue, 1);
+//
+//  if(a) sysState.sensorError = 0;
+//  ets_uart_printf("a = %d\r\n",  a);
+//}
+
