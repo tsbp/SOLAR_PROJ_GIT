@@ -54,7 +54,7 @@ uint16 lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigne
 }
 
 //==============================================================================
-const unsigned char LSM303_CFG[4][3] = {
+unsigned char LSM303_CFG[4][3] = {
 //		       ADDR				REGISTER      VALUE
 		{LSM303A_I2C_ADDR, LSM303A_CTRL_REG1, 0x57},
 		{LSM303A_I2C_ADDR, LSM303A_CTRL_REG4, 0x08},
@@ -70,7 +70,7 @@ void LSM303Init(void)
 
 	for(i = 0; i < 4; i++)
 	{
-			a += lsm303(I2C_WRITE, LSM303_CFG[i][0], LSM303_CFG[i][1], LSM303_CFG[i][2], 1);
+			a += lsm303(I2C_WRITE, LSM303_CFG[i][0], LSM303_CFG[i][1], &LSM303_CFG[i][2], 1);
 	        lsm303(I2C_READ,  LSM303_CFG[i][0], LSM303_CFG[i][1], &tmp, 1);
 	        ets_uart_printf("%02x.%02x: %02x => %02x\r\n",
 	        		LSM303_CFG[i][0],
