@@ -99,7 +99,19 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 //		motorFault();
 	static uint16 compassOk = 100;
 
-	if(sysState.sensorError) { if(compassOk) compassOk--; if(!compassOk ){LSM303Init(); compassOk = 100;}}
+	if(sysState.sensorError)
+	{
+		if(compassOk) compassOk--;
+		if(!compassOk )
+		{
+			//======== light sensor init =======================
+			BH1715(I2C_WRITE, 0x23, 0x01, 0, 1);
+			BH1715(I2C_WRITE, 0x23, 0x10, 0, 1);
+			LSM303Init();
+			compassOk = 100;
+		}
+
+	}
 	else if(!lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6))
 	{
 		if(compassOk) compassOk--;
