@@ -81,3 +81,16 @@ void LSM303Init(void)
   if(a) sysState.sensorError = 0;
   ets_uart_printf("a = %d\r\n",  a);
 }
+
+//==============================================================================
+uint16 sensorCfgOK(void)
+{
+	int i;
+	unsigned char tmp;
+	for(i = 0; i < 4; i++)
+	{
+		lsm303(I2C_READ,  LSM303_CFG[i][0], LSM303_CFG[i][1], &tmp, 1);
+		if(tmp != LSM303_CFG[i][2]) return 0;
+	}
+	return 1;
+}

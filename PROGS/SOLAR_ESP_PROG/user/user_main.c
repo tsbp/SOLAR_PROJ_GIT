@@ -90,6 +90,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		BH1715(I2C_READ, 0x23, 0x01, (unsigned char*)&light, 2);
 		light = ((unsigned char*)&light)[1] |
 				((unsigned char*)&light)[0] << 8;
+		if(!sensorCfgOK()) {LSM303Init(); stopMoving();}
 	}
 	//=======================================
 	if(!sysState.manualMoveRemote) keyProcessing((~PCF8574_readByte(0x3B)) & (~0x70));

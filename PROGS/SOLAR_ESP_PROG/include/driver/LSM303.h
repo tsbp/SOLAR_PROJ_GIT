@@ -104,5 +104,6 @@ extern u3AXIS_DATA accel, compass;
 /*=====================================================================================================*/
 void LSM303Init(void);
 uint16 lsm303(unsigned char aOp, unsigned char aDev, unsigned char aReg, unsigned char *aBuf, unsigned int aLng);
+uint16 sensorCfgOK(void);
 /*=====================================================================================================*/
 #endif
