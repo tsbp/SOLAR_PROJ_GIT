@@ -376,15 +376,25 @@ namespace SOLAR_APP
 								
 								int ss = Int32.Parse(iInfo[items[a].ip].stt);
 								
-								if(((byte)(ss & (byte)0xff) & (byte)0x20) == 32)
-									items[a].roll = "АВАРИЯ";
-								else
-								{
-									if(((byte)(ss & (byte)0xff) & 0x02) == 0)
-										items[a].roll = "АВТОМАТ";
-									else
-										items[a].roll = "РУЧНОЙ";
-								}	
+//								if(((byte)(ss & (byte)0xff) & (byte)0x28) != 0)
+//									items[a].roll = "АВАРИЯ";
+//								else
+//								{
+//									if(((byte)(ss & (byte)0xff) & 0x02) == 0)
+//										items[a].roll = "АВТОМАТ";
+//									else
+//										items[a].roll = "РУЧНОЙ";
+//								}	
+								
+								if(((byte)(ss & (byte)0xff) & 0x02) != 0)
+									items[a].roll = "РУЧНОЙ";
+								else if(((byte)(ss & (byte)0xff) & (byte)0x20) == (byte)0x20)
+									items[a].roll = "АВАРИЯ:М";
+								else if(((byte)(ss & (byte)0xff) & (byte)0x08) == (byte)0x08)
+									items[a].roll = "АВАРИЯ:Д";
+								else if(((byte)(ss & (byte)0xff) & 0x02) == 0)
+									items[a].roll = "АВТОМАТ";
+								
 							}
 							
 							// delete item if device has disapeared

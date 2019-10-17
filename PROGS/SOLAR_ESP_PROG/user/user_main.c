@@ -101,7 +101,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	if(compassOk) compassOk--;
 	else
 	{
-		if(sensorCfgOK()) compassOk = 100;
+		if(sensorCfgOK()) {compassOk = 100; sysState.sensorError = 0; if(sysState.manualMove) blink = BLINK_MANUAL;}
 		else
 		{
 			static int a = 0;
@@ -109,7 +109,9 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			else
 			{
 				a = 100;
+				sysState.sensorError = 1;
 				stopMoving();
+				if(!sysState.manualMove) blink = BLINK_MOTOR_FLT;
 				LSM303Init();
 				BH1715(I2C_WRITE, 0x23, 0x01, 0, 1);
 				BH1715(I2C_WRITE, 0x23, 0x10, 0, 1);
@@ -117,66 +119,37 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		}
 	}
 
+	if(compassOk)
+	{
+		if(direction == UP || direction == DOWN || direction == 0)
+			lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6);
+		lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_OUT_X_H, tmp, 6);
+		compass.x = ((tmp[0] << 8) | tmp[1]) ;
+		compass.z = ((tmp[2] << 8) | tmp[3]) ;
+		compass.y = ((tmp[4] << 8) | tmp[5]) ;
 
-//------------------------------------------------------
-//	if(sysState.sensorError)
-//	{
-//		if(compassOk) compassOk--;
-//		if(!compassOk )
-//		{
-//			//======== light sensor init =======================
-//			BH1715(I2C_WRITE, 0x23, 0x01, 0, 1);
-//			BH1715(I2C_WRITE, 0x23, 0x10, 0, 1);
-//			LSM303Init();
-//			compassOk = 100;
-//		}
-//
-//	}
-//	else if(!lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6))
-//	{
-//		if(compassOk) compassOk--;
-//		if(!compassOk )//&& !sysState.manualMove && !sysState.motorFault)
-//	    {
-//			if(!sysState.manualMove)
-//			{
-//				sysState.sensorError = 1;
-//				motorFault();
-//			}
-//			compassOk = 100;
-//			ets_uart_printf("Sensor error \r\n");
-//			//LSM303Init();
-//	    }
-//	}
-//	else compassOk = 100;
-
-	lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6);
-	lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_OUT_X_H, tmp, 6);
-	compass.x = ((tmp[0] << 8) | tmp[1]) ;
-	compass.z = ((tmp[2] << 8) | tmp[3]) ;
-	compass.y = ((tmp[4] << 8) | tmp[5]) ;
-
-	//ets_uart_printf("%d\t%d\t%d\n", cc.x, cc.y, cc.z);
+		//ets_uart_printf("%d\t%d\t%d\n", cc.x, cc.y, cc.z);
 
 
-	addValueToArray(compass.x,  cx); addValueToArray(compass.y,  cy); addValueToArray(compass.z,  cz);
-	addValueToArray(accel.x,  ax); 	 addValueToArray(accel.y,  ay);	  addValueToArray(accel.z,  az);
+		addValueToArray(compass.x,  cx); addValueToArray(compass.y,  cy); addValueToArray(compass.z,  cz);
+		addValueToArray(accel.x,  ax); 	 addValueToArray(accel.y,  ay);	  addValueToArray(accel.z,  az);
 
-	cc.x = mFilter(cx,  FILTER_LENGHT);	cc.y = mFilter(cy,  FILTER_LENGHT);	cc.z = mFilter(cz,  FILTER_LENGHT);
-	aa.x = mFilter(ax,  FILTER_LENGHT);	aa.y = mFilter(ay,  FILTER_LENGHT);	aa.z = mFilter(az,  FILTER_LENGHT);
+		cc.x = mFilter(cx,  FILTER_LENGHT);	cc.y = mFilter(cy,  FILTER_LENGHT);	cc.z = mFilter(cz,  FILTER_LENGHT);
+		aa.x = mFilter(ax,  FILTER_LENGHT);	aa.y = mFilter(ay,  FILTER_LENGHT);	aa.z = mFilter(az,  FILTER_LENGHT);
 
-	getAngles(&aa, &cc, &Pitch, &Roll, &Yaw);
+		getAngles(&aa, &cc, &Pitch, &Roll, &Yaw);
 
-	_roll    = Roll;
-	_pitch   = Pitch;
-	_heading = Yaw;
+		_roll    = Roll;
+		_pitch   = Pitch;
+		_heading = Yaw;
 
-	orientation.real.elevation = ((long)_pitch   * 18000 / 31416);
-	orientation.real.azimuth   = ((long)_heading * 18000 / 31416);
-	if(orientation.real.azimuth < 0) orientation.real.azimuth += 36000;
+		orientation.real.elevation = ((long)_pitch   * 18000 / 31416);
+		orientation.real.azimuth   = ((long)_heading * 18000 / 31416);
+		if(orientation.real.azimuth < 0) orientation.real.azimuth += 36000;
 
-	addValueToArray(orientation.real.azimuth,  headFarr);
-	headF =  mFilter(headFarr,  FILTER_LENGHT);
-	//ets_uart_printf("sysState = %d\r\n", sysState);
+		addValueToArray(orientation.real.azimuth,  headFarr);
+		headF =  mFilter(headFarr,  FILTER_LENGHT);
+	}
 
 
  //=== sun tracking ====================================================
