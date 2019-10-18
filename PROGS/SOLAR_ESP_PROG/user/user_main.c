@@ -213,6 +213,8 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 							motorFault();
 					}break;
 			}
+
+			if(!mTout) sysState.moving = 0;
 		}
 
 	}
