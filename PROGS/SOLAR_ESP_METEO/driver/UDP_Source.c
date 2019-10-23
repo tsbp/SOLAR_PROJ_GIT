@@ -212,12 +212,12 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 
 			case CMD_SYNC:
 				for(i = 0; i < 6; i++) mState.dateTime.byte[i] = pusrdata[i+3];
-//				ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,
-//								mState.dateTime.month,
-//								mState.dateTime.day,
-//								mState.dateTime.hour - 2, //- time zone
-//								mState.dateTime.min,
-//								mState.dateTime.sec);
+				ets_uart_printf("%d.%d.%d, %d:%d:%d\n", mState.dateTime.year + 2000,
+								mState.dateTime.month,
+								mState.dateTime.day,
+								mState.dateTime.hour - 2, //- time zone
+								mState.dateTime.min,
+								mState.dateTime.sec);
 				rtc_set_time(&mState.dateTime);
 				needAnswer = 1;
 				dataLng   = 1;

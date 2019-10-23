@@ -408,6 +408,29 @@ void ICACHE_FLASH_ATTR openWeather_request(void)
 	ets_uart_printf("Request: %s\r\n", data);
 	http_get(data, "", openWeather_http_callback);
 }
+//===================================================================================
+// thingspeak
+//===================================================================================
+void ICACHE_FLASH_ATTR thingspeak_http_callback(char * response, int http_status, char * full_response)
+{
+	ets_uart_printf("Answers: \r\n");
+	if (http_status == 200)
+	{
+		ets_uart_printf("response=%s<EOF>\n", response);
+		ets_uart_printf("---------------------------\r\n");
+	}
+	ets_uart_printf("Free heap size = %d\r\n", system_get_free_heap_size());
+}
+//==============================================================================
+uint16 thingspeakField = 0;
+//==============================================================================
+void ICACHE_FLASH_ATTR sendToTingspeak(void)
+{
+	static char data[256];
+	os_sprintf(data, "http://%s/update?api_key=%s&field4=%d", THINGSPEAK_SERVER, THINGSPEAK_API_KEY3, mState.wind);
+	ets_uart_printf("Request: %s\r\n", data);
+	http_get(data, "", thingspeak_http_callback);
+}
 
 
 

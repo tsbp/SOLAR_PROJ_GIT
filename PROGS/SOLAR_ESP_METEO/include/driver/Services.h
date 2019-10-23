@@ -38,6 +38,7 @@ void ICACHE_FLASH_ATTR blinking(unsigned int blnk);
 void ICACHE_FLASH_ATTR leds(unsigned char aStt);
 void ICACHE_FLASH_ATTR sntp_initialize(void);
 void ICACHE_FLASH_ATTR sntp_get_stamp(void);
+void ICACHE_FLASH_ATTR sendToTingspeak(void);
 
 
 extern unsigned int blink;

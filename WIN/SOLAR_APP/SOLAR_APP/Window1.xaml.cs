@@ -169,6 +169,8 @@ namespace SOLAR_APP
 			
 			us.url = "/SOLAR_APP;component/Images/dual_compass_rose.png";
 			
+			btnSync.IsChecked = true;
+			
 			Phones = new ObservableCollection<Phone>
 			{
 				new Phone {ImagePath="/Images/wind.png", Title="iPhone 6S"},
@@ -710,6 +712,34 @@ namespace SOLAR_APP
 		{
 			if(appModeMaster) 	appModeMaster = false;
 			else				appModeMaster = true;
+		}
+		//===========================================================================================
+		void btnSyncClick(object sender, RoutedEventArgs e)
+		{
+			IPEndPoint endPoint = new IPEndPoint(mIp, 7171);
+			
+			byte [] tmp = new byte[6];
+			
+			DateTime now = DateTime.Now;	
+			
+			
+			tmp[0] = (byte)(now.Year - 2000);
+			tmp[1] = (byte)(now.Month);
+			tmp[2] = (byte)(now.Day);
+			
+			tmp[3] = (byte)(now.Hour);
+			tmp[4] = (byte)(now.Minute);
+			tmp[5] = (byte)(now.Second);
+			
+			byte[] send_buffer = {ID_MASTER, CMD_SYNC, 6,  0,0,0,0,0,0, (byte) 0xcc, (byte) 0xcc};
+			for(int i = 0; i < 6; i++) send_buffer[i+3] = tmp[i];
+			
+			sock.SendTo(send_buffer , endPoint);
+			
+//			tmp[5] = 0;
+//			byte[] buf = new byte[6];
+//			buf[1]  = (byte)CMD_FWUPDATE;
+//			sock.SendTo(buf , endPoint);
 		}		
 	}
 }

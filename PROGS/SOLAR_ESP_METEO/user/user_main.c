@@ -161,7 +161,13 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 			else
 			{
 				a = 10;
-				if(wifi_station_get_connect_status() == STATION_GOT_IP) openWeather_request();
+				if(wifi_station_get_connect_status() == STATION_GOT_IP)
+				{
+					static int u = 1;
+					u ^= 1;
+					if (u) openWeather_request();
+					else sendToTingspeak();
+				}
 			}
 		}
 	}

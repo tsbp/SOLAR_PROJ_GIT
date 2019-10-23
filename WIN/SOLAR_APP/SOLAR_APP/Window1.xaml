@@ -26,35 +26,41 @@
 	<Window.Resources>
 		<ControlTemplate
 			TargetType="Label"
-			x:Key="forecast_border">
-			<!-- Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition
-						Width="*" />
-					<ColumnDefinition
-						Width="3*" />					
-				</Grid.ColumnDefinitions-->
-			<!-- Border
-				Grid.Column="0"
-				CornerRadius="15"
-				BorderBrush="CadetBlue"
-				BorderThickness="2"
-				Margin="7,5,2,5">				
-			</Border-->
+			x:Key="date_border">
 			<Border
-				Grid.Column="1"
 				CornerRadius="15"
-				BorderBrush="CadetBlue"
-				BorderThickness="2"
-				Margin="30,2,30,2"
-				Background="LightBlue">
+				Margin="5"
+				Background="DarkBlue"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch">
 				<ContentControl
-					FontSize="16"
+					FontSize="18"
+					FontWeight="Bold"
+					Foreground="Aqua"
 					HorizontalAlignment="Center"
 					VerticalAlignment="Center"
 					Content="{TemplateBinding Content}" />
 			</Border>
-			<!--/Grid-->
+		</ControlTemplate>
+		<ControlTemplate
+			TargetType="Label"
+			x:Key="meteo_border">
+			<Border
+				BorderBrush="#FF0400FF"
+				Background="#FF00FF83"
+				BorderThickness="5"
+				CornerRadius="15"
+				Margin="5,5,5,5"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch">
+				<ContentControl
+					Foreground="#FF3F00FF"
+					FontWeight="Bold"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					FontSize="18"
+					Content="{TemplateBinding Content}" />
+			</Border>
 		</ControlTemplate>
 	</Window.Resources>
 	<Grid>
@@ -171,20 +177,33 @@
 				</Grid.RowDefinitions>
 				<Border
 					Grid.Row="0"
-					BorderBrush="#FF00D0FF"
-					BorderThickness="5"
 					Height="50"
 					HorizontalAlignment="Stretch"
-					Margin="5,5,5,5"
+					Margin="5"
 					CornerRadius="20"
 					Background="Aqua">
-					<Label
-						Name="lblDate"
-						VerticalContentAlignment="Center"
-						HorizontalContentAlignment="Center"
-						FontSize="24"
-						Foreground="#FF3F00FF"
-						MouseDoubleClick="firmwareCheckClick" />
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition
+								Width="8*" />
+							<ColumnDefinition
+								Width="*" />
+						</Grid.ColumnDefinitions>
+						<Label
+							Grid.Column="0"
+							Name="lblDate"
+							Content="123"
+							Template="{StaticResource date_border}"
+							MouseDoubleClick="firmwareCheckClick"
+							FontFamily="Segoe UI" />
+						<RadioButton
+							Name="btnSync"
+							Grid.Column="1"
+							VerticalAlignment="Center"
+							HorizontalAlignment="Center"
+							Margin="0,5,5,5"
+							Click="btnSyncClick" />
+					</Grid>
 				</Border>
 				<Border
 					BorderThickness="2"
@@ -205,26 +224,11 @@
 							Grid.Row="0"
 							Source="/SOLAR_APP;component/Images/compass.png"
 							Margin="5,5,5,5" />
-						<Border
+						<Label
 							Grid.Column="1"
-							Grid.Row="0"
-							CornerRadius="15"
-							BorderBrush="#FF0400FF"
-							Background="#FF00FF83"
-							BorderThickness="5,5,5,5"
-							Margin="5,5,5,5"
-							VerticalAlignment="Stretch">
-							<Label
-								Name="lblAzim"
-								Foreground="#FF3F00FF"
-								FontWeight="Bold"
-								HorizontalAlignment="Stretch"
-								VerticalAlignment="Stretch"
-								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"
-								FontSize="18"
-								Content="" />
-						</Border>
+							Name="lblAzim"
+							Content="123"
+							Template="{StaticResource meteo_border}" />
 					</Grid>
 				</Border>
 				<Border
@@ -248,27 +252,11 @@
 							Grid.Row="0"
 							Source="/SOLAR_APP;component/Images/angle.png"
 							Margin="5,5,5,5" />
-						<Border
+						<Label
 							Grid.Column="1"
-							Grid.Row="0"
-							BorderBrush="#FF0400FF"
-							Background="#FF00FF83"
-							BorderThickness="5"
-							CornerRadius="15"
-							Margin="5,5,5,5"
-							HorizontalAlignment="Stretch"
-							VerticalAlignment="Stretch">
-							<Label
-								Name="lblElev"
-								Foreground="#FF3F00FF"
-								FontWeight="Bold"
-								HorizontalAlignment="Stretch"
-								VerticalAlignment="Stretch"
-								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"
-								FontSize="18"
-								Content="" />
-						</Border>
+							Name="lblElev"
+							Content="123"
+							Template="{StaticResource meteo_border}" />
 					</Grid>
 				</Border>
 				<Border
@@ -292,24 +280,11 @@
 							Grid.Row="0"
 							Source="/SOLAR_APP;component/Images/wind.png"
 							Margin="5,5,5,5" />
-						<Border
+						<Label
 							Grid.Column="1"
-							Grid.Row="0"
-							BorderBrush="#FF0400FF"
-							Background="#FF00FF83"
-							BorderThickness="5"
-							HorizontalAlignment="Stretch"
-							CornerRadius="15"
-							Margin="5,5,5,5">
-							<Label
-								Name="lblWind"
-								HorizontalContentAlignment="Center"
-								Foreground="#FF3F00FF"
-								FontWeight="Bold"
-								FontSize="18"
-								VerticalContentAlignment="Center"
-								Content="" />
-						</Border>
+							Name="lblWind"
+							Content="123"
+							Template="{StaticResource meteo_border}" />
 					</Grid>
 				</Border>
 				<Border
@@ -333,27 +308,11 @@
 							Grid.Row="0"
 							Source="/SOLAR_APP;component/Images/light.png"
 							Margin="5,5,5,5" />
-						<Border
+						<Label
 							Grid.Column="1"
-							Grid.Row="0"
-							BorderBrush="#FF0400FF"
-							Background="#FF00FF83"
-							BorderThickness="5"
-							CornerRadius="15"
-							HorizontalAlignment="Stretch"
-							VerticalAlignment="Stretch"
-							Margin="5,5,5,5">
-							<Label
-								Name="lblLight"
-								HorizontalContentAlignment="Center"
-								Foreground="#FF3F00FF"
-								FontWeight="Bold"
-								FontSize="18"
-								VerticalContentAlignment="Center"
-								VerticalAlignment="Stretch"
-								HorizontalAlignment="Stretch"
-								Content="" />
-						</Border>
+							Name="lblLight"
+							Content="123"
+							Template="{StaticResource meteo_border}" />
 					</Grid>
 				</Border>
 			</Grid>

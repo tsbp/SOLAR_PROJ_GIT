@@ -107,10 +107,8 @@ namespace SOLAR_APP
 				btnDwn.IsEnabled = false;
 				btnLeft.IsEnabled = false;
 				btnRight.IsEnabled = false;				
-			}
-				
-		}
-		
+			}				
+		}		
 		//======================================================================
 		Socket sock;
 		IPEndPoint endPoint;
