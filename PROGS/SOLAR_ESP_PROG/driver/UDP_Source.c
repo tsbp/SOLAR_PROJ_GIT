@@ -171,9 +171,10 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 					orientation.income.elevation = e; //(sint16)(pusrdata[3] | (pusrdata[4] << 8));
 
 
-					ets_uart_printf("Elevation: %d, Azimuth: %d\r\n",
+					ets_uart_printf("El: %d, Az: %d, RSSI: %d\r\n",
 							orientation.income.elevation,
-							orientation.income.azimuth);
+							orientation.income.azimuth,
+							wifi_station_get_rssi());
 					sysState.newPosition = 1;
 		    }
 				break;

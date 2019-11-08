@@ -487,7 +487,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         // find ip
                         for(int i = 0; i < clientsIp.length; i++)
                         {
-                            if(ip.getAddress()[3] == clientsIp[i])
+                             if(ip.getAddress()[3] == clientsIp[i])
                             {
                                 if(in[0] == UDPCommands.ID_SLAVE) {
                                     clientData[i][0] = String.format("%.1f", Math.toDegrees((double) ax / 10000));
