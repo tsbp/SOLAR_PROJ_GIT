@@ -340,6 +340,7 @@ float str2float (const char * str) {
 void ICACHE_FLASH_ATTR openWeather_http_callback(char * response, int http_status, char * full_response)
 {
 	char data[20];
+	int i = 0;
 	ets_uart_printf("Answers: \r\n");
 	if (http_status == 200)
 	{
@@ -348,38 +349,42 @@ void ICACHE_FLASH_ATTR openWeather_http_callback(char * response, int http_statu
 //		ets_uart_printf("---------------------------\r\n");
 
 		char* a = strstr(response, "name");
-		char* b = strstr(response, "cod");
-		response[b - response - 3] = 0x00;
-		ets_uart_printf("%s_", a + 7);
+		for (i = 0; i < 1024; i++)
+			if(response[a - response + 7 + i] == ',' ||	response[a - response + 7 + i] == '"') break;
+		response[a - response + 7 + i] = 0x00;
+		//ets_uart_printf("%s_", a + 7);
 		os_sprintf(mState.forecast.region, a + 7);
 
-
 		a = strstr(response, "speed");
-		b = strstr(response, "deg");
-		response[b - response - 2] = 0x00;
+		for (i = 0; i < 1024; i++)
+			if(response[a - response + 7 + i] == ',' ||	response[a - response + 7 + i] == '"') break;
+		response[a - response + 7 + i] = 0x00;
+		//ets_uart_printf("%s_", a + 7);
 		os_sprintf(data, "%s", a + 7);
 		mState.forecast.wind = (int)(str2float(data) * 100);
-		//ets_uart_printf("%s_", a + 7);
-
 
 		a = strstr(response, "humidity");
-		b = strstr(response, "temp_min");
-		response[b - response - 2] = 0x00;
-		os_sprintf(data, a + 10);
-		mState.forecast.humid = (int)(str2float(data) * 100);
+		for (i = 0; i < 1024; i++)
+			if(response[a - response + 10 + i] == ',' ||	response[a - response + 10 + i] == '"') break;
+		response[a - response + 10 + i] = 0x00;
 		//ets_uart_printf("%s_", a + 10);
+		os_sprintf(data, "%s", a + 10);
+		mState.forecast.humid = (int)(str2float(data) * 100);
 
 		a = strstr(response, "temp");
-		b = strstr(response, "pressure");
-		response[b - response - 2] = 0x00;
-		os_sprintf(data, a + 6);
-		mState.forecast.temp = (int)(str2float(data) * 100);
+		for (i = 0; i < 1024; i++)
+			if(response[a - response + 6 + i] == ',' ||	response[a - response + 6 + i] == '"') break;
+		response[a - response + 6 + i] = 0x00;
 		//ets_uart_printf("%s_", a + 6);
+		os_sprintf(data, "%s", a + 6);
+		mState.forecast.temp = (int)(str2float(data) * 100);
+
 
 		a = strstr(response, "icon");
-		b = strstr(response, "base");
-		response[b - response - 5] = 0x00;
-		//ets_uart_printf("%s\n", a + 7);
+		for (i = 0; i < 1024; i++)
+			if(response[a - response + 7 + i] == ',' ||	response[a - response + 7 + i] == '"') break;
+		response[a - response + 7 + i] = 0x00;
+		//ets_uart_printf("%s_", a + 7);
 		os_sprintf(mState.forecast.icon, a + 7);
 
 
