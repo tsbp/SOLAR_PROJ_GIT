@@ -101,17 +101,17 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 	if(compassOk) compassOk--;
 	else
 	{
-		if(sensorCfgOK()) {compassOk = 100; sysState.sensorError = 0; if(sysState.manualMove) blink = BLINK_MANUAL;}
+		if(sensorCfgOK()) {compassOk = 100; sysState.sensorError = 0; /*if(sysState.manualMove) blink = BLINK_MANUAL;*/}
 		else
 		{
 			static int a = 0;
 			if(a) a--;
-			else
+			else if(!sysState.manualMove)
 			{
 				a = 100;
 				sysState.sensorError = 1;
 				stopMoving();
-				if(!sysState.manualMove) blink = BLINK_MOTOR_FLT;
+				/*if(!sysState.manualMove) */blink = BLINK_MOTOR_FLT;
 				LSM303Init();
 				BH1715(I2C_WRITE, 0x23, 0x01, 0, 1);
 				BH1715(I2C_WRITE, 0x23, 0x10, 0, 1);
