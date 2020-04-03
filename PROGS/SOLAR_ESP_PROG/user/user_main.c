@@ -121,7 +121,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 
 	if(compassOk)
 	{
-		if(direction == UP || direction == DOWN || direction == 0)
+		//if(direction == UP || direction == DOWN || direction == 0)
 			lsm303(I2C_READ,  LSM303A_I2C_ADDR, LSM303A_OUT_X_L, accel.byte, 6);
 		lsm303(I2C_READ,  LSM303M_I2C_ADDR, LSM303M_OUT_X_H, tmp, 6);
 		compass.x = ((tmp[0] << 8) | tmp[1]) ;

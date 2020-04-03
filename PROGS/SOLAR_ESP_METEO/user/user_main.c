@@ -166,7 +166,8 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 					static int u = 1;
 					u ^= 1;
 					if (u) openWeather_request();
-					else sendToTingspeak();
+					else
+						sendToTingspeak();
 				}
 			}
 		}
