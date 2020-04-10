@@ -115,6 +115,13 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 				LSM303Init();
 				BH1715(I2C_WRITE, 0x23, 0x01, 0, 1);
 				BH1715(I2C_WRITE, 0x23, 0x10, 0, 1);
+
+				/* make zeros, to empty data display */
+				_pitch = 0;
+				_roll = 0;
+				_heading = 0;
+				light = 0;
+				terminators = 0;
 			}
 		}
 	}
