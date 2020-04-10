@@ -390,10 +390,12 @@ namespace SOLAR_APP
 								
 								if(((byte)(ss & (byte)0xff) & 0x02) != 0)
 									items[a].roll = "РУЧНОЙ";
+								else if(((byte)(ss & (byte)0xff) & (byte)0x28) == (byte)0x28)
+									items[a].roll = "АВАРИЯ:ДM";
 								else if(((byte)(ss & (byte)0xff) & (byte)0x20) == (byte)0x20)
 									items[a].roll = "АВАРИЯ:М";
 								else if(((byte)(ss & (byte)0xff) & (byte)0x08) == (byte)0x08)
-									items[a].roll = "АВАРИЯ:Д";
+									items[a].roll = "АВАРИЯ:Д";								
 								else if(((byte)(ss & (byte)0xff) & 0x02) == 0)
 									items[a].roll = "АВТОМАТ";
 								
