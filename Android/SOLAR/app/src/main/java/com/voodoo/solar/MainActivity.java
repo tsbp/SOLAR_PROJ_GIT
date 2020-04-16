@@ -4,32 +4,22 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.voodoo.solar.UDPProcessor.OnReceiveListener;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -41,8 +31,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
 
 import static com.voodoo.solar.IPHelper.getBroadcastIP4AsBytes;
 
@@ -64,18 +52,13 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
     EditText etLong, etLatit;
 
-    TextView tvRegion;
-
-
-    Button btnAnim;
+    TextView tvRegion, tvPackets;
 
     ListView lvClients, lvForecast;
 
-    //byte clientsIp[];
-    LinkedList<Byte> clientsIp;
 
+    LinkedList<Byte> clientsIp;
     String clientData[][];
-    int currentClient = 0;
     int notAsweredCntr[] = new int[100];
 
     public static int clientActivityCreated = 0;
@@ -105,6 +88,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         }
 
         tvRegion   = (TextView)findViewById(R.id.tvRegion);
+        tvPackets   = (TextView)findViewById(R.id.tvPackets);
 
         etLong =  (EditText) findViewById(R.id.etLong);
         etLatit =  (EditText) findViewById(R.id.etLatit);
@@ -191,18 +175,6 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     void deleteListRow(int aRow)
     {
         {
-//            for (int i = aRow; i < clientsIp.length - 1; i++)
-//                clientsIp[i] = clientsIp[i + 1];
-//
-//            byte tmp[] = new byte[clientsIp.length - 1];
-//            for (int i = 0; i < tmp.length; i++)
-//                tmp[i] = clientsIp[i];
-//
-//            clientsIp = new byte[clientsIp.length - 1];
-//            clientsIp = tmp;
-//
-//            clientData = new String[clientData.length - 1][4];
-//            if(clientsIp.length == 0) lvBuid();
             clientsIp.remove(aRow);
             if(clientsIp.size() == 0) lvBuid();
         }
@@ -244,12 +216,15 @@ public class MainActivity extends Activity implements OnReceiveListener  {
             {
                 byte [] ip = getBroadcastIP4AsBytes();
                 InetAddress iIP = null;
+                assert ip != null;
                 ip[3] = clientsIp.get(position)/*[position]*/;
                 try
                 {
                    iIP = InetAddress.getByAddress(ip);
                 }
-                catch (UnknownHostException e){}
+                catch (UnknownHostException e){
+                    e.printStackTrace();
+                }
                 clientActivityCreated = 1;
                 selectedClient = position;
 
@@ -282,9 +257,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
         int strEnd;
         for( strEnd = 0; strEnd < 20; strEnd++) {if(receiveBytes[24 + strEnd] == 0) break;}
-        byte[] tmp = new byte[strEnd];
-        for(int a = 0; a < strEnd; a++) tmp[a] = receiveBytes[24 + a];
-        tvRegion.setText(new String(tmp));
+        tvRegion.setText(new String(Arrays.copyOfRange(receiveBytes, 24, 24 + strEnd)));
 
 
         //http://api.openweathermap.org/data/2.5/weather?lat=48.5&lon=32.22&units=metric&appid=7412b643dfdbf390970f2f65a1bad7ce
@@ -311,23 +284,21 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         findViewById(R.id.imgPos).invalidate();
     }
     //==============================================================================================
-    void udpSend(byte[] aByte, InetAddress ip)
+   /* void udpSend(byte[] aByte, InetAddress ip)
     {
         DataFrame df = new DataFrame(aByte);
         udpProcessor.send(ip,df);
-    }
+    }*/
     //==============================================================================================
     int cntr = 0;
-    double RollAng;
-    double PitchAng;
     //==============================================================================================
-    short cx, cy, cz, ax, ay, az, packCntr = 0;
+    short /*cx, cy, cz,*/ ax, ay, az, packCntr = 0;
     //==============================================================================================
     public void onFrameReceived(InetAddress ip, IDataFrame frame)
     {
         byte[] in = frame.getFrameData();
         packCntr++;
-        //tvSunPos.setText("Packs {" + packCntr +"}");
+        tvPackets.setText("Packs {" + packCntr +"}");
 
         if(deviceIP == null) deviceIP = ip;
         try {
@@ -338,8 +309,6 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 //==========================================
                 if(clientsIp == null)
                 {
-//                    clientsIp = new byte[1];
-//                    clientsIp[0] = (byte)((int)ip.getAddress()[3]);
                     clientsIp = new LinkedList<>();
                     clientsIp.add(ip.getAddress()[3]);
                     clientData = new String[1][6];
@@ -348,21 +317,12 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 else
                 { //add client
                     boolean clientFound = false;
-                    //for(int i = 0; i < clientsIp.length; i++) {
                     for(byte curIp : clientsIp){
                         if(ip.getAddress()[3] == curIp) clientFound = true;
                     }
                     if(!clientFound)
                     {
-//                        byte tmp [];
-//                        clientsIp = Arrays.copyOf(clientsIp, clientsIp.length + 1);
-////                        tmp = clientsIp;
-////                        clientsIp = new byte[tmp.length +1];
-////                        for(int i = 0; i < tmp.length; i++)
-////                            clientsIp[i] = tmp[i];
-//                        clientsIp[clientsIp.length - 1] = ip.getAddress()[3];
                         clientsIp.add(ip.getAddress()[3]);
-
                         clientData = new String[clientData.length + 1][6];
                     }
                 }
@@ -442,22 +402,18 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                     clientData[i][1] = "E";
                                     clientData[i][2] = "T";
                                     clientData[i][3] = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double)((in[9]  & 0xff) | ((in[10] << 8))));
-                                    clientData[i][4] = String.format(Locale.ENGLISH,"%.1f", 0.01 * (double)((in[11] & 0xff) | ((in[12] << 8))));;
+                                    clientData[i][4] = String.format(Locale.ENGLISH,"%.1f", 0.01 * (double)((in[11] & 0xff) | ((in[12] << 8))));
 
                                     if(in.length > 19) {
                                         lvForecastBuild(in);
                                     }
-
-                                    ClientConfigMeteo.data = new byte[15];
-                                    for(int a = 0; a < 15; a++) ClientConfigMeteo.data[a] = in[a + 3];
-
+                                    ClientConfigMeteo.data = Arrays.copyOfRange(in, 3, 3 + 15);
                                 }
 
                                 lvBuid();
                                 notAsweredCntr[i] = 0;
 
                                 if(clientActivityCreated == 1) sendIntent();
-
 
                                 if(i == selectedClient)
                                 {
@@ -466,12 +422,11 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                                 }
                             }
                         }
-
                         break;
 
                     case UDPCommands.CMD_CFG:
-                        ClientConfigMeteo.cfgData = new byte[18];
-                        for(int a = 0; a < 18; a++) ClientConfigMeteo.cfgData[a] = in[a + 3];
+                        ClientConfigMeteo.cfgData = Arrays.copyOfRange(in, 3, 3 + 18)/*new byte[18]*/;
+
                         intent = new Intent(ClientConfigMeteo.BC_CFG_DATA);
                         sendBroadcast(intent);
                         break;
@@ -486,6 +441,7 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
     //==============================================================================================
     void showSunInfo() {
+
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
         final LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         final View Viewlayout = inflater.inflate(R.layout.sun_info, (ViewGroup) findViewById(R.id.info));
@@ -499,8 +455,9 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
         final TextView tvResult = (TextView)Viewlayout.findViewById(R.id.tvResult);
         byte tmp [] = getCurrentTime();
-        tvResult.setText("For " + (tmp[0] + 2000) + "." + tmp[1] + "." + tmp[2] + "\r\n"
-                + sunPos.getAngles());
+        String str = "For " + (tmp[0] + 2000) + "." + tmp[1] + "." + tmp[2] + "\r\n"
+                + sunPos.getAngles();
+        tvResult.setText(str);
 
 
 
