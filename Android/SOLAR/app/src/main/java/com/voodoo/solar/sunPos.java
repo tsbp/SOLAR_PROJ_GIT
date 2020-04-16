@@ -122,7 +122,7 @@ public static void Calculate(int aYear, int aMonth, int aDay, int aHour, int aMi
         azimuth = PI + Math.atan2(Math.sin(HrAngle),Math.cos(HrAngle)*Math.sin(Lat) - Math.tan(Decl)*Math.cos(Lat));
     }
     //==============================================================================================
-    public static double elev, azimuth;
+    private static double elev, azimuth;
     //==============================================================================================
     public static  String getAngles()
     {
@@ -152,13 +152,13 @@ public static void Calculate(int aYear, int aMonth, int aDay, int aHour, int aMi
         return print;
     }
     //==============================================================================================
-    public static String sstr(int a)
+    private static String sstr(int a)
     {
         if(a < 10) return "0" + a;
         return "" + a;
     }
     //==============================================================================================
-    public static long JulianDate(int year, int month, int day) {
+    private static long JulianDate(int year, int month, int day) {
         long JD_whole;
         int A, B;
         if (month <= 2) {
