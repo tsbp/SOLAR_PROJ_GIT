@@ -162,9 +162,57 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <TextView
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:id="@+id/tvRegion"
+                    android:gravity="center_horizontal"
+                    android:background="#8800e99b"
+                    android:textColor="#0000ff"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="8"
+                    android:orientation="vertical">
+                <com.voodoo.solar.imgPosition
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/rsz_dual_compass_rose"
+                    android:id="@+id/imgPos"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <ListView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="20dp"
+                    android:id="@+id/lvForecast">
+                </ListView>
+            </LinearLayout>
+
+
+
+
+
+            <!--TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -174,17 +222,6 @@
                 android:textColor="#0000ff"
                 android:textSize="18sp" />
 
-
-            <!--com.voodoo.solar.imgPosition
-                android:layout_width="210dp"
-                android:layout_height="0dp"
-                android:layout_weight="5"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/compass"
-                android:id="@+id/imgPos"/-->
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -193,7 +230,7 @@
                 android:gravity="center_horizontal"
                 android:background="#8800ab71"
                 android:textColor="#0000ff"
-                android:textSize="18sp" />
+                android:textSize="18sp" /-->
 
         </LinearLayout>
 

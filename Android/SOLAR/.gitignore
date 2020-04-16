@@ -1,9 +1,110 @@
-*.iml
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+﻿# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
 .DS_Store
-/build
-/captures
-.externalNativeBuild
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+# =========================
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+3D/~$оркаNew2.a3~
+*.a3~
+3D/~$оркаNew2.a3~
+*.m3~
+*.m3~
+*.CDR
+Android/SOLAR/app/build.gradle
+Android/SunPos/.idea/misc.xml
+Android/SOLAR/app/build.gradle
+Android/SOLAR/app/build.gradle
+Android/SunPos/.idea/vcs.xml
+Android/SunPos/.idea/runConfigurations.xml
+Android/SunPos/.idea/gradle.xml
+Android/SOLAR/app/build.gradle
+Android/SunPos/.idea/modules.xml
+Android/SunPos/.idea/modules/SunPos.iml
+Android/SunPos/.idea/modules/app/app.iml
+Android/SunPos/.idea/copyright/profiles_settings.xml
+Android/SunPos/.idea/.name
+Android/SOLAR/app/build.gradle
+Android/SOLAR/app/build.gradle
+PROGS/SOLAR_ESP_PROG/firmware/0x00000.bin
+PROGS/SOLAR_ESP_PROG/firmware/0x40000.bin
+*.gradle
+Android/SunPos/.idea/scopes/scope_settings.xml
+Android/SunPos/.idea/compiler.xml
+Android/SunPos/.idea/encodings.xml
