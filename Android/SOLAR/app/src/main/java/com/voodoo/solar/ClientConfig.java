@@ -1,5 +1,6 @@
 package com.voodoo.solar;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -13,6 +14,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -46,9 +48,10 @@ public class ClientConfig extends Activity {
 
     short azimuth = 0;
     short angle = 0;
-    byte   sysState;
-    byte angIncrement  = 10;
+    byte sysState;
+    byte angIncrement = 10;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,15 +60,15 @@ public class ClientConfig extends Activity {
         GLSurfaceView view = (GLSurfaceView) findViewById(R.id.w3D);
         view.setRenderer(new OpenGLRenderer());
 
-        tAzimuth = (TextView)findViewById(R.id.tvAzimuth);
-        tAngle   = (TextView)findViewById(R.id.tvAngle);
+        tAzimuth = (TextView) findViewById(R.id.tvAzimuth);
+        tAngle = (TextView) findViewById(R.id.tvAngle);
 
         tvPitch = (TextView) findViewById(R.id.tvPitch);
-        tvRoll  = (TextView) findViewById(R.id.tvRoll);
-        tvHead  = (TextView) findViewById(R.id.tvHead);
+        tvRoll = (TextView) findViewById(R.id.tvRoll);
+        tvHead = (TextView) findViewById(R.id.tvHead);
         tvLigth = (TextView) findViewById(R.id.tvLigth);
-        tvTerm  = (TextView) findViewById(R.id.tvTerm);
-        tvStt  = (TextView) findViewById(R.id.tvState);
+        tvTerm = (TextView) findViewById(R.id.tvTerm);
+        tvStt = (TextView) findViewById(R.id.tvState);
 
         tvIp = (TextView) findViewById(R.id.tvIP);
         tvIp.setText("" + ip.getHostAddress());
@@ -78,12 +81,12 @@ public class ClientConfig extends Activity {
         btnManual.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                byte [] data = new byte[1];
-                if((sysState & (byte)0x02) == 0)
+                byte[] data = new byte[1];
+                if ((sysState & (byte) 0x02) == 0)
                     data[0] = 0x00;
                 else
                     data[0] = 0x02;
-                UDPCommands.sendCmd(UDPCommands.CMD_MODE,  data, ip);
+                UDPCommands.sendCmd(UDPCommands.CMD_MODE, data, ip);
             }
         });
         //================================================
@@ -104,7 +107,7 @@ public class ClientConfig extends Activity {
                 tvStt.setText(input);
 
                 sysState = Byte.parseByte(input);
-                if((sysState & (byte)0x02) != 0)
+                if ((sysState & (byte) 0x02) != 0)
                     btnManual.setBackgroundColor(Color.RED);
                 else
                     btnManual.setBackgroundColor(Color.GREEN);
@@ -116,32 +119,39 @@ public class ClientConfig extends Activity {
 
         //================================================
         Button btnUp = (Button) findViewById(R.id.btnUp);
-        btnUp.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
 
-                UDPCommands.sendCmd(UDPCommands.CMD_UP,  null, ip);
+        btnUp.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                buttoEventHandle(event, (byte)0x80);
+                return false;
             }
         });
         //================================================
         Button btnDown = (Button) findViewById(R.id.btndown);
-        btnDown.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                UDPCommands.sendCmd(UDPCommands.CMD_DOWN,  null, ip);
+        btnDown.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                buttoEventHandle(event, (byte)0x08);
+                return false;
             }
         });
         //================================================
         Button btnRight = (Button) findViewById(R.id.btnRight);
-        btnRight.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                UDPCommands.sendCmd(UDPCommands.CMD_RIGHT,  null, ip);
+        btnRight.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                buttoEventHandle(event, (byte)0x02);
+                return false;
             }
         });
         //================================================
         Button btnLeft = (Button) findViewById(R.id.btnLeft);
-        btnLeft.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                UDPCommands.sendCmd(UDPCommands.CMD_LEFT,  null, ip);
+        btnLeft.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                buttoEventHandle(event, (byte)0x04);
+                return false;
             }
         });
 
@@ -158,8 +168,8 @@ public class ClientConfig extends Activity {
         calib.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                for(int i = 1; i< 4; i++)
-                    for(int j = 1; j < 4; j++)
+                for (int i = 1; i < 4; i++)
+                    for (int j = 1; j < 4; j++)
                         vals[i][j] = "0";
                 dialog_calibrate_compass();
             }
@@ -179,11 +189,11 @@ public class ClientConfig extends Activity {
         //================================================
         bSendPos.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                byte [] tmp = new byte[4];
+                byte[] tmp = new byte[4];
                 tmp[0] = (byte) (angle & 0xff);
-                tmp[1] = (byte)((angle >> 8) & 0xff);
+                tmp[1] = (byte) ((angle >> 8) & 0xff);
                 tmp[2] = (byte) (azimuth & 0xff);
-                tmp[3] = (byte)((azimuth >> 8) & 0xff);
+                tmp[3] = (byte) ((azimuth >> 8) & 0xff);
                 UDPCommands.sendCmd(UDPCommands.CMD_SET_POSITION, null, ip);
             }
         });
@@ -198,12 +208,12 @@ public class ClientConfig extends Activity {
         });
 
         //==========================================================================================
-        sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+        sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-               tAzimuth.setText("Azimyth: " + progress*3.6);
-                azimuth = (short)(progress * 3.6 * 100);
+                tAzimuth.setText("Azimyth: " + progress * 3.6);
+                azimuth = (short) (progress * 3.6 * 100);
 
 //                azimuth =  (short)(tmp * 10000);
 //
@@ -224,12 +234,12 @@ public class ClientConfig extends Activity {
             }
         });
         //==========================================================================================
-        sbAccel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+        sbAccel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tAngle.setText("Angle: " + progress * 0.9);
-                angle =  (short)(progress * 0.9 * 100);
+                angle = (short) (progress * 0.9 * 100);
 //
 //                cmdBuffer[2] = (byte) ((angle) & (byte)0xff);
 //                cmdBuffer[3] = (byte) ((angle >> 8) & (byte)0xff);
@@ -250,9 +260,24 @@ public class ClientConfig extends Activity {
 
 
     }
+
+    private void buttoEventHandle(MotionEvent event, byte direction) {
+        switch (event.getAction()) {
+
+            case MotionEvent.ACTION_DOWN:
+                byte[] tmp = {direction};
+                UDPCommands.sendCmd(UDPCommands.CMD_MANUAL_MOVE, tmp, ip);
+                break;
+
+            case MotionEvent.ACTION_UP:
+                byte[] tmp_ = {(byte) 0x00};
+                UDPCommands.sendCmd(UDPCommands.CMD_MANUAL_MOVE, tmp_, ip);
+                break;
+        }
+    }
+
     //==============================================================================================
-    void dialog_update()
-    {
+    void dialog_update() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Update");
         builder.setMessage("Firmware update?");
@@ -273,16 +298,18 @@ public class ClientConfig extends Activity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
     //==============================================================================================
     private final String ATTRIBUTE_T = "attr_t";
     private final String ATTRIBUTE_X = "attr_x";
     private final String ATTRIBUTE_Y = "attr_y";
     private final String ATTRIBUTE_Z = "attr_z";
     String[][] vals = {
-            {" ",   "X", "Y", "Z"},
-            {"V",   "1", "2", "3"},
+            {" ", "X", "Y", "Z"},
+            {"V", "1", "2", "3"},
             {"MAX", "4", "5", "6"},
             {"MIN", "4", "5", "6"}};
+
     //==============================================================================================
     void dialog_calibrate_compass() {
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
@@ -293,7 +320,7 @@ public class ClientConfig extends Activity {
         popDialog.setTitle("Калибровка");
         popDialog.setView(Viewlayout);
 
-        final ListView lvData = (ListView)Viewlayout.findViewById(R.id.lvCalib);
+        final ListView lvData = (ListView) Viewlayout.findViewById(R.id.lvCalib);
 
         //================================================
         final BroadcastReceiver brd = new BroadcastReceiver() {
@@ -304,10 +331,11 @@ public class ClientConfig extends Activity {
                 vals[1][2] = intent.getStringExtra("y_raw");
                 vals[1][3] = intent.getStringExtra("z_raw");
 
-                for(int i = 1; i < 4; i++)
-                {
-                    if(Integer.parseInt(vals[1][i]) >= Integer.parseInt(vals[2][i])) vals[2][i] = vals[1][i];
-                    if(Integer.parseInt(vals[1][i]) <  Integer.parseInt(vals[3][i])) vals[3][i] = vals[1][i];
+                for (int i = 1; i < 4; i++) {
+                    if (Integer.parseInt(vals[1][i]) >= Integer.parseInt(vals[2][i]))
+                        vals[2][i] = vals[1][i];
+                    if (Integer.parseInt(vals[1][i]) < Integer.parseInt(vals[3][i]))
+                        vals[3][i] = vals[1][i];
                 }
 
                 ArrayList<Map<String, Object>> data = new ArrayList<>(4);
@@ -341,7 +369,7 @@ public class ClientConfig extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        byte [] b = {UDPCommands.GET_COMPASS_RAW};
+                        byte[] b = {UDPCommands.GET_COMPASS_RAW};
                         UDPCommands.sendCmd(UDPCommands.CMD_CALIB, b, ip);
                     }
                 });
@@ -358,15 +386,16 @@ public class ClientConfig extends Activity {
         popDialog.setPositiveButton("Save",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        byte [] b = new byte[13];
+                        byte[] b = new byte[13];
                         b[0] = UDPCommands.SET_COMPASS_CALIBS;
                         int cnt = 1;
-                        for(int i = 0; i < 2; i++)
-                            for(int j = 0; j < 3; j++)
-                            {
-                                short a = (short)Integer.parseInt(vals[i + 2][j + 1]);
-                                b[cnt] = (byte)(a & 0xff); cnt++;
-                                b[cnt] = (byte)((a >> 8) & 0xff); cnt++;
+                        for (int i = 0; i < 2; i++)
+                            for (int j = 0; j < 3; j++) {
+                                short a = (short) Integer.parseInt(vals[i + 2][j + 1]);
+                                b[cnt] = (byte) (a & 0xff);
+                                cnt++;
+                                b[cnt] = (byte) ((a >> 8) & 0xff);
+                                cnt++;
                             }
 
 
@@ -379,6 +408,7 @@ public class ClientConfig extends Activity {
         popDialog.create();
         popDialog.show();
     }
+
     //==============================================================================================
     void dialog_calibrate_accel() {
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
@@ -389,20 +419,20 @@ public class ClientConfig extends Activity {
         popDialog.setTitle("Калибровка");
         popDialog.setView(Viewlayout);
 
-        final TextView tvAcc = (TextView)Viewlayout.findViewById(R.id.tvAccRaw);
+        final TextView tvAcc = (TextView) Viewlayout.findViewById(R.id.tvAccRaw);
         tvAcc.setText("45,0");
 
-        final TextView t0  = (TextView)Viewlayout.findViewById(R.id.tv0deg);
-        final TextView t90 = (TextView)Viewlayout.findViewById(R.id.tv90deg);
+        final TextView t0 = (TextView) Viewlayout.findViewById(R.id.tv0deg);
+        final TextView t90 = (TextView) Viewlayout.findViewById(R.id.tv90deg);
 
-        final Button b0  = (Button)Viewlayout.findViewById(R.id.btn0deg);
+        final Button b0 = (Button) Viewlayout.findViewById(R.id.btn0deg);
         b0.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 t0.setText(tvAcc.getText().toString());
             }
         });
 
-        final Button b90 = (Button)Viewlayout.findViewById(R.id.btn90deg);
+        final Button b90 = (Button) Viewlayout.findViewById(R.id.btn90deg);
         b90.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 t90.setText(tvAcc.getText().toString());
@@ -415,8 +445,8 @@ public class ClientConfig extends Activity {
             public void onReceive(Context context, Intent intent) {
 
                 vals[1][1] = intent.getStringExtra("acc_raw");
-                int ang =  Integer.parseInt(intent.getStringExtra("acc_raw"));
-                tvAcc.setText("" + String.format("%.3f", Math.toDegrees((double)ang/10000)));
+                int ang = Integer.parseInt(intent.getStringExtra("acc_raw"));
+                tvAcc.setText("" + String.format("%.3f", Math.toDegrees((double) ang / 10000)));
             }
         };
         IntentFilter intFilt = new IntentFilter(CALIB_DATA);
@@ -432,7 +462,7 @@ public class ClientConfig extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        byte [] b = {UDPCommands.GET_ACCEL_RAW};
+                        byte[] b = {UDPCommands.GET_ACCEL_RAW};
                         UDPCommands.sendCmd(UDPCommands.CMD_CALIB, b, ip);
                     }
                 });
@@ -449,16 +479,16 @@ public class ClientConfig extends Activity {
         popDialog.setPositiveButton("Save",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        byte [] b = new byte[5];
+                        byte[] b = new byte[5];
                         b[0] = UDPCommands.SET_ACCEL_CALIBS;
 
-                        double a0  = Math.toRadians(Double.parseDouble(t0.getText().toString().replace(',','.')));
-                        double a90 = Math.toRadians(Double.parseDouble(t90.getText().toString().replace(',','.')));
+                        double a0 = Math.toRadians(Double.parseDouble(t0.getText().toString().replace(',', '.')));
+                        double a90 = Math.toRadians(Double.parseDouble(t90.getText().toString().replace(',', '.')));
 
-                        b[1] = (byte)((int)(a0 * 10000) & 0xff);
-                        b[2] = (byte)(((int)(a0 * 10000) >> 8) & 0xff);
-                        b[3] = (byte)((int)(a90 * 10000) & 0xff);
-                        b[4] = (byte)(((int)(a90 * 10000) >> 8) & 0xff);
+                        b[1] = (byte) ((int) (a0 * 10000) & 0xff);
+                        b[2] = (byte) (((int) (a0 * 10000) >> 8) & 0xff);
+                        b[3] = (byte) ((int) (a90 * 10000) & 0xff);
+                        b[4] = (byte) (((int) (a90 * 10000) >> 8) & 0xff);
 
 
                         UDPCommands.sendCmd(UDPCommands.CMD_CALIB, b, ip);
@@ -470,11 +500,13 @@ public class ClientConfig extends Activity {
         popDialog.create();
         popDialog.show();
     }
+
     //==============================================================================================
-    private String[] wifiMode= {"NULL_MODE","STATION_MODE","SOFTAP_MODE","STATIONAP_MODE"};
-    private String[] wifiSecurityMode = {"AUTH_OPEN","AUTH_WEP","AUTH_WPA_PSK","AUTH_WPA2_PSK","AUTH_WPA_WPA2_PSK","AUTH_MAX"};
+    private String[] wifiMode = {"NULL_MODE", "STATION_MODE", "SOFTAP_MODE", "STATIONAP_MODE"};
+    private String[] wifiSecurityMode = {"AUTH_OPEN", "AUTH_WEP", "AUTH_WPA_PSK", "AUTH_WPA2_PSK", "AUTH_WPA_WPA2_PSK", "AUTH_MAX"};
     byte wMode, wSecur;
-//    String wCfgStr;
+
+    //    String wCfgStr;
     //==============================================================================================
     void dialog_wifi() {
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
@@ -502,14 +534,13 @@ public class ClientConfig extends Activity {
         spinnerW.setAdapter(adapterW);
         spinnerS.setAdapter(adapterS);
 
-        byte[]cfg = loadConfig();
-        if(cfg.length > 0)
-        {
+        byte[] cfg = loadConfig();
+        if (cfg.length > 0) {
 
-            spinnerS.setSelection((int)cfg[1]);
-            spinnerW.setSelection((int)cfg[0]);
+            spinnerS.setSelection((int) cfg[1]);
+            spinnerW.setSelection((int) cfg[0]);
             String str = new String(cfg);
-            ssid.setText(str.substring(2,str.indexOf('$')));
+            ssid.setText(str.substring(2, str.indexOf('$')));
             ssidPass.setText(str.substring(str.indexOf('$') + 1, str.indexOf('#')));
             otaIp.setText(str.substring(str.indexOf('#') + 1, str.length()));
         }
@@ -520,6 +551,7 @@ public class ClientConfig extends Activity {
                                        int position, long id) {
                 wSecur = (byte) position;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
             }
@@ -531,6 +563,7 @@ public class ClientConfig extends Activity {
                                        int position, long id) {
                 wMode = (byte) position;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
             }
@@ -539,7 +572,7 @@ public class ClientConfig extends Activity {
         popDialog.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        String wCfgStr = (char)wMode + "" + (char)wSecur + ssid.getText().toString() + "$" + ssidPass.getText().toString() + "#" + otaIp.getText().toString();
+                        String wCfgStr = (char) wMode + "" + (char) wSecur + ssid.getText().toString() + "$" + ssidPass.getText().toString() + "#" + otaIp.getText().toString();
                         saveConfig(wCfgStr);
 //                        sendCmdmd(CMD_SET_WIFI, deviceIP);
 //                        UDPCommands.wifiSettings = wCfgStr;
@@ -550,8 +583,10 @@ public class ClientConfig extends Activity {
         popDialog.create();
         popDialog.show();
     }
+
     //==============================================================================================
     public static String configReference = "com.voodoo.solar";
+
     //==============================================================================================
     void saveConfig(String aStr) {
 
@@ -562,12 +597,14 @@ public class ClientConfig extends Activity {
 
         editor.apply();
     }
+
     //==============================================================================================
     byte[] loadConfig() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String conf = sharedPreferences.getString(configReference, "") ;
+        String conf = sharedPreferences.getString(configReference, "");
         return conf.getBytes();
     }
+
     //==============================================================================================
     @Override
     protected void onDestroy() {

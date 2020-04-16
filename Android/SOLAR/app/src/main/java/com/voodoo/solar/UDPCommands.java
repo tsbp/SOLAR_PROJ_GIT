@@ -31,6 +31,7 @@ public class UDPCommands
     public final static byte CMD_UP	    = (byte)0x22;
     public final static byte CMD_DOWN	= (byte)0x23;
     public final static byte CMD_GOHOME	= (byte)0x24;
+    public final static byte CMD_MANUAL_MOVE	=	(byte)0x25;
 
     public final static byte CMD_CALIB	= (byte)0x30;
 
@@ -72,6 +73,7 @@ public class UDPCommands
             case CMD_CFG:
             case CMD_WIFI:
             case CMD_MODE:
+            case CMD_MANUAL_MOVE:
                 //dataLng = aData.length;
 //                buf = new byte[5 + aData.length];
                 for(int i = 0; i < dataLng; i++) buf[i+3] = aData[i];

@@ -19,8 +19,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ClientConfig"></activity>
-        <activity android:name=".ClientConfigMeteo"></activity>
+        <activity
+            android:name=".ClientConfig"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".ClientConfigMeteo"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>
