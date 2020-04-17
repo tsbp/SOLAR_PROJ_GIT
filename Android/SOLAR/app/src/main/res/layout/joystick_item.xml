@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="300dp"
+    >
+
+    <Button
+        android:text="Mode"
+        android:layout_width="@dimen/joystick_button_size"
+        android:layout_height="@dimen/joystick_button_size"
+        android:layout_centerInParent="true"
+        android:id="@+id/btnManual"/>
+    <Button
+        android:text="Left"
+        android:id="@+id/btnLeft"
+        android:layout_width="@dimen/joystick_button_size"
+        android:layout_height="@dimen/joystick_button_size"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"/>
+    <Button
+        android:text="Right"
+        android:id="@+id/btnRight"
+        android:layout_width="@dimen/joystick_button_size"
+        android:layout_height="@dimen/joystick_button_size"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"/>
+    <Button
+        android:text="UP"
+        android:id="@+id/btnUp"
+        android:layout_width="@dimen/joystick_button_size"
+        android:layout_height="@dimen/joystick_button_size"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"/>
+    <Button
+        android:text="Down"
+        android:id="@+id/btnDown"
+        android:layout_width="@dimen/joystick_button_size"
+        android:layout_height="@dimen/joystick_button_size"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
+
+
+
+
+
+</RelativeLayout>

@@ -38,18 +38,15 @@ import static com.voodoo.solar.MainActivity.BROADCAST_ACTION;
 
 public class ClientConfig extends Activity {
 
-    TextView tvStt, tvIp, tvPitch, tvRoll, tvHead, tvLigth, tvTerm, tAzimuth, tAngle;
-    SeekBar sbCompass, sbAccel;
+    TextView tvStt, tvIp, tvPitch, tvRoll, tvHead, tvLigth, tvTerm;
+
 
     public final static String CALIB_DATA = "Calib data";
 
     public static InetAddress ip;
     BroadcastReceiver br;
 
-    short azimuth = 0;
-    short angle = 0;
     byte sysState;
-    byte angIncrement = 10;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -60,8 +57,6 @@ public class ClientConfig extends Activity {
         GLSurfaceView view = (GLSurfaceView) findViewById(R.id.w3D);
         view.setRenderer(new OpenGLRenderer());
 
-        tAzimuth = (TextView) findViewById(R.id.tvAzimuth);
-        tAngle = (TextView) findViewById(R.id.tvAngle);
 
         tvPitch = (TextView) findViewById(R.id.tvPitch);
         tvRoll = (TextView) findViewById(R.id.tvRoll);
@@ -72,9 +67,6 @@ public class ClientConfig extends Activity {
 
         tvIp = (TextView) findViewById(R.id.tvIP);
         tvIp.setText("" + ip.getHostAddress());
-
-        sbCompass = (SeekBar) findViewById(R.id.sbCompass);
-        sbAccel = (SeekBar) findViewById(R.id.sbAccel);
 
         //================================================
         final Button btnManual = (Button) findViewById(R.id.btnManual);
@@ -123,17 +115,17 @@ public class ClientConfig extends Activity {
         btnUp.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                buttoEventHandle(event, (byte)0x80);
-                return false;
+                buttoEventHandle(event, (byte) 0x80);
+                return true;
             }
         });
         //================================================
-        Button btnDown = (Button) findViewById(R.id.btndown);
+        Button btnDown = (Button) findViewById(R.id.btnDown);
         btnDown.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                buttoEventHandle(event, (byte)0x08);
-                return false;
+                buttoEventHandle(event, (byte) 0x08);
+                return true;
             }
         });
         //================================================
@@ -141,8 +133,8 @@ public class ClientConfig extends Activity {
         btnRight.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                buttoEventHandle(event, (byte)0x02);
-                return false;
+                buttoEventHandle(event, (byte) 0x02);
+                return true;
             }
         });
         //================================================
@@ -150,8 +142,8 @@ public class ClientConfig extends Activity {
         btnLeft.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                buttoEventHandle(event, (byte)0x04);
-                return false;
+                buttoEventHandle(event, (byte) 0x04);
+                return true;
             }
         });
 
@@ -185,19 +177,6 @@ public class ClientConfig extends Activity {
             }
         });
 
-        Button bSendPos = (Button) findViewById(R.id.btnSendPos);
-        //================================================
-        bSendPos.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                byte[] tmp = new byte[4];
-                tmp[0] = (byte) (angle & 0xff);
-                tmp[1] = (byte) ((angle >> 8) & 0xff);
-                tmp[2] = (byte) (azimuth & 0xff);
-                tmp[3] = (byte) ((azimuth >> 8) & 0xff);
-                UDPCommands.sendCmd(UDPCommands.CMD_SET_POSITION, null, ip);
-            }
-        });
-
         Button bUpdate = (Button) findViewById(R.id.btnUpdate);
         //================================================
         bUpdate.setOnClickListener(new View.OnClickListener() {
@@ -206,74 +185,24 @@ public class ClientConfig extends Activity {
                 dialog_update();
             }
         });
-
-        //==========================================================================================
-        sbCompass.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tAzimuth.setText("Azimyth: " + progress * 3.6);
-                azimuth = (short) (progress * 3.6 * 100);
-
-//                azimuth =  (short)(tmp * 10000);
-//
-//                cmdBuffer[2] = (byte) ((azimuth) & (byte)0xff);
-//                cmdBuffer[3] = (byte) ((azimuth >> 8) & (byte)0xff);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_AZIMUTH, deviceIP);
-//                else
-//                    sendCmd(CMD_AZIMUTH, broadcastIP);
-            }
-        });
-        //==========================================================================================
-        sbAccel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tAngle.setText("Angle: " + progress * 0.9);
-                angle = (short) (progress * 0.9 * 100);
-//
-//                cmdBuffer[2] = (byte) ((angle) & (byte)0xff);
-//                cmdBuffer[3] = (byte) ((angle >> 8) & (byte)0xff);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-//                if(deviceIP != null)
-//                    sendCmd(CMD_ANGLE, deviceIP);
-//                else
-//                    sendCmd(CMD_ANGLE, broadcastIP);
-            }
-        });
-
-
     }
 
     private void buttoEventHandle(MotionEvent event, byte direction) {
+        byte[] tmp;
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
-                byte[] tmp = {direction};
-                UDPCommands.sendCmd(UDPCommands.CMD_MANUAL_MOVE, tmp, ip);
+                tmp = new byte[]{direction};
                 break;
 
             case MotionEvent.ACTION_UP:
-                byte[] tmp_ = {(byte) 0x00};
-                UDPCommands.sendCmd(UDPCommands.CMD_MANUAL_MOVE, tmp_, ip);
+                tmp = new byte[]{0x00};
                 break;
+
+            default:
+                return;
         }
+        UDPCommands.sendCmd(UDPCommands.CMD_MANUAL_MOVE, tmp, ip);
     }
 
     //==============================================================================================
