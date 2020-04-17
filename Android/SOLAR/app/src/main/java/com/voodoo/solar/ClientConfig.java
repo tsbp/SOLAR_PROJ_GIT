@@ -100,9 +100,11 @@ public class ClientConfig extends Activity {
 
                 sysState = Byte.parseByte(input);
                 if ((sysState & (byte) 0x02) != 0)
-                    btnManual.setBackgroundColor(Color.RED);
+                    //btnManual.setBackgroundColor(Color.RED);
+                btnManual.setBackgroundResource(R.drawable.control);
                 else
-                    btnManual.setBackgroundColor(Color.GREEN);
+//                    btnManual.setBackgroundColor(Color.GREEN);
+                    btnManual.setBackgroundResource(R.drawable.auto);
             }
         };
         IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);

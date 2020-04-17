@@ -1,5 +1,6 @@
 package com.voodoo.solar;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
