@@ -184,6 +184,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="8"
+                    android:gravity="center"
                     android:orientation="vertical">
                 <com.voodoo.solar.imgPosition
                     android:layout_width="150dp"
@@ -196,42 +197,26 @@
             </LinearLayout>
 
             <LinearLayout
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-                <ListView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="20dp"
-                    android:id="@+id/lvForecast">
-                </ListView>
+                android:layout_weight="0.8"
+                android:orientation="horizontal"
+                android:gravity="center">
+                <LinearLayout
+                    android:background="@drawable/border"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ListView
+                        android:layout_margin="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:id="@+id/lvForecast">
+                    </ListView>
+                </LinearLayout>
+
             </LinearLayout>
-
-
-
-
-
-            <!--TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:id="@+id/tvDate"
-                android:gravity="center_horizontal"
-                android:background="#8800e99b"
-                android:textColor="#0000ff"
-                android:textSize="18sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:id="@+id/tvSunPos"
-                android:gravity="center_horizontal"
-                android:background="#8800ab71"
-                android:textColor="#0000ff"
-                android:textSize="18sp" /-->
 
         </LinearLayout>
     </LinearLayout>
@@ -244,15 +229,5 @@
         android:background="#8800ab71"
         android:textColor="#0000ff"
         android:textSize="18sp" />
-    <!--LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
-
-
-    </LinearLayout-->
 </LinearLayout>
 

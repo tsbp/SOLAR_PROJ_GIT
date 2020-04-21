@@ -35,19 +35,18 @@ import java.util.TimerTask;
 
 import static com.voodoo.solar.IPHelper.getBroadcastIP4AsBytes;
 
-public class MainActivity extends Activity implements OnReceiveListener  {
+public class MainActivity extends Activity implements OnReceiveListener {
 
 
     public final static String PARAM_PITCH = "pitch";
-    public final static String PARAM_ROLL  = "roll";
-    public final static String PARAM_HEAD  = "head";
+    public final static String PARAM_ROLL = "roll";
+    public final static String PARAM_HEAD = "head";
     public final static String PARAM_LIGTH = "ligth";
-    public final static String PARAM_TERM  = "term";
-    public final static String PARAM_STT  = "dStt";
+    public final static String PARAM_TERM = "term";
+    public final static String PARAM_STT = "dStt";
 
 
-
-    public static UDPProcessor udpProcessor ;
+    public static UDPProcessor udpProcessor;
     InetAddress deviceIP = null, broadcastIP;
 
 
@@ -58,9 +57,10 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     ListView lvClients, lvForecast;
 
 
-    LinkedList<Byte> clientsIp;
-    String clientData[][];
-    int notAsweredCntr[] = new int[100];
+    LinkedList<Client> clients = new LinkedList();
+//    LinkedList<Byte> clientsIp;
+//    String clientData[][];
+//    int notAsweredCntr[] = new int[100];
 
     public static int clientActivityCreated = 0;
 
@@ -73,26 +73,25 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); // unfocus Edited text
 
-        lvClients = (ListView)findViewById(R.id.lvClients);
+        lvClients = (ListView) findViewById(R.id.lvClients);
         lvForecast = (ListView) findViewById(R.id.lvForecast);
 
         udpProcessor = new UDPProcessor(7171);
         udpProcessor.setOnReceiveListener(this);
         udpProcessor.start();
 
-        byte [] bcIP = getBroadcastIP4AsBytes();
+        byte[] bcIP = getBroadcastIP4AsBytes();
         try {
             broadcastIP = InetAddress.getByAddress(bcIP);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        tvRegion   = (TextView)findViewById(R.id.tvRegion);
-        tvPackets   = (TextView)findViewById(R.id.tvPackets);
+        tvRegion = (TextView) findViewById(R.id.tvRegion);
+        tvPackets = (TextView) findViewById(R.id.tvPackets);
 
-        etLong =  (EditText) findViewById(R.id.etLong);
-        etLatit =  (EditText) findViewById(R.id.etLatit);
+        etLong = (EditText) findViewById(R.id.etLong);
+        etLatit = (EditText) findViewById(R.id.etLatit);
 //        imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
 
         sunPos.Lon = Math.toRadians(Double.parseDouble(etLong.getText().toString()));
@@ -126,14 +125,22 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(clientsIp != null)
-                        {
-                            //for (int i = 0; i < clientsIp.length; i++) notAsweredCntr[i]++;
-                            for (int i = 0; i < clientsIp.size(); i++) notAsweredCntr[i]++;
-                            //for (int i = 0; i < clientsIp.length; i++)
-                            for (int i = 0; i < clientsIp.size(); i++)
-                                if (notAsweredCntr[i] > 5) deleteListRow(i);
+                        if (clients.size() >= 0) {
+                            for (int i = 0; i < clients.size(); i++) {
+                                Client tmp = clients.get(i);
+                                tmp.notAnswerDownCounter--;
+                                if (tmp.notAnswerDownCounter <= 0) {
+                                    deleteListRow(i);
+                                }
+                            }
                         }
+                        //-----------------------------------------
+//                        if(clientsIp != null)
+//                        {
+//                            for (int i = 0; i < clientsIp.size(); i++) notAsweredCntr[i]++;
+//                            for (int i = 0; i < clientsIp.size(); i++)
+//                                if (notAsweredCntr[i] > 5) deleteListRow(i);
+//                        }
 
                     }
                 });
@@ -142,44 +149,45 @@ public class MainActivity extends Activity implements OnReceiveListener  {
 
 
     }
+
     //==============================================================================================
-    public static byte [] getCurrentTime()
-    {
-        byte tmp [] = new byte[6];
-        Calendar currentTime    = Calendar.getInstance();
+    public static byte[] getCurrentTime() {
+        byte tmp[] = new byte[6];
+        Calendar currentTime = Calendar.getInstance();
 
-        tmp[0] = (byte)(currentTime.get(Calendar.YEAR) - 2000);
-        tmp[1] = (byte)(1 + currentTime.get(Calendar.MONTH));
-        tmp[2] = (byte)(currentTime.get(Calendar.DAY_OF_MONTH));
+        tmp[0] = (byte) (currentTime.get(Calendar.YEAR) - 2000);
+        tmp[1] = (byte) (1 + currentTime.get(Calendar.MONTH));
+        tmp[2] = (byte) (currentTime.get(Calendar.DAY_OF_MONTH));
 
-        tmp[3] = (byte)(currentTime.get(Calendar.HOUR_OF_DAY));
-        tmp[4] = (byte)(currentTime.get(Calendar.MINUTE));
-        tmp[5] = (byte)(currentTime.get(Calendar.SECOND));
+        tmp[3] = (byte) (currentTime.get(Calendar.HOUR_OF_DAY));
+        tmp[4] = (byte) (currentTime.get(Calendar.MINUTE));
+        tmp[5] = (byte) (currentTime.get(Calendar.SECOND));
         return tmp;
     }
 
     //==============================================================================================
     int selectedClient = 0;
+
     //==============================================================================================
-    void sendIntent()
-    {
+    void sendIntent() {
         Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
-        intent.putExtra(PARAM_PITCH, clientData[selectedClient][0]);
-        intent.putExtra(PARAM_ROLL,  clientData[selectedClient][1]);
-        intent.putExtra(PARAM_HEAD,  clientData[selectedClient][2]);
-        intent.putExtra(PARAM_LIGTH, clientData[selectedClient][3]);
-        intent.putExtra(PARAM_TERM,  clientData[selectedClient][4]);
-        intent.putExtra(PARAM_STT,   clientData[selectedClient][5]);
+        intent.putExtra(PARAM_PITCH, clients.get(selectedClient).data[0]);
+        intent.putExtra(PARAM_ROLL, clients.get(selectedClient).data[1]);
+        intent.putExtra(PARAM_HEAD, clients.get(selectedClient).data[2]);
+        intent.putExtra(PARAM_LIGTH, clients.get(selectedClient).data[3]);
+        intent.putExtra(PARAM_TERM, clients.get(selectedClient).data[4]);
+        intent.putExtra(PARAM_STT, clients.get(selectedClient).data[5]);
         sendBroadcast(intent);
     }
+
     //==============================================================================================
-    void deleteListRow(int aRow)
-    {
+    void deleteListRow(int aRow) {
         {
-            clientsIp.remove(aRow);
-            if(clientsIp.size() == 0) lvBuid();
+            /*clientsIp.*/clients.remove(aRow);
+            if (/*clientsIp.*/clients.size() == 0) lvBuid();
         }
     }
+
     //==============================================================================================
     private final String ATTRIBUTE_IP = "attr_ip";
     private final String ATTRIBUTE_V1 = "attr_v1";
@@ -187,21 +195,26 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     private final String ATTRIBUTE_V3 = "attr_v3";
     private final String ATTRIBUTE_V4 = "attr_v4";
     private final String ATTRIBUTE_V5 = "attr_v5";
+
     //==============================================================================================
-    void lvBuid()
-    {
-        ArrayList<Map<String, Object>> data = new ArrayList<>(
-                clientsIp.size());
+    void lvBuid() {
+        ArrayList<Map<String, Object>> data = new ArrayList<>(clients.size());
         Map<String, Object> m;
-        for (int i = 0; i < clientsIp.size(); i++) {
+        for (int i = 0; i < clients.size(); i++) {
 
             m = new HashMap<>();
-            m.put(ATTRIBUTE_IP, clientsIp.get(i)/*[i]*/ & 0xff);
-            m.put(ATTRIBUTE_V1, clientData[i][0]);
-            m.put(ATTRIBUTE_V2, clientData[i][1]);
-            m.put(ATTRIBUTE_V3, clientData[i][2]);
-            m.put(ATTRIBUTE_V4, clientData[i][3]);
-            m.put(ATTRIBUTE_V5, clientData[i][4]);
+            m.put(ATTRIBUTE_IP, clients.get(i).ip & 0xff);
+            m.put(ATTRIBUTE_V1, clients.get(i).data[0]);
+            m.put(ATTRIBUTE_V2, clients.get(i).data[1]);
+            m.put(ATTRIBUTE_V3, clients.get(i).data[2]);
+            m.put(ATTRIBUTE_V4, clients.get(i).data[3]);
+            m.put(ATTRIBUTE_V5, clients.get(i).data[4]);
+//            m.put(ATTRIBUTE_IP, clientsIp.get(i)/*[i]*/ & 0xff);
+//            m.put(ATTRIBUTE_V1, clientData[i][0]);
+//            m.put(ATTRIBUTE_V2, clientData[i][1]);
+//            m.put(ATTRIBUTE_V3, clientData[i][2]);
+//            m.put(ATTRIBUTE_V4, clientData[i][3]);
+//            m.put(ATTRIBUTE_V5, clientData[i][4]);
             data.add(m);
 
         }
@@ -213,30 +226,25 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         //==========================================================
         lvClients.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id)
-            {
-                byte [] ip = getBroadcastIP4AsBytes();
+                                    int position, long id) {
+                byte[] ip = getBroadcastIP4AsBytes();
                 InetAddress iIP = null;
                 assert ip != null;
-                ip[3] = clientsIp.get(position)/*[position]*/;
-                try
-                {
-                   iIP = InetAddress.getByAddress(ip);
-                }
-                catch (UnknownHostException e){
+                ip[3] = clients.get(position).ip;//clientsIp.get(position)/*[position]*/;
+                try {
+                    iIP = InetAddress.getByAddress(ip);
+                } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
                 clientActivityCreated = 1;
                 selectedClient = position;
 
                 Intent intent;
-                if(clientData[selectedClient][0].equals("M"))
+                if (clients.get(selectedClient).data[0].equals("M"))//(clientData[selectedClient][0].equals("M"))
                 {
                     ClientConfigMeteo.ip = iIP;
                     intent = new Intent(MainActivity.this, ClientConfigMeteo.class);
-                }
-                else
-                {
+                } else {
                     ClientConfig.ip = iIP;
                     intent = new Intent(MainActivity.this, ClientConfig.class);
                 }
@@ -244,110 +252,151 @@ public class MainActivity extends Activity implements OnReceiveListener  {
             }
         });
     }
+
     /***********************************************************************************************
      *
      */
-    private final String [] FORECAST_ITEMS = {"Wind", "Temp", "Humid"};
+    private final String[] FORECAST_ITEMS = {"Wind", "Temp", "Humid"};
+
     private void lvForecastBuild(byte[] receiveBytes) {
 
-        double [] fcData = new double[3];
+        double[] fcData = new double[3];
 
-        fcData[0] = (double) ((receiveBytes[18] & 0xff) | (receiveBytes[19] & 0xff ) << 8) / 100;
-        fcData[1] = (double) ((receiveBytes[20] & 0xff) | (receiveBytes[21] & 0xff ) << 8) / 100;
-        fcData[2] = (double) ((receiveBytes[22] & 0xff) | (receiveBytes[23] & 0xff ) << 8) / 100;
+        fcData[0] = (double) ((receiveBytes[18] & 0xff) | (receiveBytes[19] & 0xff) << 8) / 100;
+        fcData[1] = (double) ((receiveBytes[20] & 0xff) | (receiveBytes[21] & 0xff) << 8) / 100;
+        fcData[2] = (double) ((receiveBytes[22] & 0xff) | (receiveBytes[23] & 0xff) << 8) / 100;
 
         int strEnd;
-        for( strEnd = 0; strEnd < 20; strEnd++) {if(receiveBytes[24 + strEnd] == 0) break;}
+        for (strEnd = 0; strEnd < 20; strEnd++) {
+            if (receiveBytes[24 + strEnd] == 0) break;
+        }
         tvRegion.setText(new String(Arrays.copyOfRange(receiveBytes, 24, 24 + strEnd)));
 
 
-        //http://api.openweathermap.org/data/2.5/weather?lat=48.5&lon=32.22&units=metric&appid=7412b643dfdbf390970f2f65a1bad7ce
+        int[] pictos = {0, R.drawable.wind, R.drawable.humid};
+        byte[] tmp = {receiveBytes[44], receiveBytes[45], receiveBytes[46]};
+        String imgPicto = new String(tmp);
+        pictos[0] = getImage(imgPicto);
 
         ArrayList<Map<String, Object>> data = new ArrayList<>(3);
         Map<String, Object> m;
         for (int i = 0; i < 3; i++) {
             m = new HashMap<>();
-            m.put(ATTRIBUTE_IP, FORECAST_ITEMS[i]);
+            m.put(ATTRIBUTE_IP, pictos[i]);
             m.put(ATTRIBUTE_V1, fcData[i]);
             data.add(m);
-
         }
         String[] from = {ATTRIBUTE_IP, ATTRIBUTE_V1};
-        int[] to = {R.id.i1, R.id.i2};
+        int[] to = {R.id.picto, R.id.i1};
         SimpleAdapter sAdapter = new SimpleAdapter(this, data, R.layout.forecast_item, from, to);
         lvForecast.setAdapter(sAdapter);
 
         // compass
-        double azimuth   = 0.01 * (double)((receiveBytes[9] & 0xff) | ((receiveBytes[10] << 8)));
-        double elevation = 0.01 * (double)((receiveBytes[11] & 0xff) | ((receiveBytes[12] << 8)));
+        double azimuth = 0.01 * (double) ((receiveBytes[9] & 0xff) | ((receiveBytes[10] << 8)));
+        double elevation = 0.01 * (double) ((receiveBytes[11] & 0xff) | ((receiveBytes[12] << 8)));
         imgPosition.azimuth = azimuth;
         imgPosition.elevation = elevation;
         findViewById(R.id.imgPos).invalidate();
     }
-    //==============================================================================================
-   /* void udpSend(byte[] aByte, InetAddress ip)
-    {
-        DataFrame df = new DataFrame(aByte);
-        udpProcessor.send(ip,df);
-    }*/
+
+    /***********************************************************************************************
+     *
+     * @param imgPicto
+     * @return
+     */
+    private int getImage(String imgPicto) {
+        switch (imgPicto) {
+            case "01d":
+                return R.drawable.w01d;
+            case "01n":
+                return R.drawable.w01n;
+            case "02n":
+                return R.drawable.w02d;
+            case "02d":
+                return R.drawable.w02n;
+            case "03n":
+                return R.drawable.w03n;
+            case "03d":
+                return R.drawable.w03d;
+            case "04n":
+                return R.drawable.w04n;
+            case "04d":
+                return R.drawable.w04d;
+            case "09n":
+                return R.drawable.w09n;
+            case "09d":
+                return R.drawable.w09d;
+            case "10n":
+                return R.drawable.w10n;
+            case "10d":
+                return R.drawable.w10d;
+            case "11n":
+                return R.drawable.w11n;
+            case "11d":
+                return R.drawable.w11d;
+            case "13n":
+                return R.drawable.w13n;
+            case "13d":
+                return R.drawable.w13d;
+            case "50n":
+                return R.drawable.w50n;
+            case "50d":
+                return R.drawable.w50d;
+        }
+        return R.drawable.w01d;
+    }
+
     //==============================================================================================
     int cntr = 0;
     //==============================================================================================
-    short /*cx, cy, cz,*/ ax, ay, az, packCntr = 0;
+    short ax, ay, az, packCntr = 0;
+
     //==============================================================================================
-    public void onFrameReceived(InetAddress ip, IDataFrame frame)
-    {
+    public void onFrameReceived(InetAddress ip, IDataFrame frame) {
         byte[] in = frame.getFrameData();
         packCntr++;
-        tvPackets.setText("Packs {" + packCntr +"}");
+        tvPackets.setText("Packs {" + packCntr + "}");
 
-        if(deviceIP == null) deviceIP = ip;
+        if (deviceIP == null) deviceIP = ip;
         try {
 
-            if(in[0] == UDPCommands.ID_SLAVE || in[0] == UDPCommands.ID_METEO)
-            {
+            if (in[0] == UDPCommands.ID_SLAVE || in[0] == UDPCommands.ID_METEO) {
 
                 //==========================================
-                if(clientsIp == null)
-                {
-                    clientsIp = new LinkedList<>();
-                    clientsIp.add(ip.getAddress()[3]);
-                    clientData = new String[1][6];
-                    clientData[0][0] = "";
-                }
-                else
-                { //add client
+                if (clients.size() <= 0) {
+                    clients.add(new Client(ip.getAddress()[3], new String[6]));
+                } else { //add client
+
                     boolean clientFound = false;
-                    for(byte curIp : clientsIp){
-                        if(ip.getAddress()[3] == curIp) clientFound = true;
+                    for (Client cl : clients) {
+                        if (ip.getAddress()[3] == cl.ip) {
+                            clientFound = true;
+                            break;
+                        }
                     }
-                    if(!clientFound)
-                    {
-                        clientsIp.add(ip.getAddress()[3]);
-                        clientData = new String[clientData.length + 1][6];
+                    if(!clientFound) {
+                        clients.add(new Client(ip.getAddress()[3], new String[6]));
                     }
                 }
                 Intent intent;
                 //==========================================
-                switch(in[1])
-                {
+                switch (in[1]) {
                     case UDPCommands.CMD_CALIB:
                         intent = new Intent(ClientConfig.CALIB_DATA);
-                        switch(in[3])
-                        {
-                            case UDPCommands.GET_COMPASS_RAW:
-                            {
+                        switch (in[3]) {
+                            case UDPCommands.GET_COMPASS_RAW: {
                                 intent.putExtra("x_raw", "" + (short) (((in[5] << 8) & 0xff00) | in[4] & 0xff));
                                 intent.putExtra("y_raw", "" + (short) (((in[7] << 8) & 0xff00) | in[6] & 0xff));
                                 intent.putExtra("z_raw", "" + (short) (((in[9] << 8) & 0xff00) | in[8] & 0xff));
                                 sendBroadcast(intent);
-                            }break;
+                            }
+                            break;
 
-                            case UDPCommands.GET_ACCEL_RAW:
-                            {
+                            case UDPCommands.GET_ACCEL_RAW: {
                                 intent.putExtra("acc_raw", "" + (short) (((in[5] << 8) & 0xff00) | in[4] & 0xff));
                                 sendBroadcast(intent);
-                            }break;
+                            }
+                            break;
                         }
                         break;
                     case UDPCommands.CMD_ANGLE:
@@ -365,14 +414,18 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                     case UDPCommands.CMD_STATE:
 
                         String terms = "";
-                        if((in[11] & (short)1) == 1)   terms += "1"; //btnIn1.setBackgroundColor(Color.RED);
-                        else                           terms += "0"; //btnIn1.setBackgroundColor(Color.GREEN);
-                        if((in[11] & (short)2) == 2)   terms += "1"; //btnIn2.setBackgroundColor(Color.RED);
-                        else                           terms += "0"; //btnIn2.setBackgroundColor(Color.GREEN);
-                        if((in[11] & (short)4) == 4)   terms += "1"; //btnIn3.setBackgroundColor(Color.RED);
-                        else                           terms += "0"; //btnIn3.setBackgroundColor(Color.GREEN);
-                        if((in[11] & (short)8) == 8)   terms += "1"; //btnIn4.setBackgroundColor(Color.RED);
-                        else                           terms += "0"; //btnIn4.setBackgroundColor(Color.GREEN);
+                        if ((in[11] & (short) 1) == 1)
+                            terms += "1"; //btnIn1.setBackgroundColor(Color.RED);
+                        else terms += "0"; //btnIn1.setBackgroundColor(Color.GREEN);
+                        if ((in[11] & (short) 2) == 2)
+                            terms += "1"; //btnIn2.setBackgroundColor(Color.RED);
+                        else terms += "0"; //btnIn2.setBackgroundColor(Color.GREEN);
+                        if ((in[11] & (short) 4) == 4)
+                            terms += "1"; //btnIn3.setBackgroundColor(Color.RED);
+                        else terms += "0"; //btnIn3.setBackgroundColor(Color.GREEN);
+                        if ((in[11] & (short) 8) == 8)
+                            terms += "1"; //btnIn4.setBackgroundColor(Color.RED);
+                        else terms += "0"; //btnIn4.setBackgroundColor(Color.GREEN);
 
                         int light = (((in[10] << 8) & 0xff00) | in[9] & 0xff);
                         int stt = (in[12] & 0xff);
@@ -382,59 +435,54 @@ public class MainActivity extends Activity implements OnReceiveListener  {
                         az = (short) (((in[8] << 8) & 0xff00) | in[7] & 0xff);
 
 
-                        double tt = Math.toDegrees((double)az/10000);
-                        if(tt < 0) tt += 360;
+                        double tt = Math.toDegrees((double) az / 10000);
+                        if (tt < 0) tt += 360;
                         // find ip
-                        for(int i = 0; i < clientsIp.size(); i++)
-                        {
-                             if(ip.getAddress()[3] == clientsIp.get(i)/*clientsIp[i]*/)
-                            {
-                                if(in[0] == UDPCommands.ID_SLAVE) {
-                                    clientData[i][0] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ax / 10000));
-                                    clientData[i][1] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ay / 10000));
-                                    clientData[i][3] = "" + light;
-                                    clientData[i][2] = String.format(Locale.ENGLISH, "%.1f", tt);
-                                    clientData[i][4] = terms;
-                                    clientData[i][5] = "" + stt;
-                                }
-                                else
-                                {
-                                    clientData[i][0] = "M";
-                                    clientData[i][1] = "E";
-                                    clientData[i][2] = "T";
-                                    clientData[i][3] = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double)((in[9]  & 0xff) | ((in[10] << 8))));
-                                    clientData[i][4] = String.format(Locale.ENGLISH,"%.1f", 0.01 * (double)((in[11] & 0xff) | ((in[12] << 8))));
+                        for (int i = 0; i < clients.size(); i++) {
+                            Client currentClient = clients.get(i);
+                            if (ip.getAddress()[3] == clients.get(i).ip/*clientsIp[i]*/) {
+                                if (in[0] == UDPCommands.ID_SLAVE) {
+                                    currentClient.data[0]/*clientData[i][0] */= String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ax / 10000));
+                                    currentClient.data[1]/*clientData[i][1] */= String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ay / 10000));
+                                    currentClient.data[2]/*clientData[i][3]*/ = "" + light;
+                                    currentClient.data[3]/*clientData[i][2]*/ = String.format(Locale.ENGLISH, "%.1f", tt);
+                                    currentClient.data[4]/*clientData[i][4]*/ = terms;
+                                    currentClient.data[5]/*clientData[i][5]*/ = "" + stt;
+                                } else {
+                                    currentClient.data[0]/*clientData[i][0]*/ = "M";
+                                    currentClient.data[1]/*clientData[i][1]*/ = "E";
+                                    currentClient.data[2]/*clientData[i][2]*/ = "T";
+                                    currentClient.data[3]/*clientData[i][3]*/ = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[9] & 0xff) | ((in[10] << 8))));
+                                    currentClient.data[4]/*clientData[i][4]*/ = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[11] & 0xff) | ((in[12] << 8))));
 
-                                    if(in.length > 19) {
+                                    if (in.length > 19) {
                                         lvForecastBuild(in);
                                     }
                                     ClientConfigMeteo.data = Arrays.copyOfRange(in, 3, 3 + 15);
                                 }
 
                                 lvBuid();
-                                notAsweredCntr[i] = 0;
+                                currentClient.notAnswerDownCounter = 5;
+//                                notAsweredCntr[i] = 0;
 
-                                if(clientActivityCreated == 1) sendIntent();
+                                if (clientActivityCreated == 1) sendIntent();
 
-                                if(i == selectedClient)
-                                {
-                                    OpenGLRenderer.pitch = (float)ax/10000;
-                                    OpenGLRenderer.roll  = (float)ay/10000;
+                                if (i == selectedClient) {
+                                    OpenGLRenderer.pitch = (float) ax / 10000;
+                                    OpenGLRenderer.roll = (float) ay / 10000;
                                 }
                             }
                         }
                         break;
 
                     case UDPCommands.CMD_CFG:
-                        ClientConfigMeteo.cfgData = Arrays.copyOfRange(in, 3, 3 + 18)/*new byte[18]*/;
-
+                        ClientConfigMeteo.cfgData = Arrays.copyOfRange(in, 3, 3 + 18);
                         intent = new Intent(ClientConfigMeteo.BC_CFG_DATA);
                         sendBroadcast(intent);
                         break;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         cntr++;
@@ -454,12 +502,11 @@ public class MainActivity extends Activity implements OnReceiveListener  {
         sunPos.Lon = Math.toRadians(Double.parseDouble(etLong.getText().toString()));
         sunPos.Lat = Math.toRadians(Double.parseDouble(etLatit.getText().toString()));
 
-        final TextView tvResult = (TextView)Viewlayout.findViewById(R.id.tvResult);
-        byte tmp [] = getCurrentTime();
+        final TextView tvResult = (TextView) Viewlayout.findViewById(R.id.tvResult);
+        byte tmp[] = getCurrentTime();
         String str = "For " + (tmp[0] + 2000) + "." + tmp[1] + "." + tmp[2] + "\r\n"
                 + sunPos.getAngles();
         tvResult.setText(str);
-
 
 
         popDialog.setPositiveButton("OK",
@@ -477,6 +524,18 @@ public class MainActivity extends Activity implements OnReceiveListener  {
     protected void onDestroy() {
         super.onDestroy();
         udpProcessor.stop();
+    }
+
+}
+
+class Client {
+    public int notAnswerDownCounter = 5;
+    public byte ip;
+    public String data[];
+
+    Client(byte ip, String[] data) {
+        this.ip = ip;
+        this.data = data;
     }
 
 }

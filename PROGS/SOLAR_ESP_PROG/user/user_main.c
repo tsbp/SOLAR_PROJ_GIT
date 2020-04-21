@@ -248,6 +248,23 @@ void ICACHE_FLASH_ATTR setup(void)
 
 
 	readConfigs();
+
+
+
+	os_memset(configs.wifi.SSID, 0, sizeof(configs.wifi.SSID));
+							os_sprintf(configs.wifi.SSID, "%s", "Solar");
+
+							os_memset(configs.wifi.SSID_PASS, 0, sizeof(configs.wifi.SSID_PASS));
+							os_sprintf(configs.wifi.SSID_PASS, "%s", "123454321");
+
+							configs.wifi.mode = STATION_MODE;
+							configs.wifi.auth = AUTH_WPA_WPA2_PSK;
+							saveConfigs();
+
+
+
+
+
 	wifi_station_disconnect();
 	wifi_station_set_auto_connect(0);
 

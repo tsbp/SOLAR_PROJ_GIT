@@ -3,11 +3,11 @@ include	settings.mk
 
 # Individual project settings (Optional)
 BOOT		= new
-APP		= 1
+APP		= 2
 #SPI_SPEED	= 40
 SPI_MODE	= DOUT
 SPI_SIZE_MAP	= 2
-#ESPPORT		= COM2
+ESPPORT		= COM7
 #ESPBAUD		= 256000
 
 # Basic project settings
