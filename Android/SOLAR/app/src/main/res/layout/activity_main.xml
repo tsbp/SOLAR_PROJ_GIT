@@ -9,18 +9,22 @@
     android:paddingLeft="@dimen/activity_margin"
     android:paddingRight="@dimen/activity_margin"
     android:paddingTop="@dimen/activity_margin"
+    android:background="@drawable/border"
     tools:context="com.voodoo.solar.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:orientation="vertical">
+        android:layout_weight="0.8"
+        android:orientation="vertical"
+        android:background="@drawable/border_m">
 
 
         <LinearLayout
+            android:layout_margin="5dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:orientation="horizontal"
             android:layout_weight="1">
             <TextView
                 android:layout_width="0dp"
@@ -73,6 +77,7 @@
 
         </LinearLayout>
         <ListView
+            android:layout_margin="5dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="5"
@@ -92,133 +97,80 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/linearLayout">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#ff6600"
-            android:text="Координаты"
-            android:layout_marginTop="5dp"
-            android:gravity="center_horizontal"
-            android:id="@+id/textView"            />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="#ffee00"
-            >
-            <TextView
-                android:layout_weight="2"
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_marginLeft="5dp"
-                android:text="Широта"/>
-            <EditText
-                android:layout_weight="3"
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:inputType="numberDecimal|numberSigned"
-                android:id="@+id/etLatit"
-                android:text="48.5" />
-            <TextView
-                android:layout_weight="2"
-                android:layout_marginLeft="5dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Долгота"/>
-            <EditText
-                android:layout_weight="3"
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:inputType="numberDecimal|numberSigned"
-                android:id="@+id/etLong"
-                android:text="32.23"/>
 
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="INFO"
-                android:id="@+id/btnCalculate"/>
-            <Button
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Start"
-                android:id="@+id/btnAnimate"/>
-            <Button
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Find"
-                android:id="@+id/btnFind"/>
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="horizontal">
-
+            android:orientation="vertical">
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="2dp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1.5"
+                android:id="@+id/tvRegion"
+                android:gravity="center"
+                android:background="@drawable/border"
+                android:textColor="#0000ff"
+                android:textSize="18sp" />
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:id="@+id/tvRegion"
-                    android:gravity="center_horizontal"
-                    android:background="#8800e99b"
-                    android:textColor="#0000ff"
-                    android:textSize="18sp" />
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="10"
+                android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="8"
-                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:orientation="vertical">
-                <com.voodoo.solar.imgPosition
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/rsz_dual_compass_rose"
-                    android:id="@+id/imgPos"/>
+
+
+                    <LinearLayout
+                        android:background="@drawable/border"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="8"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <com.voodoo.solar.imgPosition
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/compass"
+                            android:id="@+id/imgPos"/>
+                    </LinearLayout>
+
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <LinearLayout
-
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.8"
-                android:orientation="horizontal"
-                android:gravity="center">
                 <LinearLayout
                     android:background="@drawable/border"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <ListView
-                        android:layout_margin="10dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.8"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <LinearLayout
+
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:id="@+id/lvForecast">
-                    </ListView>
+                        android:layout_height="wrap_content">
+                        <ListView
+                            android:layout_margin="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
+                            android:id="@+id/lvForecast">
+                        </ListView>
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </LinearLayout>
-
         </LinearLayout>
+
+
     </LinearLayout>
 
     <TextView
@@ -229,5 +181,71 @@
         android:background="#8800ab71"
         android:textColor="#0000ff"
         android:textSize="18sp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ff6600"
+        android:text="Координаты"
+        android:layout_marginTop="5dp"
+        android:gravity="center_horizontal"
+        android:id="@+id/textView"            />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#ffee00"
+        >
+        <TextView
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_marginLeft="5dp"
+            android:text="Широта"/>
+        <EditText
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:inputType="numberDecimal|numberSigned"
+            android:id="@+id/etLatit"
+            android:text="48.5" />
+        <TextView
+            android:layout_weight="2"
+            android:layout_marginLeft="5dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Долгота"/>
+        <EditText
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:inputType="numberDecimal|numberSigned"
+            android:id="@+id/etLong"
+            android:text="32.23"/>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="INFO"
+            android:id="@+id/btnCalculate"/>
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:id="@+id/btnAnimate"/>
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Find"
+            android:id="@+id/btnFind"/>
+    </LinearLayout>
 </LinearLayout>
 

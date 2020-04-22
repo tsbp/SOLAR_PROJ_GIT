@@ -209,19 +209,12 @@ public class MainActivity extends Activity implements OnReceiveListener {
             m.put(ATTRIBUTE_V3, clients.get(i).data[2]);
             m.put(ATTRIBUTE_V4, clients.get(i).data[3]);
             m.put(ATTRIBUTE_V5, clients.get(i).data[4]);
-//            m.put(ATTRIBUTE_IP, clientsIp.get(i)/*[i]*/ & 0xff);
-//            m.put(ATTRIBUTE_V1, clientData[i][0]);
-//            m.put(ATTRIBUTE_V2, clientData[i][1]);
-//            m.put(ATTRIBUTE_V3, clientData[i][2]);
-//            m.put(ATTRIBUTE_V4, clientData[i][3]);
-//            m.put(ATTRIBUTE_V5, clientData[i][4]);
             data.add(m);
 
         }
         String[] from = {ATTRIBUTE_IP, ATTRIBUTE_V1, ATTRIBUTE_V2, ATTRIBUTE_V3, ATTRIBUTE_V4, ATTRIBUTE_V5};
         int[] to = {R.id.i1, R.id.i2, R.id.i3, R.id.i4, R.id.i5, R.id.i6};
         SimpleAdapter sAdapter = new SimpleAdapter(this, data, R.layout.client_item, from, to);
-        //lvClients = (ListView) findViewById(R.id.lvClients);
         lvClients.setAdapter(sAdapter);
         //==========================================================
         lvClients.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -230,7 +223,7 @@ public class MainActivity extends Activity implements OnReceiveListener {
                 byte[] ip = getBroadcastIP4AsBytes();
                 InetAddress iIP = null;
                 assert ip != null;
-                ip[3] = clients.get(position).ip;//clientsIp.get(position)/*[position]*/;
+                ip[3] = clients.get(position).ip;
                 try {
                     iIP = InetAddress.getByAddress(ip);
                 } catch (UnknownHostException e) {
@@ -240,7 +233,7 @@ public class MainActivity extends Activity implements OnReceiveListener {
                 selectedClient = position;
 
                 Intent intent;
-                if (clients.get(selectedClient).data[0].equals("M"))//(clientData[selectedClient][0].equals("M"))
+                if (clients.get(selectedClient).data[0].equals("M"))
                 {
                     ClientConfigMeteo.ip = iIP;
                     intent = new Intent(MainActivity.this, ClientConfigMeteo.class);
@@ -260,6 +253,7 @@ public class MainActivity extends Activity implements OnReceiveListener {
 
     private void lvForecastBuild(byte[] receiveBytes) {
 
+        //http://api.openweathermap.org/data/2.5/weather?lat=32.23&lon=48.5&units=metric&appid=7412b643dfdbf390970f2f65a1bad7ce
         double[] fcData = new double[3];
 
         fcData[0] = (double) ((receiveBytes[18] & 0xff) | (receiveBytes[19] & 0xff) << 8) / 100;
@@ -442,18 +436,18 @@ public class MainActivity extends Activity implements OnReceiveListener {
                             Client currentClient = clients.get(i);
                             if (ip.getAddress()[3] == clients.get(i).ip/*clientsIp[i]*/) {
                                 if (in[0] == UDPCommands.ID_SLAVE) {
-                                    currentClient.data[0]/*clientData[i][0] */= String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ax / 10000));
-                                    currentClient.data[1]/*clientData[i][1] */= String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ay / 10000));
-                                    currentClient.data[2]/*clientData[i][3]*/ = "" + light;
-                                    currentClient.data[3]/*clientData[i][2]*/ = String.format(Locale.ENGLISH, "%.1f", tt);
-                                    currentClient.data[4]/*clientData[i][4]*/ = terms;
-                                    currentClient.data[5]/*clientData[i][5]*/ = "" + stt;
+                                    currentClient.data[0] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ax / 10000));
+                                    currentClient.data[1] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ay / 10000));
+                                    currentClient.data[2] = "" + light;
+                                    currentClient.data[3] = String.format(Locale.ENGLISH, "%.1f", tt);
+                                    currentClient.data[4] = terms;
+                                    currentClient.data[5] = "" + stt;
                                 } else {
-                                    currentClient.data[0]/*clientData[i][0]*/ = "M";
-                                    currentClient.data[1]/*clientData[i][1]*/ = "E";
-                                    currentClient.data[2]/*clientData[i][2]*/ = "T";
-                                    currentClient.data[3]/*clientData[i][3]*/ = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[9] & 0xff) | ((in[10] << 8))));
-                                    currentClient.data[4]/*clientData[i][4]*/ = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[11] & 0xff) | ((in[12] << 8))));
+                                    currentClient.data[0] = "M";
+                                    currentClient.data[1] = "E";
+                                    currentClient.data[2] = "T";
+                                    currentClient.data[3] = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[9] & 0xff) | ((in[10] << 8))));
+                                    currentClient.data[4] = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[11] & 0xff) | ((in[12] << 8))));
 
                                     if (in.length > 19) {
                                         lvForecastBuild(in);
@@ -463,7 +457,6 @@ public class MainActivity extends Activity implements OnReceiveListener {
 
                                 lvBuid();
                                 currentClient.notAnswerDownCounter = 5;
-//                                notAsweredCntr[i] = 0;
 
                                 if (clientActivityCreated == 1) sendIntent();
 
