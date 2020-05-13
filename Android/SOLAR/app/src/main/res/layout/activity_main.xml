@@ -2,101 +2,104 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_margin"
-    android:paddingLeft="@dimen/activity_margin"
-    android:paddingRight="@dimen/activity_margin"
-    android:paddingTop="@dimen/activity_margin"
     android:background="@drawable/border"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_margin"
+    android:paddingTop="@dimen/activity_margin"
+    android:paddingRight="@dimen/activity_margin"
+    android:paddingBottom="@dimen/activity_margin"
     tools:context="com.voodoo.solar.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.8"
-        android:orientation="vertical"
-        android:background="@drawable/border_m">
+        android:background="@drawable/border_m"
+        android:orientation="vertical">
 
 
         <LinearLayout
-            android:layout_margin="5dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:textSize="15dp"
-                android:text="IP"
                 android:background="@drawable/border_m"
-                android:gravity="center_vertical|center_horizontal" />
+                android:gravity="center_vertical|center_horizontal"
+                android:text="IP"
+                android:textSize="15dp" />
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:textSize="15dp"
+                android:background="@drawable/border"
+                android:gravity="center_vertical|center_horizontal"
                 android:text="Pitch"
-                android:background="@drawable/border"
-                android:gravity="center_vertical|center_horizontal"/>
+                android:textSize="15dp" />
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:textSize="15dp"
+                android:background="@drawable/border"
+                android:gravity="center_vertical|center_horizontal"
                 android:text="Roll"
-                android:background="@drawable/border"
-                android:gravity="center_vertical|center_horizontal"/>
+                android:textSize="15dp" />
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:textSize="15dp"
+                android:background="@drawable/border"
+                android:gravity="center_vertical|center_horizontal"
                 android:text="Head"
-                android:background="@drawable/border"
-                android:gravity="center_vertical|center_horizontal"/>
+                android:textSize="15dp" />
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:textSize="15dp"
+                android:background="@drawable/border"
+                android:gravity="center_vertical|center_horizontal"
                 android:text="Light"
-                android:background="@drawable/border"
-                android:gravity="center_vertical|center_horizontal"/>
+                android:textSize="15dp" />
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:textSize="15dp"
-                android:text="Term"
                 android:background="@drawable/border"
-                android:gravity="center_vertical|center_horizontal"/>
+                android:gravity="center_vertical|center_horizontal"
+                android:text="Term"
+                android:textSize="15dp" />
 
         </LinearLayout>
+
         <ListView
-            android:layout_margin="5dp"
+            android:id="@+id/lvClients"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="5"
-            android:id="@+id/lvClients">
-        </ListView>
-
-
+            android:layout_margin="5dp"
+            android:layout_weight="5"></ListView>
 
 
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/linearLayout"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_centerHorizontal="true"
-        android:id="@+id/linearLayout">
-
+        android:layout_weight="1"
+        android:orientation="vertical">
 
 
         <LinearLayout
@@ -104,65 +107,66 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="2dp"
+                android:id="@+id/tvRegion"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="2dp"
                 android:layout_weight="1.5"
-                android:id="@+id/tvRegion"
-                android:gravity="center"
                 android:background="@drawable/border"
+                android:gravity="center"
                 android:textColor="#0000ff"
                 android:textSize="18sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="10"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
 
 
                     <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
                         android:background="@drawable/border"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="8"
                         android:gravity="center"
                         android:orientation="vertical">
                         <com.voodoo.solar.imgPosition
+                            android:id="@+id/imgPos"
                             android:layout_width="150dp"
                             android:layout_height="150dp"
-                            android:layout_gravity="center_horizontal"
                             android:background="@drawable/compass"
-                            android:id="@+id/imgPos"/>
+                            android:layout_gravity="center_horizontal"
+                            android:src="@drawable/compass"/>
+
+
                     </LinearLayout>
 
-                </LinearLayout>
+
 
                 <LinearLayout
-                    android:background="@drawable/border"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.8"
-                    android:orientation="horizontal"
-                    android:gravity="center">
+                    android:background="@drawable/border"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
                     <LinearLayout
 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
+
                         <ListView
-                            android:layout_margin="10dp"
+                            android:id="@+id/lvForecast"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="20dp"
-                            android:id="@+id/lvForecast">
-                        </ListView>
+                            android:layout_margin="10dp"
+                            android:layout_marginLeft="20dp"></ListView>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -174,78 +178,87 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tvPackets"
         android:layout_width="match_parent"
         android:layout_height="20dp"
-        android:id="@+id/tvPackets"
-        android:gravity="center_horizontal"
         android:background="#8800ab71"
+        android:gravity="center_horizontal"
         android:textColor="#0000ff"
         android:textSize="18sp" />
+
     <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ff6600"
-        android:text="Координаты"
         android:layout_marginTop="5dp"
+        android:background="#ff6600"
         android:gravity="center_horizontal"
-        android:id="@+id/textView"            />
+        android:text="Координаты" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:background="#ffee00"
-        >
+        android:orientation="horizontal">
+
         <TextView
-            android:layout_weight="2"
-            android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:text="Широта"/>
+            android:layout_weight="2"
+            android:text="Широта" />
+
         <EditText
-            android:layout_weight="3"
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:inputType="numberDecimal|numberSigned"
             android:id="@+id/etLatit"
-            android:text="48.5" />
-        <TextView
-            android:layout_weight="2"
-            android:layout_marginLeft="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Долгота"/>
-        <EditText
             android:layout_weight="3"
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
             android:inputType="numberDecimal|numberSigned"
+            android:text="48.5" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="2"
+            android:text="Долгота" />
+
+        <EditText
             android:id="@+id/etLong"
-            android:text="32.23"/>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:inputType="numberDecimal|numberSigned"
+            android:text="32.23" />
 
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <Button
-            android:layout_weight="1"
+            android:id="@+id/btnCalculate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="INFO"
-            android:id="@+id/btnCalculate"/>
-        <Button
             android:layout_weight="1"
+            android:text="INFO" />
+
+        <Button
+            android:id="@+id/btnAnimate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Start"
-            android:id="@+id/btnAnimate"/>
-        <Button
             android:layout_weight="1"
+            android:text="Start" />
+
+        <Button
+            android:id="@+id/btnFind"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Find"
-            android:id="@+id/btnFind"/>
+            android:layout_weight="1"
+            android:text="Find" />
     </LinearLayout>
 </LinearLayout>
 

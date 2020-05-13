@@ -7,12 +7,13 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
 
 /**
  * Created by Voodoo on 16.11.2017.
  */
 
-public class imgPosition extends View {
+public class imgPosition extends ImageView {
     Paint p;
     Rect rect;
 
@@ -32,7 +33,7 @@ public class imgPosition extends View {
         canvas.drawARGB(0, 0, 0, 0);
 
         int AREA_WIDTH = canvas.getWidth();
-        int AREA_HEIGH = canvas.getHeight();
+        int AREA_HEIGH = AREA_WIDTH/*canvas.getHeight()*/;
 
         // настройка кисти
         // красный цвет
