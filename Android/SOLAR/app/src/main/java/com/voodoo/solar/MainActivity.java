@@ -475,6 +475,9 @@ public class MainActivity extends Activity implements OnReceiveListener {
                         break;
                 }
             }
+
+            // zatychka ot neprihodyaschih paketov
+            UDPCommands.sendCmd(UDPCommands.NOP, null, ip);
         } catch (Exception e) {
             e.printStackTrace();
         }

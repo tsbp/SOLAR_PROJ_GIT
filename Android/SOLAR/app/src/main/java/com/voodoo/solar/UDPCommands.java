@@ -49,6 +49,7 @@ public class UDPCommands
     public final static byte ID_SLAVE     = (byte)0x3c;
     public final static byte ID_METEO     = (byte)0x3D;
 
+    public final static byte NOP     = (byte)0xff;
     //==============================================================================================
     //public  static void sendCmd(byte aCmd, short angle, short azimuth, byte angIncrement, InetAddress aIP)
     public  static void sendCmd(byte aCmd, byte [] aData, InetAddress aIP)
