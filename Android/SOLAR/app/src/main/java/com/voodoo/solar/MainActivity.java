@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -56,11 +57,10 @@ public class MainActivity extends Activity implements OnReceiveListener {
 
     ListView lvClients, lvForecast;
 
+    com.voodoo.solar.Compass compass;
 
-    LinkedList<Client> clients = new LinkedList();
-//    LinkedList<Byte> clientsIp;
-//    String clientData[][];
-//    int notAsweredCntr[] = new int[100];
+
+    LinkedList<Client> clients = new LinkedList<>();
 
     public static int clientActivityCreated = 0;
 
@@ -92,7 +92,9 @@ public class MainActivity extends Activity implements OnReceiveListener {
 
         etLong = (EditText) findViewById(R.id.etLong);
         etLatit = (EditText) findViewById(R.id.etLatit);
-//        imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
+        //com.voodoo.solar.imgPosition imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
+
+        compass = (com.voodoo.solar.Compass) findViewById(R.id.compassImg);
 
         sunPos.Lon = Math.toRadians(Double.parseDouble(etLong.getText().toString()));
         sunPos.Lat = Math.toRadians(Double.parseDouble(etLatit.getText().toString()));
@@ -134,14 +136,6 @@ public class MainActivity extends Activity implements OnReceiveListener {
                                 }
                             }
                         }
-                        //-----------------------------------------
-//                        if(clientsIp != null)
-//                        {
-//                            for (int i = 0; i < clientsIp.size(); i++) notAsweredCntr[i]++;
-//                            for (int i = 0; i < clientsIp.size(); i++)
-//                                if (notAsweredCntr[i] > 5) deleteListRow(i);
-//                        }
-
                     }
                 });
             }
@@ -200,18 +194,19 @@ public class MainActivity extends Activity implements OnReceiveListener {
     void lvBuid() {
         ArrayList<Map<String, Object>> data = new ArrayList<>(clients.size());
         Map<String, Object> m;
-        for (int i = 0; i < clients.size(); i++) {
 
+        for (Client c : clients) {
             m = new HashMap<>();
-            m.put(ATTRIBUTE_IP, clients.get(i).ip & 0xff);
-            m.put(ATTRIBUTE_V1, clients.get(i).data[0]);
-            m.put(ATTRIBUTE_V2, clients.get(i).data[1]);
-            m.put(ATTRIBUTE_V3, clients.get(i).data[2]);
-            m.put(ATTRIBUTE_V4, clients.get(i).data[3]);
-            m.put(ATTRIBUTE_V5, clients.get(i).data[4]);
+            m.put(ATTRIBUTE_IP, c.ip & 0xff);
+            m.put(ATTRIBUTE_V1, c.data[0]);
+            m.put(ATTRIBUTE_V2, c.data[1]);
+            m.put(ATTRIBUTE_V3, c.data[2]);
+            m.put(ATTRIBUTE_V4, c.data[3]);
+            m.put(ATTRIBUTE_V5, c.data[4]);
             data.add(m);
 
         }
+
         String[] from = {ATTRIBUTE_IP, ATTRIBUTE_V1, ATTRIBUTE_V2, ATTRIBUTE_V3, ATTRIBUTE_V4, ATTRIBUTE_V5};
         int[] to = {R.id.i1, R.id.i2, R.id.i3, R.id.i4, R.id.i5, R.id.i6};
         SimpleAdapter sAdapter = new SimpleAdapter(this, data, R.layout.client_item, from, to);
@@ -284,13 +279,18 @@ public class MainActivity extends Activity implements OnReceiveListener {
         int[] to = {R.id.picto, R.id.i1};
         SimpleAdapter sAdapter = new SimpleAdapter(this, data, R.layout.forecast_item, from, to);
         lvForecast.setAdapter(sAdapter);
+        redrawSunPosition(receiveBytes);
+    }
 
-        // compass
+    com.voodoo.solar.imgPosition iw;
+    //**********************************************************************************************
+    void redrawSunPosition(byte[] receiveBytes) {
         double azimuth = 0.01 * (double) ((receiveBytes[9] & 0xff) | ((receiveBytes[10] << 8)));
         double elevation = 0.01 * (double) ((receiveBytes[11] & 0xff) | ((receiveBytes[12] << 8)));
-        imgPosition.azimuth = azimuth;
-        imgPosition.elevation = elevation;
-        findViewById(R.id.imgPos).invalidate();
+        Compass.azimuth = azimuth;
+        Compass.elevation = elevation;
+        compass = (com.voodoo.solar.Compass) findViewById(R.id.compassImg);
+        compass.invalidate();
     }
 
     /***********************************************************************************************
@@ -438,8 +438,8 @@ public class MainActivity extends Activity implements OnReceiveListener {
                                 if (in[0] == UDPCommands.ID_SLAVE) {
                                     currentClient.data[0] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ax / 10000));
                                     currentClient.data[1] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ay / 10000));
-                                    currentClient.data[2] = "" + light;
-                                    currentClient.data[3] = String.format(Locale.ENGLISH, "%.1f", tt);
+                                    currentClient.data[2] = String.format(Locale.ENGLISH, "%.1f", tt);
+                                    currentClient.data[3] = "" + light;
                                     currentClient.data[4] = terms;
                                     currentClient.data[5] = "" + stt;
                                 } else {
@@ -453,6 +453,7 @@ public class MainActivity extends Activity implements OnReceiveListener {
                                         lvForecastBuild(in);
                                     }
                                     ClientConfigMeteo.data = Arrays.copyOfRange(in, 3, 3 + 15);
+                                    //redrawSunPosition(in);
                                 }
 
                                 lvBuid();
@@ -477,7 +478,7 @@ public class MainActivity extends Activity implements OnReceiveListener {
             }
 
             // zatychka ot neprihodyaschih paketov
-            UDPCommands.sendCmd(UDPCommands.NOP, null, ip);
+            UDPCommands.sendCmd(UDPCommands.NOP, null, broadcastIP);
         } catch (Exception e) {
             e.printStackTrace();
         }

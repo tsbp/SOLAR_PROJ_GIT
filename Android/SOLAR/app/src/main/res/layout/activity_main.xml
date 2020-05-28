@@ -135,13 +135,20 @@
                         android:background="@drawable/border"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <com.voodoo.solar.imgPosition
+
+                        <!--com.voodoo.solar.imgPosition
                             android:id="@+id/imgPos"
                             android:layout_width="150dp"
                             android:layout_height="150dp"
                             android:background="@drawable/compass"
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/compass"/>
+                            android:layout_gravity="center_horizontal"/-->
+
+                        <com.voodoo.solar.Compass
+                            android:id="@+id/compassImg"
+                            android:layout_margin="5dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+
 
 
                     </LinearLayout>

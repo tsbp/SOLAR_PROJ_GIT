@@ -15,7 +15,6 @@ import android.widget.ImageView;
 
 public class imgPosition extends ImageView {
     Paint p;
-    Rect rect;
 
     public static double azimuth;
     public static double elevation;
@@ -24,7 +23,6 @@ public class imgPosition extends ImageView {
         super(context, attrs);
 
         p = new Paint();
-        rect = new Rect();
     }
 
     @Override
