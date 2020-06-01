@@ -136,6 +136,8 @@ public class MainActivity extends Activity implements OnReceiveListener {
                                 }
                             }
                         }
+                        // zatychka ot neprihodyaschih paketov
+                        UDPCommands.sendCmd(UDPCommands.NOP, null, broadcastIP);
                     }
                 });
             }
@@ -407,22 +409,36 @@ public class MainActivity extends Activity implements OnReceiveListener {
                         break;
                     case UDPCommands.CMD_STATE:
 
-                        String terms = "";
-                        if ((in[11] & (short) 1) == 1)
-                            terms += "1"; //btnIn1.setBackgroundColor(Color.RED);
-                        else terms += "0"; //btnIn1.setBackgroundColor(Color.GREEN);
-                        if ((in[11] & (short) 2) == 2)
-                            terms += "1"; //btnIn2.setBackgroundColor(Color.RED);
-                        else terms += "0"; //btnIn2.setBackgroundColor(Color.GREEN);
-                        if ((in[11] & (short) 4) == 4)
-                            terms += "1"; //btnIn3.setBackgroundColor(Color.RED);
-                        else terms += "0"; //btnIn3.setBackgroundColor(Color.GREEN);
-                        if ((in[11] & (short) 8) == 8)
-                            terms += "1"; //btnIn4.setBackgroundColor(Color.RED);
-                        else terms += "0"; //btnIn4.setBackgroundColor(Color.GREEN);
+//                        String terms = ""; // if no faults show terminators state
+//                        if ((in[11] & (short) 1) == 1)
+//                            terms += "1";
+//                        else terms += "0";
+//                        if ((in[11] & (short) 2) == 2)
+//                            terms += "1";
+//                        else terms += "0";
+//                        if ((in[11] & (short) 4) == 4)
+//                            terms += "1";
+//                        else terms += "0";
+//                        if ((in[11] & (short) 8) == 8)
+//                            terms += "1";
+//                        else terms += "0";
+
+
 
                         int light = (((in[10] << 8) & 0xff00) | in[9] & 0xff);
+
                         int stt = (in[12] & 0xff);
+                        String state = "";
+                        if(((byte)(in[12] & 0xff) & 0x02) != 0)
+                            state = "РУЧ";
+                        else if(((byte)(in[12] & 0xff) & (byte)0x28) == (byte)0x28)
+                            state = "А:ДM";
+                        else if(((byte)(in[12] & 0xff) & (byte)0x20) == (byte)0x20)
+                            state = "А:М";
+                        else if(((byte)(in[12] & 0xff) & (byte)0x08) == (byte)0x08)
+                            state = "А:Д";
+                        else if(((byte)(in[12] & 0xff) & 0x02) == 0)
+                            state = "АВТО";
 
                         ax = (short) (((in[4] << 8) & 0xff00) | in[3] & 0xff);
                         ay = (short) (((in[6] << 8) & 0xff00) | in[5] & 0xff);
@@ -440,7 +456,7 @@ public class MainActivity extends Activity implements OnReceiveListener {
                                     currentClient.data[1] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ay / 10000));
                                     currentClient.data[2] = String.format(Locale.ENGLISH, "%.1f", tt);
                                     currentClient.data[3] = "" + light;
-                                    currentClient.data[4] = terms;
+                                    currentClient.data[4] = state;
                                     currentClient.data[5] = "" + stt;
                                 } else {
                                     currentClient.data[0] = "M";
@@ -476,9 +492,6 @@ public class MainActivity extends Activity implements OnReceiveListener {
                         break;
                 }
             }
-
-            // zatychka ot neprihodyaschih paketov
-            UDPCommands.sendCmd(UDPCommands.NOP, null, broadcastIP);
         } catch (Exception e) {
             e.printStackTrace();
         }
