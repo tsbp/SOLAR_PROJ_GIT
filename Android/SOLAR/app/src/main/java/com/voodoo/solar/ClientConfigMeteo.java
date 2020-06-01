@@ -340,14 +340,14 @@ public class ClientConfigMeteo extends Activity {
             String str = new String(cfg);
             ssid.setText(str.substring(2,str.indexOf('$')));
             //ssidPass.setText(str.substring(str.indexOf('$') + 1, str.length()));
-            try {
+            //try {
                 ssidPass.setText(str.substring(str.indexOf('$') + 1, str.indexOf('#')));
                 otaIp.setText(str.substring(str.indexOf('#') + 1, str.length()));
-            }
-            catch (Exception e)
-            {
-
-            }
+//            }
+//            catch (Exception e)
+//            {
+//
+//            }
         }
 
         spinnerS.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

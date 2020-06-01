@@ -28,7 +28,7 @@ public class imgPosition extends ImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         // заливка канвы цветом
-        canvas.drawARGB(0, 0, 0, 0);
+//        canvas.drawARGB(0, 0, 0, 0);
 
         int AREA_WIDTH = canvas.getWidth();
         int AREA_HEIGH = AREA_WIDTH/*canvas.getHeight()*/;
