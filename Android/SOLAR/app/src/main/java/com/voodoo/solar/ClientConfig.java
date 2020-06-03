@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
@@ -28,18 +29,22 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.voodoo.solar.MainActivity.BROADCAST_ACTION;
+import static com.voodoo.solar.IPHelper.getBroadcastIP4AsBytes;
+import static com.voodoo.solar.MainActivity.BROADCAST_ACTION_CLIENT;
 
 public class ClientConfig extends Activity {
 
-    TextView tvStt, tvIp, tvPitch, tvRoll, tvHead, tvLigth, tvTerm;
+    TextView tvIp/*, tvStt, tvPitch, tvRoll, tvHead, tvLigth, tvTerm*/;
 
+    ListView lvClientInfo;
+    ImageView ivMotor, ivSensor;
 
     public final static String CALIB_DATA = "Calib data";
 
@@ -58,12 +63,17 @@ public class ClientConfig extends Activity {
         view.setRenderer(new OpenGLRenderer());
 
 
-        tvPitch = (TextView) findViewById(R.id.tvPitch);
-        tvRoll = (TextView) findViewById(R.id.tvRoll);
-        tvHead = (TextView) findViewById(R.id.tvHead);
-        tvLigth = (TextView) findViewById(R.id.tvLigth);
-        tvTerm = (TextView) findViewById(R.id.tvTerm);
-        tvStt = (TextView) findViewById(R.id.tvState);
+//        tvPitch = (TextView) findViewById(R.id.tvPitch);
+//        tvRoll = (TextView) findViewById(R.id.tvRoll);
+//        tvHead = (TextView) findViewById(R.id.tvHead);
+//        tvLigth = (TextView) findViewById(R.id.tvLigth);
+//        tvTerm = (TextView) findViewById(R.id.tvTerm);
+//        tvStt = (TextView) findViewById(R.id.tvFault);
+
+        ivMotor = (ImageView) findViewById(R.id.ivMotorFault);
+        ivSensor = (ImageView) findViewById(R.id.ivSensorFault);
+
+        lvClientInfo = (ListView) findViewById(R.id.lvClientInfo);
 
         tvIp = (TextView) findViewById(R.id.tvIP);
         tvIp.setText("" + ip.getHostAddress());
@@ -85,31 +95,44 @@ public class ClientConfig extends Activity {
         br = new BroadcastReceiver() {
             // действия при получении сообщений
             public void onReceive(Context context, Intent intent) {
-                String input = intent.getStringExtra(MainActivity.PARAM_PITCH);
-                tvPitch.setText(input);
-                input = intent.getStringExtra(MainActivity.PARAM_ROLL);
-                tvRoll.setText(input);
-                input = intent.getStringExtra(MainActivity.PARAM_HEAD);
-                tvHead.setText(input);
-                input = intent.getStringExtra(MainActivity.PARAM_LIGTH);
-                tvLigth.setText(input);
-                input = intent.getStringExtra(MainActivity.PARAM_TERM);
-                tvTerm.setText(input);
-                input = intent.getStringExtra(MainActivity.PARAM_STT);
-                tvStt.setText(input);
+                try {
+                    lvBuid(intent);
+                    String input = intent.getStringExtra(MainActivity.PARAM_STT);
+                    sysState = Byte.parseByte(input);
+                    if ((sysState & (byte) 0x02) != 0)
+                        btnManual.setBackgroundResource(R.drawable.control);
+                    else
+                        btnManual.setBackgroundResource(R.drawable.auto);
 
-                sysState = Byte.parseByte(input);
-                if ((sysState & (byte) 0x02) != 0)
-                    //btnManual.setBackgroundColor(Color.RED);
-                btnManual.setBackgroundResource(R.drawable.control);
-                else
-//                    btnManual.setBackgroundColor(Color.GREEN);
-                    btnManual.setBackgroundResource(R.drawable.auto);
+                    input = intent.getStringExtra(MainActivity.PARAM_TERM);
+                    if(input.contains("Д")) {
+                        ivSensor.setImageResource(R.drawable.sensor);
+                    }
+                    else {
+                        ivSensor.setImageResource(R.drawable.ok);
+                    }
+
+                    String s = "M";
+                    if(input.contains(s)) {
+                        ivMotor.setImageResource(R.drawable.check);
+                    }
+                    else {
+                        ivMotor.setImageResource(R.drawable.ok);
+                    }
+
+//                        state = "А:ДM";
+//                    else if(((byte)(in[12] & 0xff) & (byte)0x20) == (byte)0x20)
+//                        state = "А:М";
+//                    else if(((byte)(in[12] & 0xff) & (byte)0x08) == (byte)0x08)
+//                        state = "А:Д";
+                }
+                catch (Exception ignored){
+
+                }
             }
         };
-        IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
+        IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION_CLIENT);
         registerReceiver(br, intFilt);
-
 
         //================================================
         Button btnUp = (Button) findViewById(R.id.btnUp);
@@ -189,6 +212,41 @@ public class ClientConfig extends Activity {
         });
     }
 
+    //==============================================================================================
+    private final String ATTRIBUTE_LOGO = "attr_logo";
+    private final String ATTRIBUTE_VALUE = "attr_value";
+
+    private String [] paramStrings = {
+            MainActivity.PARAM_PITCH, MainActivity.PARAM_ROLL,
+            MainActivity.PARAM_HEAD, MainActivity.PARAM_LIGTH/*,
+            MainActivity.PARAM_TERM, MainActivity.PARAM_STT*/};
+    private int [] logos = {
+            R.drawable.angle, R.drawable.tilt, R.drawable.compass_small, R.drawable.light};
+    //==============================================================================================
+    void lvBuid(Intent intent) {
+
+        ArrayList<Map<String, Object>> data = new ArrayList<>(paramStrings.length);
+        Map<String, Object> m;
+
+        for (int i = 0; i < paramStrings.length ; i++) {
+            m = new HashMap<>();
+            m.put(ATTRIBUTE_LOGO, logos[i]);
+            m.put(ATTRIBUTE_VALUE, intent.getStringExtra(paramStrings[i]));
+            data.add(m);
+        }
+
+        String[] from = {ATTRIBUTE_LOGO, ATTRIBUTE_VALUE};
+        int[] to = {R.id.picto, R.id.value};
+        SimpleAdapter sAdapter = new SimpleAdapter(this, data, R.layout.client_info_item2, from, to);
+        lvClientInfo.setAdapter(sAdapter);
+    }
+
+    //==============================================================================================
+    private String getFaults(String stringExtra) {
+        return "Norma";
+    }
+
+    //==============================================================================================
     private void buttoEventHandle(MotionEvent event, byte direction) {
         byte[] tmp;
         switch (event.getAction()) {
@@ -540,6 +598,6 @@ public class ClientConfig extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MainActivity.clientActivityCreated = 0;
+        MainActivity.clientActivityCreated = "";
     }
 }

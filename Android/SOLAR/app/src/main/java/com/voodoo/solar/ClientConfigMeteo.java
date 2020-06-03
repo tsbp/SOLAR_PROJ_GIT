@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 import java.net.InetAddress;
 
-import static com.voodoo.solar.MainActivity.BROADCAST_ACTION;
+import static com.voodoo.solar.MainActivity.BROADCAST_ACTION_METEO;
 
 public class ClientConfigMeteo extends Activity {
 
@@ -144,7 +144,7 @@ public class ClientConfigMeteo extends Activity {
                 imgSun.invalidate();
             }
         };
-        IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
+        IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION_METEO);
         registerReceiver(br, intFilt);
 
         //================================================
@@ -406,6 +406,6 @@ public class ClientConfigMeteo extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MainActivity.clientActivityCreated = 0;
+        MainActivity.clientActivityCreated = "";
     }
 }

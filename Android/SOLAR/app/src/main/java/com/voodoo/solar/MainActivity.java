@@ -62,9 +62,10 @@ public class MainActivity extends Activity implements OnReceiveListener {
 
     LinkedList<Client> clients = new LinkedList<>();
 
-    public static int clientActivityCreated = 0;
+    public static String clientActivityCreated = "";
 
-    public final static String BROADCAST_ACTION = "broadcast Cient data";
+    public final static String BROADCAST_ACTION_CLIENT = "broadcast data";
+    public final static String BROADCAST_ACTION_METEO = "broadcast data";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,8 +137,7 @@ public class MainActivity extends Activity implements OnReceiveListener {
                                 }
                             }
                         }
-                        // zatychka ot neprihodyaschih paketov
-                        UDPCommands.sendCmd(UDPCommands.NOP, null, broadcastIP);
+
                     }
                 });
             }
@@ -162,18 +162,29 @@ public class MainActivity extends Activity implements OnReceiveListener {
     }
 
     //==============================================================================================
-    int selectedClient = 0;
-
+    Client selectedClient;
     //==============================================================================================
-    void sendIntent() {
-        Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
-        intent.putExtra(PARAM_PITCH, clients.get(selectedClient).data[0]);
-        intent.putExtra(PARAM_ROLL, clients.get(selectedClient).data[1]);
-        intent.putExtra(PARAM_HEAD, clients.get(selectedClient).data[2]);
-        intent.putExtra(PARAM_LIGTH, clients.get(selectedClient).data[3]);
-        intent.putExtra(PARAM_TERM, clients.get(selectedClient).data[4]);
-        intent.putExtra(PARAM_STT, clients.get(selectedClient).data[5]);
-        sendBroadcast(intent);
+    void sendIntent(String action) {
+
+        if(selectedClient != null) {
+            Intent intent = new Intent(action/*MainActivity.BROADCAST_ACTION*/);
+//        intent.putExtra(PARAM_PITCH, clients.get(selectedClient).data[0]);
+//        intent.putExtra(PARAM_ROLL, clients.get(selectedClient).data[1]);
+//        intent.putExtra(PARAM_HEAD, clients.get(selectedClient).data[2]);
+//        intent.putExtra(PARAM_LIGTH, clients.get(selectedClient).data[3]);
+//        intent.putExtra(PARAM_TERM, clients.get(selectedClient).data[4]);
+//        intent.putExtra(PARAM_STT, clients.get(selectedClient).data[5]);
+            intent.putExtra(PARAM_PITCH, selectedClient.data[0]);
+            intent.putExtra(PARAM_ROLL, selectedClient.data[1]);
+            intent.putExtra(PARAM_HEAD, selectedClient.data[2]);
+            intent.putExtra(PARAM_LIGTH, selectedClient.data[3]);
+            intent.putExtra(PARAM_TERM, selectedClient.data[4]);
+            intent.putExtra(PARAM_STT, selectedClient.data[5]);
+
+            sendBroadcast(intent);
+//            OpenGLRenderer.pitch = (float) ax / 10000;
+//            OpenGLRenderer.roll = (float) ay / 10000;
+        }
     }
 
     //==============================================================================================
@@ -226,17 +237,25 @@ public class MainActivity extends Activity implements OnReceiveListener {
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
-                clientActivityCreated = 1;
-                selectedClient = position;
+                //clientActivityCreated = 1;
+                //selectedClient = position;
+                for(Client c: clients) {
+                    if(c.ip == clients.get(position).ip){
+                        selectedClient = c;
+                        break;
+                    }
+                }
 
                 Intent intent;
-                if (clients.get(selectedClient).data[0].equals("M"))
+                if (clients.get(position).data[0].equals("M"))
                 {
                     ClientConfigMeteo.ip = iIP;
                     intent = new Intent(MainActivity.this, ClientConfigMeteo.class);
+                    clientActivityCreated = MainActivity.BROADCAST_ACTION_METEO;
                 } else {
                     ClientConfig.ip = iIP;
                     intent = new Intent(MainActivity.this, ClientConfig.class);
+                    clientActivityCreated = MainActivity.BROADCAST_ACTION_CLIENT;
                 }
                 startActivity(intent);
             }
@@ -423,66 +442,67 @@ public class MainActivity extends Activity implements OnReceiveListener {
 //                            terms += "1";
 //                        else terms += "0";
 
-
-
-                        int light = (((in[10] << 8) & 0xff00) | in[9] & 0xff);
-
-                        int stt = (in[12] & 0xff);
-                        String state = "";
-                        if(((byte)(in[12] & 0xff) & 0x02) != 0)
-                            state = "РУЧ";
-                        else if(((byte)(in[12] & 0xff) & (byte)0x28) == (byte)0x28)
-                            state = "А:ДM";
-                        else if(((byte)(in[12] & 0xff) & (byte)0x20) == (byte)0x20)
-                            state = "А:М";
-                        else if(((byte)(in[12] & 0xff) & (byte)0x08) == (byte)0x08)
-                            state = "А:Д";
-                        else if(((byte)(in[12] & 0xff) & 0x02) == 0)
-                            state = "АВТО";
-
-                        ax = (short) (((in[4] << 8) & 0xff00) | in[3] & 0xff);
-                        ay = (short) (((in[6] << 8) & 0xff00) | in[5] & 0xff);
-                        az = (short) (((in[8] << 8) & 0xff00) | in[7] & 0xff);
-
-
-                        double tt = Math.toDegrees((double) az / 10000);
-                        if (tt < 0) tt += 360;
                         // find ip
                         for (int i = 0; i < clients.size(); i++) {
                             Client currentClient = clients.get(i);
                             if (ip.getAddress()[3] == clients.get(i).ip/*clientsIp[i]*/) {
                                 if (in[0] == UDPCommands.ID_SLAVE) {
-                                    currentClient.data[0] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ax / 10000));
-                                    currentClient.data[1] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ay / 10000));
-                                    currentClient.data[2] = String.format(Locale.ENGLISH, "%.1f", tt);
-                                    currentClient.data[3] = "" + light;
-                                    currentClient.data[4] = state;
-                                    currentClient.data[5] = "" + stt;
-                                } else {
-                                    currentClient.data[0] = "M";
-                                    currentClient.data[1] = "E";
-                                    currentClient.data[2] = "T";
-                                    currentClient.data[3] = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[9] & 0xff) | ((in[10] << 8))));
-                                    currentClient.data[4] = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[11] & 0xff) | ((in[12] << 8))));
 
+                                    ax = (short) (((in[4] << 8) & 0xff00) | in[3] & 0xff);
+                                    ay = (short) (((in[6] << 8) & 0xff00) | in[5] & 0xff);
+                                    az = (short) (((in[8] << 8) & 0xff00) | in[7] & 0xff);
+
+                                    double tt = Math.toDegrees((double) az / 10000);
+                                    if (tt < 0) tt += 360;
+
+                                    int light = (((in[10] << 8) & 0xff00) | in[9] & 0xff);
+
+                                    int stt = (in[12] & 0xff);
+                                    String state = "";
+                                    if(((byte)(in[12] & 0xff) & 0x02) != 0)
+                                        state = "РУЧ";
+                                    else if(((byte)(in[12] & 0xff) & (byte)0x28) == (byte)0x28)
+                                        state = "А:ДM";
+                                    else if(((byte)(in[12] & 0xff) & (byte)0x20) == (byte)0x20)
+                                        state = "А:M";
+                                    else if(((byte)(in[12] & 0xff) & (byte)0x08) == (byte)0x08)
+                                        state = "А:Д";
+                                    else if(((byte)(in[12] & 0xff) & 0x02) == 0)
+                                        state = "АВТО";
+                                     {
+                                        currentClient.data[0] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ax / 10000));
+                                        currentClient.data[1] = String.format(Locale.ENGLISH, "%.1f", Math.toDegrees((double) ay / 10000));
+                                        currentClient.data[2] = String.format(Locale.ENGLISH, "%.1f", tt);
+                                        currentClient.data[3] = "" + light;
+                                        currentClient.data[4] = state;
+                                        currentClient.data[5] = "" + stt;
+                                    }
+                                } else {
+                                    {
+                                        currentClient.data[0] = "M";
+                                        currentClient.data[1] = "E";
+                                        currentClient.data[2] = "T";
+                                        currentClient.data[3] = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[9] & 0xff) | ((in[10] << 8))));
+                                        currentClient.data[4] = String.format(Locale.ENGLISH, "%.1f", 0.01 * (double) ((in[11] & 0xff) | ((in[12] << 8))));
+                                    }
                                     if (in.length > 19) {
                                         lvForecastBuild(in);
                                     }
                                     ClientConfigMeteo.data = Arrays.copyOfRange(in, 3, 3 + 15);
-                                    //redrawSunPosition(in);
                                 }
 
                                 lvBuid();
                                 currentClient.notAnswerDownCounter = 5;
 
-                                if (clientActivityCreated == 1) sendIntent();
-
-                                if (i == selectedClient) {
+                                if (currentClient.ip == selectedClient.ip/*i == selectedClient*/) {
                                     OpenGLRenderer.pitch = (float) ax / 10000;
                                     OpenGLRenderer.roll = (float) ay / 10000;
+                                    sendIntent(MainActivity.BROADCAST_ACTION_CLIENT);
                                 }
                             }
                         }
+                        // zatychka ot neprihodyaschih paketov
+                        UDPCommands.sendCmd(UDPCommands.NOP, null, broadcastIP);
                         break;
 
                     case UDPCommands.CMD_CFG:

@@ -5,7 +5,7 @@
     >
 
     <Button
-android:background="@drawable/control"
+        android:background="@drawable/control"
         android:layout_width="@dimen/joystick_button_size"
         android:layout_height="@dimen/joystick_button_size"
         android:layout_centerInParent="true"

@@ -11,26 +11,149 @@
     android:paddingBottom="@dimen/activity_margin"
     tools:context="com.voodoo.solar.ClientConfig">
 
-    <include
-        layout="@layout/client_info_item"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_weight="2"
+        android:background="@drawable/border_m">
+        <TextView
+            android:text="IP"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvIP"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:textSize="25sp" />
+        <Button
+            android:layout_margin="@dimen/acc_calib_margin"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/btnCfg"
+            android:text="CFG"/>
+
+    </LinearLayout>
 
 
     <LinearLayout
+        android:background="@drawable/border"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ListView
+                android:layout_margin="@dimen/acc_calib_margin"
+                android:id="@+id/lvClientInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </ListView>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:background="@drawable/border_m"
+                android:orientation="vertical"
+                android:layout_margin="@dimen/acc_calib_margin"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/tvFault"
+                    android:background="@drawable/border_m"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:textSize="18dp"
+                    android:text="Состояние"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3">
+                    <ImageView
+                        android:id="@+id/ivSensorFault"
+                        android:layout_margin="10dp"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        tools:ignore="ContentDescription" />
+                    <ImageView
+                        android:id="@+id/ivMotorFault"
+                        android:layout_margin="10dp"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        tools:ignore="ContentDescription" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <android.opengl.GLSurfaceView
+                android:layout_margin="@dimen/acc_calib_margin"
+                android:id="@+id/w3D"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@drawable/border_m"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="horizontal">
+        <Button
+            android:layout_margin="@dimen/acc_calib_margin"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="FWUP"
+            android:id="@+id/btnUpdate"/>
+        <Button
+            android:layout_margin="@dimen/acc_calib_margin"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="ACC"
+            android:id="@+id/btnAccCal"/>
+        <Button
+            android:layout_margin="@dimen/acc_calib_margin"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="CMP"
+            android:id="@+id/btnCmpCal"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginTop="5dp"
-        android:layout_weight="1"
+        android:layout_weight="8"
         android:gravity="center"
         android:orientation="vertical">
-
-        <android.opengl.GLSurfaceView
-            android:id="@+id/w3D"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="10dp" />
 
         <include layout="@layout/joystick_item" />
 
