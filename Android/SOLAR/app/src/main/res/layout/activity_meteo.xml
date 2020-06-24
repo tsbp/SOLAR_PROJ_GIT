@@ -156,6 +156,7 @@
                         android:layout_weight="5"
                         android:id="@+id/tvMeteoWind" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"

@@ -42,7 +42,8 @@ public class ClientConfigMeteo extends Activity {
 
     public final static byte STOPPED   = (byte)0x0;
     public final static byte TRACKING  = (byte)0x1;
-    public final static byte ALARM     = (byte)0x2;
+    public final static byte ALARM     = (byte)0x5;
+    public final static byte ATTENTION = (byte)0x2;
     public final static byte MANUAL_ALARM     = (byte)0x3;
     byte meteoState = 0;
 
@@ -118,6 +119,11 @@ public class ClientConfigMeteo extends Activity {
                         bAlarm.setText("ALARM INACTIVE");
                     }break;
 
+                    case ATTENTION:
+                    {
+                        bAlarm.setText("ATTENTION");
+                        bAlarm.setBackgroundColor(Color.YELLOW);
+                    } break;
                     case ALARM:
                     case MANUAL_ALARM:
                     {
@@ -236,6 +242,8 @@ public class ClientConfigMeteo extends Activity {
         zone.clearFocus();
         final EditText wind = (EditText) Viewlayout.findViewById(R.id.tvMeteoWindCFG);
         wind.clearFocus();
+        final EditText windHigh = (EditText) Viewlayout.findViewById(R.id.tvMeteoWindHighCFG);
+        wind.clearFocus();
         final EditText light = (EditText) Viewlayout.findViewById(R.id.tvMeteoLightCFG);
         light.clearFocus();
 
@@ -256,18 +264,19 @@ public class ClientConfigMeteo extends Activity {
 
         zone.setText ("" + ((cfgData[4] & 0xff) | ((cfgData[5] << 8))));
         wind.setText ("" + ((cfgData[6] & 0xff) | ((cfgData[7] << 8))));
-        light.setText("" + ((cfgData[8] & 0xff) | ((cfgData[9] << 8))));
+        windHigh.setText ("" + ((cfgData[8] & 0xff) | ((cfgData[9] << 8))));
+        light.setText("" + ((cfgData[10] & 0xff) | ((cfgData[11] << 8))));
 
-        angH_max.setText("" + ((cfgData[10] & 0xff) | ((cfgData[11] << 8))));
-        angH_min.setText("" + ((cfgData[12] & 0xff) | ((cfgData[13] << 8))));
-        angV_max.setText("" + ((cfgData[14] & 0xff) | ((cfgData[15] << 8))));
-        angV_min.setText("" + ((cfgData[16] & 0xff) | ((cfgData[17] << 8))));
+        angH_max.setText("" + ((cfgData[12] & 0xff) | ((cfgData[13] << 8))));
+        angH_min.setText("" + ((cfgData[14] & 0xff) | ((cfgData[15] << 8))));
+        angV_max.setText("" + ((cfgData[16] & 0xff) | ((cfgData[17] << 8))));
+        angV_min.setText("" + ((cfgData[18] & 0xff) | ((cfgData[19] << 8))));
 
         popDialog.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
-                        byte[] tmp = new byte[19];
+                        byte[] tmp = new byte[21];
                         tmp[0] = UDPCommands.SET;
                         tmp[1] = (byte) (getInt(lat.getText().toString()) & 0xff);
                         tmp[2] = (byte) ((getInt(lat.getText().toString()) >> 8) & 0xff);
@@ -277,17 +286,20 @@ public class ClientConfigMeteo extends Activity {
                         tmp[6] = (byte) ((Integer.parseInt(zone.getText().toString()) >> 8) & 0xff);
                         tmp[7] = (byte) (Integer.parseInt(wind.getText().toString()) & 0xff);
                         tmp[8] = (byte) ((Integer.parseInt(wind.getText().toString()) >> 8) & 0xff);
-                        tmp[9] = (byte) (Integer.parseInt(light.getText().toString()) & 0xff);
-                        tmp[10] =(byte) ((Integer.parseInt(light.getText().toString()) >> 8) & 0xff);
+                        tmp[9] = (byte) (Integer.parseInt(windHigh.getText().toString()) & 0xff);
+                        tmp[10] = (byte) ((Integer.parseInt(windHigh.getText().toString()) >> 8) & 0xff);
 
-                        tmp[11] = (byte) (Integer.parseInt(angH_max.getText().toString()) & 0xff);
-                        tmp[12] =(byte) ((Integer.parseInt(angH_max.getText().toString()) >> 8) & 0xff);
-                        tmp[13] = (byte) (Integer.parseInt(angH_min.getText().toString()) & 0xff);
-                        tmp[14] =(byte) ((Integer.parseInt(angH_min.getText().toString()) >> 8) & 0xff);
-                        tmp[15] = (byte) (Integer.parseInt(angV_max.getText().toString()) & 0xff);
-                        tmp[16] =(byte) ((Integer.parseInt(angV_max.getText().toString()) >> 8) & 0xff);
-                        tmp[17] = (byte) (Integer.parseInt(angV_min.getText().toString()) & 0xff);
-                        tmp[18] =(byte) ((Integer.parseInt(angV_min.getText().toString()) >> 8) & 0xff);
+                        tmp[11] = (byte) (Integer.parseInt(light.getText().toString()) & 0xff);
+                        tmp[12] =(byte) ((Integer.parseInt(light.getText().toString()) >> 8) & 0xff);
+
+                        tmp[13] = (byte) (Integer.parseInt(angH_max.getText().toString()) & 0xff);
+                        tmp[14] =(byte) ((Integer.parseInt(angH_max.getText().toString()) >> 8) & 0xff);
+                        tmp[15] = (byte) (Integer.parseInt(angH_min.getText().toString()) & 0xff);
+                        tmp[16] =(byte) ((Integer.parseInt(angH_min.getText().toString()) >> 8) & 0xff);
+                        tmp[17] = (byte) (Integer.parseInt(angV_max.getText().toString()) & 0xff);
+                        tmp[18] =(byte) ((Integer.parseInt(angV_max.getText().toString()) >> 8) & 0xff);
+                        tmp[19] = (byte) (Integer.parseInt(angV_min.getText().toString()) & 0xff);
+                        tmp[20] =(byte) ((Integer.parseInt(angV_min.getText().toString()) >> 8) & 0xff);
 
                         UDPCommands.sendCmd(UDPCommands.CMD_CFG, tmp, ip);
                         dialog.dismiss();

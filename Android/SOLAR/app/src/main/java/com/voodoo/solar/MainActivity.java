@@ -103,19 +103,14 @@ public class MainActivity extends Activity implements OnReceiveListener {
         Button btnCalc = (Button) findViewById(R.id.btnCalculate);
         btnCalc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 showSunInfo();
-
             }
         });
 
         Button btnFind = (Button) findViewById(R.id.btnFind);
         btnFind.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-
                 UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
-
             }
         });
 
@@ -132,18 +127,24 @@ public class MainActivity extends Activity implements OnReceiveListener {
                             for (int i = 0; i < clients.size(); i++) {
                                 Client tmp = clients.get(i);
                                 tmp.notAnswerDownCounter--;
+
+//                                //todo zatychka ot neprihodyaschih paketov
+//                                if(tmp.notAnswerDownCounter == 1)
+//                                    UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
+
                                 if (tmp.notAnswerDownCounter <= 0) {
                                     deleteListRow(i);
                                 }
                             }
                         }
+                        tvPackets.setText("Packs {" + packCntr + "}, 189 = " + debug);
+//                        //todo zatychka ot neprihodyaschih paketov
+//                        UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
 
                     }
                 });
             }
         }, 0, 1000);
-
-
     }
 
     //==============================================================================================
@@ -360,18 +361,13 @@ public class MainActivity extends Activity implements OnReceiveListener {
         }
         return R.drawable.w01d;
     }
-
-    //==============================================================================================
-    int cntr = 0;
     //==============================================================================================
     short ax, ay, az, packCntr = 0;
-
+    int debug = 0;
     //==============================================================================================
     public void onFrameReceived(InetAddress ip, IDataFrame frame) {
-        byte[] in = frame.getFrameData();
-        packCntr++;
-        tvPackets.setText("Packs {" + packCntr + "}");
 
+        byte[] in = frame.getFrameData();
         if (deviceIP == null) deviceIP = ip;
         try {
 
@@ -489,10 +485,17 @@ public class MainActivity extends Activity implements OnReceiveListener {
                                         lvForecastBuild(in);
                                     }
                                     ClientConfigMeteo.data = Arrays.copyOfRange(in, 3, 3 + 15);
+
+
                                 }
 
                                 lvBuid();
                                 currentClient.notAnswerDownCounter = 5;
+
+                                //todo debug
+                                if(currentClient.ip == (byte) 189) {
+                                    debug++;
+                                }
 
                                 if (currentClient.ip == selectedClient.ip/*i == selectedClient*/) {
                                     OpenGLRenderer.pitch = (float) ax / 10000;
@@ -502,11 +505,11 @@ public class MainActivity extends Activity implements OnReceiveListener {
                             }
                         }
                         // zatychka ot neprihodyaschih paketov
-                        UDPCommands.sendCmd(UDPCommands.NOP, null, broadcastIP);
+                        //UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
                         break;
 
                     case UDPCommands.CMD_CFG:
-                        ClientConfigMeteo.cfgData = Arrays.copyOfRange(in, 3, 3 + 18);
+                        ClientConfigMeteo.cfgData = Arrays.copyOfRange(in, 3, 3 + 20);
                         intent = new Intent(ClientConfigMeteo.BC_CFG_DATA);
                         sendBroadcast(intent);
                         break;
@@ -515,7 +518,8 @@ public class MainActivity extends Activity implements OnReceiveListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        cntr++;
+        packCntr++;
+        //tvPackets.setText("Packs {" + packCntr + "}, 189 = " + debug);
     }
 
     //==============================================================================================

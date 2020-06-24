@@ -93,6 +93,27 @@
             android:gravity="center"
             android:id="@+id/tvMeteoWindCFG" />
     </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="#01ff09">
+        <TextView
+            android:text=" Wind high: "
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginLeft="2dp"/>
+        <EditText
+            android:inputType="number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:id="@+id/tvMeteoWindHighCFG" />
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
