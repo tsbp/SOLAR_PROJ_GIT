@@ -18,13 +18,14 @@ typedef union __packed
 //==============================================================================
 typedef union __packed
 {
-	uint8 byte[10];
+	uint8 byte[12];
 	struct
 	{
 		uint16 latit;
 		uint16 longit;
 		uint16 timeZone;
-		uint16 wind;
+		uint16 windLow;
+		uint16 windHigh;
 		uint16 light;
 	};
 }u_METEO;

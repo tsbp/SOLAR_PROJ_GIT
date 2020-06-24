@@ -66,9 +66,10 @@ typedef union __attribute__ ((__packed__))
 //=========================================================================================
 #define STOPPED         (0)
 #define TRACKING        (1)
-#define ALARM           (2)
+#define ATTENTION      (2)
 #define MANUAL_ALARM    (3)
 #define OTA_STARTED     (4)
+#define ALARM           (5)
 //=========================================================================================
 typedef union __packed
 {

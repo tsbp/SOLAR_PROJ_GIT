@@ -263,16 +263,17 @@ void UDP_Recieved(void *arg, char *pusrdata, unsigned short length)
 					else //get
 					{
 						needAnswer = 1;
-						dataLng   = 10;
+//						dataLng   = 10;
 						ets_uart_printf("CMD GET CFG\r\n");
 						dataLng = sizeof(u_METEO) + sizeof(u_ANGLES);
 						memcpy (ansBuffer + 3, configs.meteo.byte, dataLng );
 					}
-					ets_uart_printf("METEO: %d, %d, %d, %d, %d, %d, %d, %d, %d\r\n",
+					ets_uart_printf("METEO: %d, %d, %d, %d, %d, %d, %d, %d, %d, %d\r\n",
 													configs.meteo.latit,
 													configs.meteo.longit,
 													configs.meteo.timeZone,
-													configs.meteo.wind,
+													configs.meteo.windLow,
+													configs.meteo.windHigh,
 													configs.meteo.light,
 													configs.angles.horiz_max,
 													configs.angles.horiz_min,

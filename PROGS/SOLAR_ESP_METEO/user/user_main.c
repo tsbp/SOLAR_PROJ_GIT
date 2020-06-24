@@ -99,6 +99,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 				{
 					case STOPPED: 		blink = BLINK_TRACK_STOPPPED; break;
 					case TRACKING: 		blink = BLINK_WAIT; break;
+					case ATTENTION:
 					case ALARM: 		blink = BLINK_WAIT_NODATA; break;
 					case MANUAL_ALARM: 	blink = BLINK_WAIT_NODATA; break;
 					case OTA_STARTED:	blink = BLINK_FW_UPDATE; break;
@@ -133,11 +134,9 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 		//====== check if sun is under horizont ========================
 		mState.azim = (int)(100 * azimuth * 57.2958);
 		mState.elev = (int)(9000 - 100 * elev * 57.2958);
+
 		if(mState.elev > MAX_ELEVATION)
 		{
-//			mState.azim = 100 * configs.angles.horiz_min;//HOME_AZIMUTH;
-//			mState.elev = 100 * configs.angles.vert_min; //HOME_ELEVATION;
-
 			//parking to south
 			mState.azim = 100 * 180; //parking to south
 			mState.elev = 100 * 10;
@@ -223,7 +222,8 @@ void ICACHE_FLASH_ATTR user_init(void)
 	ets_uart_printf("configs.wifi.OTAIP %s\r\n", configs.wifi.OTAIP);
 
 	ets_uart_printf("configs.meteo.light %d\r\n", configs.meteo.light);
-	ets_uart_printf("configs.meteo.wind  %d\r\n", configs.meteo.wind);
+	ets_uart_printf("configs.meteo.windLow  %d\r\n", configs.meteo.windLow);
+	ets_uart_printf("configs.meteo.windHigh  %d\r\n", configs.meteo.windHigh);
 
 	if(configs.wifi.mode == STATION_MODE)
 		setup_wifi_st_mode();

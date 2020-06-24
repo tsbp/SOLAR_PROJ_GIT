@@ -109,7 +109,8 @@ static void ICACHE_FLASH_ATTR service_timer_cb(os_event_t *events) {
 						configs.meteo.latit=4850;
 						configs.meteo.longit=3223;
 						configs.meteo.timeZone = 3;
-						configs.meteo.wind = 6;
+						configs.meteo.windLow = 6;
+						configs.meteo.windHigh = 8;
 
 
 						configs.wifi.mode = STATION_MODE;
@@ -253,15 +254,18 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 
 	if(mState.stt != MANUAL_ALARM )
 	{
-		if     (mState.wind >= configs.meteo.wind)
-		{
-			mState.stt = ALARM;
+		if     (mState.wind >= configs.meteo.windLow)		{
+			mState.stt = ATTENTION;
+
+			if(mState.wind >= configs.meteo.windHigh) {
+				mState.stt = ALARM;
+			}
+
 			windTimeoutCntr = WIND_TIMEOUT;
 		}
 		else if((mState.stt != STOPPED) &&
-				(mState.wind <= configs.meteo.wind - 2) &&
-				(windTimeoutCntr == 0))
-		{
+				(mState.wind <= configs.meteo.windLow - 2) &&
+				(windTimeoutCntr == 0))		{
 			mState.stt = TRACKING;
 		}
 		windTimeoutCntr--;
@@ -274,6 +278,7 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 		mState.azim = 100 * 180;//configs.angles.horiz_min;//HOME_AZIMUTH;
 		mState.elev = 100 * 10;//configs.angles.vert_min; //HOME_ELEVATION;
 	}
+	else if (mState.stt == ATTENTION) mState.elev = 100 * 10;//configs.angles.vert_min; //HOME_ELEVATION;
 	//========= Light ==========
 	int i, cntr_a = 0;
 	long light = 0;
