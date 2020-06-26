@@ -32,8 +32,8 @@ namespace SOLAR_APP
 		
 		public ObservableCollection<cfgData> items = new ObservableCollection<cfgData>();
 		
-		string[] names = {"Latitude", "Longitude", "Time zone", "Wind", "Light", "xMax", "xMin", "yMax", "yMin"};
-		public static double [] vals = {0, 0, 0, 0, 0,0,0,0,0};
+		string[] names = {"Latitude", "Longitude", "Time zone", "WindLow", "WindHigh", "Light", "xMax", "xMin", "yMax", "yMin"};
+		public static double [] vals = {0, 0, 0, 0, 0,0,0,0,0,0};
 		
 		public mCfgWin()
 		{
@@ -61,7 +61,7 @@ namespace SOLAR_APP
 			Window1.lat = ("" + vals[0]).Replace(',','.');
 			Window1.lon = ("" + vals[1]).Replace(',','.');
 			
-			byte[] buf = new byte[24]; //{(byte) 0x7e, (byte) 0xc0, (byte) 0x01, (byte) 0x00, (byte) 0xcc, (byte) 0xcc};
+			byte[] buf = new byte[26]; //{(byte) 0x7e, (byte) 0xc0, (byte) 0x01, (byte) 0x00, (byte) 0xcc, (byte) 0xcc};
 			
 			buf[0]  = (byte) 0x7e;
 			buf[1]  = (byte) 0xc0;
@@ -76,19 +76,21 @@ namespace SOLAR_APP
 			buf[10] = (byte) ((int)(vals[3]) & 0xff);
 			buf[11] = (byte) ((int)vals[3] >> 8);
 			buf[12] = (byte) ((int)(vals[4]) & 0xff);
-			buf[13] = (byte) ((int)vals[4] >> 8);
-			
+			buf[13] = (byte) ((int)vals[4] >> 8);			
 			buf[14] = (byte) ((int)(vals[5]) & 0xff);
 			buf[15] = (byte) ((int)vals[5] >> 8);
+			
 			buf[16] = (byte) ((int)(vals[6]) & 0xff);
 			buf[17] = (byte) ((int)vals[6] >> 8);
 			buf[18] = (byte) ((int)(vals[7]) & 0xff);
 			buf[19] = (byte) ((int)vals[7] >> 8);
 			buf[20] = (byte) ((int)(vals[8]) & 0xff);
 			buf[21] = (byte) ((int)vals[8] >> 8);
+			buf[22] = (byte) ((int)(vals[9]) & 0xff);
+			buf[23] = (byte) ((int)vals[9] >> 8);
 			
-			buf[22] = (byte) 0xcc;
-			buf[23] = (byte) 0xcc;
+			buf[24] = (byte) 0xcc;
+			buf[25] = (byte) 0xcc;
 			
 			sock.SendTo(buf , endPoint);
 		}

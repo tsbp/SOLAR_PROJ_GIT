@@ -100,7 +100,7 @@ void ICACHE_FLASH_ATTR loop(os_event_t *events)
 					case STOPPED: 		blink = BLINK_TRACK_STOPPPED; break;
 					case TRACKING: 		blink = BLINK_WAIT; break;
 					case ATTENTION:
-					case ALARM: 		blink = BLINK_WAIT_NODATA; break;
+					case ALARM: 		//blink = BLINK_WAIT_NODATA; break;
 					case MANUAL_ALARM: 	blink = BLINK_WAIT_NODATA; break;
 					case OTA_STARTED:	blink = BLINK_FW_UPDATE; break;
 				}

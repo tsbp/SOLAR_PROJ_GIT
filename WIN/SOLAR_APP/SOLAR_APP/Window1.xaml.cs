@@ -65,8 +65,9 @@ namespace SOLAR_APP
 		//======================================================================
 		public const byte STOPPED   = (byte)0x0;
 		public const byte TRACKING  = (byte)0x1;
-		public const byte ALARM     = (byte)0x2;
+		public const byte ATTENTION     = (byte)0x2;
 		public const byte MANUAL_ALARM     = (byte)0x3;
+		public const byte ALARM     = (byte)0x5;
 		//byte meteoState = 0;
 		//======================================================================
 		
@@ -97,6 +98,20 @@ namespace SOLAR_APP
 					_url = value;
 					if (PropertyChanged != null)
 						PropertyChanged(this, new PropertyChangedEventArgs("url"));
+				}
+			}
+			
+			
+			private String _alarmIcon;
+			public string alarmIcon
+			{ 
+				get
+				{ return _alarmIcon;}
+				set
+				{
+					_alarmIcon = value;
+					if (PropertyChanged != null)
+						PropertyChanged(this, new PropertyChangedEventArgs("alarmIcon"));
 				}
 			}
                 
@@ -168,6 +183,7 @@ namespace SOLAR_APP
 			lvSlave.ItemsSource = items;
 			
 			us.url = "/SOLAR_APP;component/Images/dual_compass_rose.png";
+			us.alarmIcon = "/SOLAR_APP;component/Images/control.png";
 			
 			btnSync.IsChecked = true;
 			
@@ -201,7 +217,7 @@ namespace SOLAR_APP
 			public string time;
 			public int azim;
 			public int elev;
-			public int wind;
+			public int wind;			
 			public int light;
 			public int stt;
 			
@@ -217,7 +233,8 @@ namespace SOLAR_APP
 		int cX, cY;
 		
 		public static string lat = "48.5";
-		public static string lon = "32.24";
+		public static string lon = "32.24";		
+		
 		//======================================================================
 		public static int currentSlave = 0, slavestt; 
 		//======================================================================
@@ -283,8 +300,9 @@ namespace SOLAR_APP
                         bServ.IsEnabled = (true);
                         bServ.Background = Brushes.Green;
                         bServ.Content = "TRACKING" + '\n' + "STARTED";
-                        bAlarm.Background = (Brushes.Green);
-                        bAlarm.Content = "ALARM" + '\n' + "INACTIVE";
+                        us.alarmIcon = "/SOLAR_APP;component/Images/normal.png";
+                        //bAlarm.Background = (Brushes.Green);
+                        //bAlarm.Content = "ALARM" + '\n' + "INACTIVE";
                     }break;
 
                     case STOPPED:
@@ -292,16 +310,24 @@ namespace SOLAR_APP
                         bServ.IsEnabled = true;
                         bServ.Background = (Brushes.Red);
                         bServ.Content = "TRACKING" + '\n' + "STOPPED";
-                        bAlarm.Background = (Brushes.Green);
-                        bAlarm.Content = "ALARM" + '\n' + "INACTIVE";
+                        us.alarmIcon = "/SOLAR_APP;component/Images/normal.png";
+                        //bAlarm.Background = (Brushes.Green);
+                        //bAlarm.Content = "ALARM" + '\n' + "INACTIVE";
                     }break;
 
+                	case ATTENTION:
+                		{
+                			//bAlarm.Background = (Brushes.Yellow);
+                			//bAlarm.Content = "ATTENTION";
+                			us.alarmIcon = "/SOLAR_APP;component/Images/attention.png";
+                		}break;
                     case ALARM:
                     case MANUAL_ALARM:
                     {
                         bServ.IsEnabled = (false);
-                        bAlarm.Content = "ALARM" + '\n' + "ACTIVATED";
-                        bAlarm.Background = (Brushes.Red);
+                        us.alarmIcon = "/SOLAR_APP;component/Images/alarm.png";
+                        //bAlarm.Content = "ALARM" + '\n' + "ACTIVATED";
+                        //bAlarm.Background = (Brushes.Red);
                     }break;
                 }
 				
@@ -476,12 +502,13 @@ namespace SOLAR_APP
 	                    			mCfgWin.vals[1] = (double)( receiveBytes[5]  | (receiveBytes[6])  << 8) / 100;
 	                    			mCfgWin.vals[2] = (double)( receiveBytes[7]  | (receiveBytes[8])  << 8) ;
 	                    			mCfgWin.vals[3] = (double)( receiveBytes[9]  | (receiveBytes[10]) << 8);
-	                    			mCfgWin.vals[4] = (double)( receiveBytes[11] | (receiveBytes[12]) << 8) ;
-	                    			
+	                    			mCfgWin.vals[4] = (double)( receiveBytes[11] | (receiveBytes[12]) << 8) ;	                    			
 	                                mCfgWin.vals[5] = (double)( receiveBytes[13] | (receiveBytes[14]) << 8) ;
+	                                
 	                                mCfgWin.vals[6] = (double)( receiveBytes[15] | (receiveBytes[16]) << 8) ;
 	                                mCfgWin.vals[7] = (double)( receiveBytes[17] | (receiveBytes[18]) << 8) ;
 	                                mCfgWin.vals[8] = (double)( receiveBytes[19] | (receiveBytes[20]) << 8) ;
+	                                mCfgWin.vals[9] = (double)( receiveBytes[21] | (receiveBytes[22]) << 8) ;
 	                    			
 	                    			break;
 	                    	}break;

@@ -252,23 +252,40 @@ void ICACHE_FLASH_ATTR meteoProcessing(void)
 	addValueToArray((sint16)freq, windArr); //[];
 	mState.wind = mFilter(windArr, FILTER_LENGHT);
 
+
+
 	if(mState.stt != MANUAL_ALARM )
 	{
-		if     (mState.wind >= configs.meteo.windLow)		{
-			mState.stt = ATTENTION;
+
+
+		if(mState.stt != STOPPED) {
+			if(windTimeoutCntr) windTimeoutCntr--;
+			else
+			{
+				if(mState.stt == ALARM && (mState.wind <= configs.meteo.windHigh - 2))
+				{
+					mState.stt = ATTENTION;
+					windTimeoutCntr = WIND_TIMEOUT;
+				}
+				else if ((mState.stt == ATTENTION && (mState.wind <= configs.meteo.windLow - 2)))
+				{
+					mState.stt = TRACKING;
+				}
+			}
+
+			//------------------------------------------
+			if ( mState.stt != ALARM && mState.wind >= configs.meteo.windLow) {
+				mState.stt = ATTENTION;
+				windTimeoutCntr = WIND_TIMEOUT;
+			}
 
 			if(mState.wind >= configs.meteo.windHigh) {
 				mState.stt = ALARM;
+				windTimeoutCntr = WIND_TIMEOUT;
 			}
+		}
 
-			windTimeoutCntr = WIND_TIMEOUT;
-		}
-		else if((mState.stt != STOPPED) &&
-				(mState.wind <= configs.meteo.windLow - 2) &&
-				(windTimeoutCntr == 0))		{
-			mState.stt = TRACKING;
-		}
-		windTimeoutCntr--;
+
 	}
 
 	if(mState.stt == ALARM || mState.stt == MANUAL_ALARM) // wind to fast then parking to south

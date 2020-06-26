@@ -98,6 +98,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Resource Include="Images\atte.png" />
+    <Resource Include="Images\attention.png" />
+    <Resource Include="Images\normal.png" />
+    <Resource Include="Images\alarm.png" />
     <Resource Include="Images\OpenWeather\01d%402x.png" />
     <Resource Include="Images\OpenWeather\01n%402x.png" />
     <Resource Include="Images\OpenWeather\02d%402x.png" />
