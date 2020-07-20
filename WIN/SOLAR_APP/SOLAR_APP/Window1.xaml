@@ -355,7 +355,7 @@
 					FontWeight="ExtraBold"
 					FontSize="16"
 					Foreground="Blue"
-					Content=""
+					Content="WifiCFG"
 					Click="masterEnableClick" />
 			</Grid>
 		</Grid>

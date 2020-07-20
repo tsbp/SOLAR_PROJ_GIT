@@ -82,6 +82,10 @@
       <DependentUpon>SlaveCfg.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Wifi.xaml.cs">
+      <DependentUpon>Wifi.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Window1.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>Window1.xaml</DependentUpon>
@@ -93,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="SlaveCfg.xaml" />
+    <Page Include="Wifi.xaml" />
     <Page Include="Window1.xaml" />
     <Page Include="MeteoCfg.xaml" />
   </ItemGroup>

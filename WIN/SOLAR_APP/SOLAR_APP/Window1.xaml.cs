@@ -241,19 +241,19 @@ namespace SOLAR_APP
 		private void dispatcherTimer_Tick(object sender, EventArgs e)
 		{
 			
-			if(appModeMaster) 	
-			{				
-				bMaster.Content = "ON";
-				Socket sockA = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
-			                         ProtocolType.Udp);		
-				IPEndPoint endPointA = new IPEndPoint(IPAddress.Parse("192.168.43.255"), 7171);
-				
-				byte[] send_buffer = {ID_MASTER, CMD_STATE, 0, (byte) 0xcc, (byte) 0xcc};
-				
-				sockA.SendTo(send_buffer , endPointA);
-				sockA.Close();
-			}
-			else				bMaster.Content = "OFF";
+//			if(appModeMaster) 	
+//			{				
+//				bMaster.Content = "ON";
+//				Socket sockA = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+//			                         ProtocolType.Udp);		
+//				IPEndPoint endPointA = new IPEndPoint(IPAddress.Parse("192.168.43.255"), 7171);
+//				
+//				byte[] send_buffer = {ID_MASTER, CMD_STATE, 0, (byte) 0xcc, (byte) 0xcc};
+//				
+//				sockA.SendTo(send_buffer , endPointA);
+//				sockA.Close();
+//			}
+//			else				bMaster.Content = "OFF";
 			
 			
 //			us.url = "https://maps.googleapis.com/maps/api/staticmap?center=" +
@@ -612,7 +612,7 @@ namespace SOLAR_APP
 			Keyboard.ClearFocus();
 		}
 		//===========================================================================================
-		Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+		public Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
 			                         ProtocolType.Udp);
 		//===========================================================================================
 		void slaveCfgClick(object sender, MouseButtonEventArgs e)
@@ -735,12 +735,14 @@ namespace SOLAR_APP
 			dispatcherTimer.Stop();			
 		}
 		//===========================================================================================
-		bool appModeMaster = false;
+		//bool appModeMaster = false;
 		//===========================================================================================
 		void masterEnableClick(object sender, RoutedEventArgs e)
 		{
-			if(appModeMaster) 	appModeMaster = false;
-			else				appModeMaster = true;
+//			if(appModeMaster) 	appModeMaster = false;
+//			else				appModeMaster = true;
+			Wifi wifiCfgWindow = new Wifi(mIp);
+			wifiCfgWindow.Show();
 		}
 		//===========================================================================================
 		void btnSyncClick(object sender, RoutedEventArgs e)

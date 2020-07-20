@@ -220,6 +220,13 @@ namespace SOLAR_APP
 				buf[1]  = (byte) Window1.CMD_FWUPDATE;
 				sock.SendTo(buf , endPoint);
 			}
+		}
+		
+		//===========================================================================================
+		void bWifiSlave(object sender, RoutedEventArgs e)
+		{
+			Wifi wifiCfgWindow = new Wifi(endPoint.Address);
+			wifiCfgWindow.Show();
 		}	
 	}		
 }

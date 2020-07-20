@@ -28,6 +28,8 @@
 					Height="*" />
 				<RowDefinition
 					Height="5*" />
+				<RowDefinition
+					Height="*" />
 			</Grid.RowDefinitions>
 			<Label
 				Name="lblVersion"
@@ -107,6 +109,17 @@
 					</Label.Background>
 				</Label>
 			</DockPanel>
+			<Button
+				Width="75"
+				Height="23"
+				Grid.Column="0"
+				Grid.Row="2"
+				HorizontalAlignment="Center"
+				x:Name="btnWifiSet"
+				Margin="0,0,0,0"
+				VerticalAlignment="Center"
+				Content="WIFI CFG"
+				Click="bWifiSlave" />
 		</Grid>
 		<Grid
 			Grid.Column="0">
