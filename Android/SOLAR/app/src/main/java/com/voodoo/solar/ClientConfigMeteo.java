@@ -19,17 +19,26 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.voodoo.solar.MainActivity.BROADCAST_ACTION_METEO;
 
 public class ClientConfigMeteo extends Activity {
 
-    TextView tvIp, tvWind, tvTime, tvAzim, tvElev, tvWindS, tvlight;
+    TextView tvIp/*, tvWind, tvTime, tvAzim, tvElev, tvWindS, tvlight*/;
+
+
+    ListView lvMeteoState;
 
     public final static String BC_CFG_DATA = "broadcast CFG data";
 
@@ -57,15 +66,17 @@ public class ClientConfigMeteo extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meteo);
 
-        tvWind = (TextView) findViewById(R.id.tvWind);
-        tvTime = (TextView) findViewById(R.id.tvMeteoTime);
-        tvAzim = (TextView) findViewById(R.id.tvMeteoAzimuth);
-        tvElev = (TextView) findViewById(R.id.tvMeteoElevation);
-        tvWindS = (TextView) findViewById(R.id.tvMeteoWind);
-        tvlight = (TextView) findViewById(R.id.tvMeteoLight);
+//        tvWind = (TextView) findViewById(R.id.tvWind);
+//        tvTime = (TextView) findViewById(R.id.tvMeteoTime);
+//        tvAzim = (TextView) findViewById(R.id.tvMeteoAzimuth);
+//        tvElev = (TextView) findViewById(R.id.tvMeteoElevation);
+//        tvWindS = (TextView) findViewById(R.id.tvMeteoWind);
+//        tvlight = (TextView) findViewById(R.id.tvMeteoLight);
 
         tvIp = (TextView) findViewById(R.id.tvIPMeteo);
         tvIp.setText("" + ip.getHostAddress());
+
+        lvMeteoState = findViewById(R.id.lvMeteoState);
 
         imgSun = (com.voodoo.solar.imgPosition) findViewById(R.id.imgPos);
 
@@ -96,7 +107,7 @@ public class ClientConfigMeteo extends Activity {
             // действия при получении сообщений
             public void onReceive(Context context, Intent intent) {
                 String input = intent.getStringExtra(MainActivity.PARAM_LIGTH);
-                tvWind.setText(input);
+                //tvWind.setText(input);
 
                 meteoState = data[14];
                 switch(meteoState)
@@ -134,14 +145,16 @@ public class ClientConfigMeteo extends Activity {
                 }
 
 
-                tvTime.setText((data[0] & 0xff) + "." + (data[1] & 0xff) + "." + (data[2] & 0xff) + ", " +
-                               (data[3] & 0xff) + ":" + (data[4] & 0xff) + ":" + (data[5] & 0xff));
-                azimuth   = 0.01 * (double)((data[6] & 0xff) | ((data[7] << 8)));
-                elevation = 0.01 * (double)((data[8] & 0xff) | ((data[9] << 8)));
-                tvAzim.setText(String.format("%.1f", azimuth));
-                tvElev.setText(String.format("%.1f", elevation));
-                tvWindS.setText("" + ((data[10] & 0xff) | ((data[11] << 8))));
-                tvlight.setText("" + ((data[12] & 0xff) | ((data[13] << 8))));
+//                tvTime.setText((data[0] & 0xff) + "." + (data[1] & 0xff) + "." + (data[2] & 0xff) + ", " +
+//                               (data[3] & 0xff) + ":" + (data[4] & 0xff) + ":" + (data[5] & 0xff));
+//                azimuth   = 0.01 * (double)((data[6] & 0xff) | ((data[7] << 8)));
+//                elevation = 0.01 * (double)((data[8] & 0xff) | ((data[9] << 8)));
+//                tvAzim.setText(String.format("%.1f", azimuth));
+//                tvElev.setText(String.format("%.1f", elevation));
+//                tvWindS.setText("" + ((data[10] & 0xff) | ((data[11] << 8))));
+//                tvlight.setText("" + ((data[12] & 0xff) | ((data[13] << 8))));
+
+                lvStateBuild(data);
 
                 imgPosition.azimuth = azimuth;//sunPos.azimuth;
 //                if(sunPos.elev < 0)
@@ -413,6 +426,45 @@ public class ClientConfigMeteo extends Activity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String conf = sharedPreferences.getString(configReference, "") ;
         return conf.getBytes();
+    }
+
+    /***********************************************************************************************
+     *
+     */
+
+    private final String ATTRIBUTE_V1 = "attr_v1";
+    private final String ATTRIBUTE_V2 = "attr_v2";
+    private final String ATTRIBUTE_V3 = "attr_v3";
+    private final String ATTRIBUTE_V4 = "attr_v4";
+    private final String ATTRIBUTE_V5 = "attr_v5";
+
+    private void lvStateBuild(byte[] receiveBytes) {
+
+        String[] stateData = new String[5];
+        stateData[0] = ((receiveBytes[0] & 0xff) + "." + (receiveBytes[1] & 0xff) + "." + (receiveBytes[2] & 0xff) + ", " +
+                (receiveBytes[3] & 0xff) + ":" + (receiveBytes[4] & 0xff) + ":" + (receiveBytes[5] & 0xff));
+        azimuth   = 0.01 * (double)((receiveBytes[6] & 0xff) | ((receiveBytes[7] << 8)));
+        elevation = 0.01 * (double)((receiveBytes[8] & 0xff) | ((receiveBytes[9] << 8)));
+        stateData[1] = (String.format("%.1f", azimuth));
+        stateData[2] = (String.format("%.1f", elevation));
+        stateData[3] = ("" + ((receiveBytes[10] & 0xff) | ((receiveBytes[11] << 8))));
+        stateData[4] = ("" + ((receiveBytes[12] & 0xff) | ((receiveBytes[13] << 8))));
+
+        int[] pictos = {R.drawable.clock, R.drawable.compass2, R.drawable.angle, R.drawable.wind, R.drawable.light};
+
+
+        ArrayList<Map<String, Object>> data = new ArrayList<>(3);
+        Map<String, Object> m;
+        for (int i = 0; i < 5; i++) {
+            m = new HashMap<>();
+            m.put(ATTRIBUTE_V1, pictos[i]);
+            m.put(ATTRIBUTE_V2, stateData[i]);
+            data.add(m);
+        }
+        String[] from = {ATTRIBUTE_V1, ATTRIBUTE_V2};
+        int[] to = {R.id.picto, R.id.i1};
+        SimpleAdapter sAdapter = new SimpleAdapter(this, data, R.layout.meteo_state_item, from, to);
+        lvMeteoState.setAdapter(sAdapter);
     }
     //==============================================================================================
     @Override

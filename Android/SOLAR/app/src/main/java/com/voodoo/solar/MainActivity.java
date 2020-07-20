@@ -38,7 +38,6 @@ import static com.voodoo.solar.IPHelper.getBroadcastIP4AsBytes;
 
 public class MainActivity extends Activity implements OnReceiveListener {
 
-
     public final static String PARAM_PITCH = "pitch";
     public final static String PARAM_ROLL = "roll";
     public final static String PARAM_HEAD = "head";
@@ -46,10 +45,8 @@ public class MainActivity extends Activity implements OnReceiveListener {
     public final static String PARAM_TERM = "term";
     public final static String PARAM_STT = "dStt";
 
-
     public static UDPProcessor udpProcessor;
     InetAddress deviceIP = null, broadcastIP;
-
 
     EditText etLong, etLatit;
 
@@ -128,18 +125,18 @@ public class MainActivity extends Activity implements OnReceiveListener {
                                 Client tmp = clients.get(i);
                                 tmp.notAnswerDownCounter--;
 
-//                                //todo zatychka ot neprihodyaschih paketov
-//                                if(tmp.notAnswerDownCounter == 1)
-//                                    UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
+                                //todo zatychka ot neprihodyaschih paketov
+                                if(tmp.notAnswerDownCounter == 1)
+                                    UDPCommands.sendCmd(UDPCommands.NOP, null, broadcastIP);
 
                                 if (tmp.notAnswerDownCounter <= 0) {
                                     deleteListRow(i);
                                 }
                             }
                         }
-                        tvPackets.setText("Packs {" + packCntr + "}, 189 = " + debug);
-//                        //todo zatychka ot neprihodyaschih paketov
-//                        UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
+                        //tvPackets.setText("Packs {" + packCntr + "}, 189 = " + debug);
+                        //todo zatychka ot neprihodyaschih paketov
+                        UDPCommands.sendCmd(UDPCommands.CMD_STATE, null, broadcastIP);
 
                     }
                 });
@@ -169,12 +166,6 @@ public class MainActivity extends Activity implements OnReceiveListener {
 
         if(selectedClient != null) {
             Intent intent = new Intent(action/*MainActivity.BROADCAST_ACTION*/);
-//        intent.putExtra(PARAM_PITCH, clients.get(selectedClient).data[0]);
-//        intent.putExtra(PARAM_ROLL, clients.get(selectedClient).data[1]);
-//        intent.putExtra(PARAM_HEAD, clients.get(selectedClient).data[2]);
-//        intent.putExtra(PARAM_LIGTH, clients.get(selectedClient).data[3]);
-//        intent.putExtra(PARAM_TERM, clients.get(selectedClient).data[4]);
-//        intent.putExtra(PARAM_STT, clients.get(selectedClient).data[5]);
             intent.putExtra(PARAM_PITCH, selectedClient.data[0]);
             intent.putExtra(PARAM_ROLL, selectedClient.data[1]);
             intent.putExtra(PARAM_HEAD, selectedClient.data[2]);
@@ -424,20 +415,6 @@ public class MainActivity extends Activity implements OnReceiveListener {
                         break;
                     case UDPCommands.CMD_STATE:
 
-//                        String terms = ""; // if no faults show terminators state
-//                        if ((in[11] & (short) 1) == 1)
-//                            terms += "1";
-//                        else terms += "0";
-//                        if ((in[11] & (short) 2) == 2)
-//                            terms += "1";
-//                        else terms += "0";
-//                        if ((in[11] & (short) 4) == 4)
-//                            terms += "1";
-//                        else terms += "0";
-//                        if ((in[11] & (short) 8) == 8)
-//                            terms += "1";
-//                        else terms += "0";
-
                         // find ip
                         for (int i = 0; i < clients.size(); i++) {
                             Client currentClient = clients.get(i);
@@ -518,8 +495,8 @@ public class MainActivity extends Activity implements OnReceiveListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        packCntr++;
-        //tvPackets.setText("Packs {" + packCntr + "}, 189 = " + debug);
+        //packCntr++;
+        tvPackets.setText("Packs {" + ++packCntr + "}"/*, 189 = " + debug*/);
     }
 
     //==============================================================================================
@@ -560,17 +537,19 @@ public class MainActivity extends Activity implements OnReceiveListener {
         udpProcessor.stop();
     }
 
-}
+    //==============================================================================================
+    class Client {
+        public int notAnswerDownCounter = 5;
+        public byte ip;
+        public String data[];
 
-class Client {
-    public int notAnswerDownCounter = 5;
-    public byte ip;
-    public String data[];
+        Client(byte ip, String[] data) {
+            this.ip = ip;
+            this.data = data;
+        }
 
-    Client(byte ip, String[] data) {
-        this.ip = ip;
-        this.data = data;
     }
-
 }
+
+
 

@@ -62,14 +62,6 @@ public class ClientConfig extends Activity {
         GLSurfaceView view = (GLSurfaceView) findViewById(R.id.w3D);
         view.setRenderer(new OpenGLRenderer());
 
-
-//        tvPitch = (TextView) findViewById(R.id.tvPitch);
-//        tvRoll = (TextView) findViewById(R.id.tvRoll);
-//        tvHead = (TextView) findViewById(R.id.tvHead);
-//        tvLigth = (TextView) findViewById(R.id.tvLigth);
-//        tvTerm = (TextView) findViewById(R.id.tvTerm);
-//        tvStt = (TextView) findViewById(R.id.tvFault);
-
         ivMotor = (ImageView) findViewById(R.id.ivMotorFault);
         ivSensor = (ImageView) findViewById(R.id.ivSensorFault);
 
@@ -119,12 +111,6 @@ public class ClientConfig extends Activity {
                     else {
                         ivMotor.setImageResource(R.drawable.ok);
                     }
-
-//                        state = "А:ДM";
-//                    else if(((byte)(in[12] & 0xff) & (byte)0x20) == (byte)0x20)
-//                        state = "А:М";
-//                    else if(((byte)(in[12] & 0xff) & (byte)0x08) == (byte)0x08)
-//                        state = "А:Д";
                 }
                 catch (Exception ignored){
 
@@ -221,7 +207,7 @@ public class ClientConfig extends Activity {
             MainActivity.PARAM_HEAD, MainActivity.PARAM_LIGTH/*,
             MainActivity.PARAM_TERM, MainActivity.PARAM_STT*/};
     private int [] logos = {
-            R.drawable.angle, R.drawable.tilt, R.drawable.compass_small, R.drawable.light};
+            R.drawable.angle, R.drawable.tilt, R.drawable.compass2, R.drawable.light};
     //==============================================================================================
     void lvBuid(Intent intent) {
 
