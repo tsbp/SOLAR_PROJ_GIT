@@ -264,9 +264,9 @@ public class MainActivity extends Activity implements OnReceiveListener {
         //http://api.openweathermap.org/data/2.5/weather?lat=32.23&lon=48.5&units=metric&appid=7412b643dfdbf390970f2f65a1bad7ce
         String[] fcData = new String[3];
 
-        fcData[1] = (double) ((receiveBytes[18] & 0xff) | (receiveBytes[19] & 0xff) << 8) / 100 + " m/s";
-        fcData[0] = (double) ((receiveBytes[20] & 0xff) | (receiveBytes[21] & 0xff) << 8) / 100 + " \u2103";
-        fcData[2] = (double) ((receiveBytes[22] & 0xff) | (receiveBytes[23] & 0xff) << 8) / 100 + "%";
+        fcData[1] = (double)((receiveBytes[18] & 0xff) | (receiveBytes[19] & 0xff) << 8) / 100 + " m/s";
+        fcData[0] = (double)((short) ((receiveBytes[20] & 0xff) | (receiveBytes[21] & 0xff) << 8)) / 100 + " \u2103";
+        fcData[2] = (double)((receiveBytes[22] & 0xff) | (receiveBytes[23] & 0xff) << 8) / 100 + "%";
 
         int strEnd;
         for (strEnd = 0; strEnd < 20; strEnd++) {
